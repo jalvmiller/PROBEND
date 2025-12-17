@@ -15,3 +15,5 @@ buildNumber.properties
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+uml/CLASSESMVP1.drawio
+uml/DIAGCASO.drawio
