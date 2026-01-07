@@ -15,8 +15,7 @@ public class QuestaoRepository {
 
             banco.add(question);
         } else {
-            // sobrescreve o mesmo, ou faz update..
-            // dá na mesma.
+            // faz update.. nesse trecho debaixo, caso haja o id no banco de dados
             for (int i = 0; i < banco.size(); i++){
                 if(banco.get(i).getId().equals(question.getId())){
                     banco.set(i, question);
