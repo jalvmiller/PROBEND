@@ -1,2 +1,2 @@
 # PROBEND
-Projeto de férias, relembrar Java e afins.
+Projeto de férias
