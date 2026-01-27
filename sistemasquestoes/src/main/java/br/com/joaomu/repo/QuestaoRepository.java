@@ -6,7 +6,7 @@ import java.util.List;
 
 public class QuestaoRepository {
 
-    private final List<Questao> banco = new ArrayList<>();
+    private final List<Questao> banco = new ArrayList<>(); // "Banco de dados", uma Lista de várias questões
     private Long proximoId = 1L;
     
     public Questao salvar(Questao question) {
