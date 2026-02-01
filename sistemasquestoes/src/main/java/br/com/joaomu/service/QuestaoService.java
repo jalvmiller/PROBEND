@@ -15,6 +15,31 @@ public class QuestaoService {
         this.repository = repository;
     }
 
+    // Validar a entrada de dificuldade
+
+    /* 
+    private void validarDificuldade(Integer dificuldade) {
+        if (dificuldade == null) {
+            throw new IllegalArgumentException("Dificuldade é obrigatória!");
+        }
+
+        if (dificuldade < 0 || dificuldade > 2) {
+            dificuldade = 0;
+            
+            System.out.println("Dificuldade inválida, a dificuldade será fácil por padrão.");
+            return;
+        }
+    }
+    */
+
+    public void validarDificuldade(Questao questao) {
+        if (questao.getDificuldade() == null || questao.getDificuldade() < 0 || questao.getDificuldade() > 2) {
+            System.out.println("\nDificuldade inválida, a dificuldade será fácil por padrão.\n");
+            
+            questao.setDificuldade(0);
+        }
+    }    
+
     // Cadastrar nova questão com as regras de negócio, exceções
 
     public Questao validarQuestao(Questao questao){
@@ -43,7 +68,11 @@ public class QuestaoService {
         if (alternativasIncorretas < 2) {
             throw new IllegalArgumentException("É necessário pelo menos 2 alternativas incorretas!");
         }
+
+
+        validarUnicidade(questao); // Caso o usuário tenha informado uma mesma alternativa como correta e incorreta -> exceção 
         
+
         // VALIDAÇÃO 4: Matéria obrigatória
         if (questao.getMateria() == null || questao.getMateria().isBlank()) {
             throw new IllegalArgumentException("Matéria é obrigatória!");
@@ -60,6 +89,8 @@ public class QuestaoService {
         return repository.salvar(questao);
     }
 
+
+    
     public Questao atualizarQuestao(Questao questao){
         Questao existe = repository.buscarPorId(questao.getId());
         if (existe == null){
@@ -72,6 +103,8 @@ public class QuestaoService {
     public List<Questao> listarTodas(){
         return repository.listarTodas();
     }
+
+
 
     public Questao buscarPorId(Long id){
         if (id == null || id <= 0){
@@ -86,6 +119,8 @@ public class QuestaoService {
         return questao;
     }
 
+
+
     public boolean remover(Long id){
         if (id == null || id <= 0){
             throw new IllegalArgumentException("ID inválido");
@@ -99,6 +134,8 @@ public class QuestaoService {
         return true;
     }
 
+
+
     public List<Questao> buscarPorMateria(String materia){
         if (materia == null || materia.isBlank()){
             throw new IllegalArgumentException("Matéria inválida");
@@ -108,6 +145,8 @@ public class QuestaoService {
             .filter(q -> q.getMateria().equalsIgnoreCase(materia))
             .collect(Collectors.toList());
     }
+
+
 
     public List<Questao> buscarPorDificuldade(Integer dificuldade){
         if (dificuldade == null || dificuldade < 0 || dificuldade > 2){
@@ -137,6 +176,24 @@ public class QuestaoService {
                 .toLowerCase()
                 .contains(assunto.toLowerCase()))
                 .collect(Collectors.toList());
+    }
+
+
+    private void validarUnicidade(Questao questao) {
+        String correta = questao.getAlternativaCorreta().toLowerCase().trim(); 
+        //tolowercase-> uniformizar o padrão minúsculo para verif; o trim servirá para remover espaços
+
+        if(correta.equals(questao.getAlternativaIncorreta1().toLowerCase().trim())) {
+            throw new IllegalArgumentException("A alternativa correta não pode ser posta como incorreta");
+        }
+
+        if(correta.equals(questao.getAlternativaIncorreta2().toLowerCase().trim())) {
+            throw new IllegalArgumentException("A alternativa correta não pode ser posta como incorreta");
+        }
+
+        if(correta.equals(questao.getAlternativaIncorreta3().toLowerCase().trim())) {
+            throw new IllegalArgumentException("A alternativa correta não pode ser posta como incorreta");
+        }
     }
     
 }

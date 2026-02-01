@@ -43,10 +43,10 @@ public class App {
                     controller.removerQuestao();
                     break;
                 case 5: 
-                    menu.exibirInformacao("Ainda não implementada.");
+                    controller.buscarPorMateria();
                     break;
                 case 6:
-                    menu.exibirInformacao("Ainda não implementada.");
+                    controller.buscarPorDificuldade();
                     break;
                 case 0:
                     menu.exibirInformacao("Encerrando...");

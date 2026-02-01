@@ -46,22 +46,27 @@ public class QuestaoController {
             System.out.println("Dificuldade: 0 - Fácil, 1 - Média, 2 - Difícil");
             q.setDificuldade(scanner.nextInt());
 
+            service.validarDificuldade(q);
+
+            scanner.nextLine(); // consumir \n (quebra de linha) contida no buffer
+
+
+
             System.out.println("Fonte: ");
             q.setFonte(scanner.nextLine());
 
             Questao salva = service.validarQuestao(q);
 
-            System.out.println("Questao " + salva.getId() + " foi cadastrada com sucesso."); 
+            System.out.println("\nQuestao " + salva.getId() + " foi cadastrada com sucesso.");
             // Controller -> Service -> Repo
             // E de repo, o objeto volta para que salva possa usar o getId
 
         } catch (IllegalArgumentException e) {
-            System.out.println("\n ERRO: " + e.getMessage());
+            System.out.println("\nERRO: " + e.getMessage());
         } catch (Exception e) {
-            System.out.println("\n ERRO inesperado: " + e.getMessage());
+            System.out.println("\nERRO inesperado: " + e.getMessage());
         }
     }
-
 
     public void ListarQuestoes() {
         try {
@@ -74,21 +79,20 @@ public class QuestaoController {
 
             System.out.println("\n=== Questões Cadastradas ===");
             for (Questao q : lista) {
-                System.out.println("\n ID: " + q.getId());
+                System.out.println("\nID: " + q.getId());
                 System.out.println("Enunciado: " + q.getEnunciado());
                 System.out.println("Matéria: " + q.getMateria());
-                System.out.println("Dificuldade" + q.getDificuldade());
+                System.out.println("Dificuldade: " + q.getDificuldade());
                 System.out.println("---");
             }
         } catch (Exception e) {
-            System.out.println("\n Erro ao listar questões: " + e.getMessage());
+            System.out.println("\nErro ao listar questões: " + e.getMessage());
         }
     }
 
-
     public void removerQuestao() {
         try {
-            System.out.println("Informe o ID da questão: ");
+            System.out.println("\nInforme o ID da questão: ");
             Long id = lerLong();
 
             service.remover(id);
@@ -100,7 +104,6 @@ public class QuestaoController {
             System.out.println("\nErro Ineseperado: " + e.getMessage());
         }
     }
-
 
     public void editarQuestao() {
         try {
@@ -175,11 +178,8 @@ public class QuestaoController {
                 q.setDificuldade(novaDif);
             }
 
-
             service.atualizarQuestao(q);
             System.out.println("Questão atualizada!");
-
-            
 
         } catch (IllegalArgumentException e) {
             System.out.println("\nErro: " + e.getMessage());
@@ -188,8 +188,69 @@ public class QuestaoController {
         }
     }
 
+    public void buscarPorMateria() {
 
-    private Long lerLong(){
+        try {
+            System.out.println("\nDigite a matéria a buscar:");
+            String materia = scanner.nextLine();
+
+            List<Questao> lista = service.buscarPorMateria(materia);
+
+            if (lista.isEmpty()) {
+                System.out.println("\nNenhuma questão encontrada para a matéria " + materia + "\n");
+                return;
+            }
+
+            System.out.println("\n=== Questões de " + materia + " ===\n");
+            for (Questao q : lista) {
+                System.out.println("ID: " + q.getId());
+                System.out.println("Enunciado: " + q.getEnunciado());
+                System.out.println("Matéria: " + q.getMateria());
+                System.out.println("Dificuldade: " + getNomeDificuldade(q.getDificuldade()));
+                System.out.println("===\n");
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("\nErro: " + e.getMessage() + "\n");
+        } catch (Exception e) {
+            System.out.println("\nErro inesperado: " + e.getMessage() + "\n");
+        }
+
+    }
+
+    public void buscarPorDificuldade() {
+
+        try {
+            System.out.println("\nEscolha a dificuldade desejada: ");
+            System.out.println("\n 0 - Fácil");
+            System.out.println("\n 1 - Média");
+            System.out.println("\n 2 - Difícil");
+            System.out.println("Digite a opção: ");
+
+            Integer dificuldade = lerInt();
+
+            List<Questao> lista = service.buscarPorDificuldade(dificuldade);
+
+            if (lista.isEmpty()) {
+                System.out.println("\nNenhuma questão encontrada para a dificuldade " + dificuldade + "\n");
+                return;
+            }
+
+            System.out.println("\n=== Questões de dificuldade " + dificuldade + " ===\n");
+            for (Questao q : lista) {
+                System.out.println("ID: " + q.getId());
+                System.out.println("Enunciado: " + q.getEnunciado());
+                System.out.println("Matéria: " + q.getMateria());
+                System.out.println("Dificuldade: " + getNomeDificuldade(q.getDificuldade()));
+                System.out.println("===\n");
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("\nErro: " + e.getMessage() + "\n");
+        } catch (Exception e) {
+            System.out.println("\nErro inesperado: " + e.getMessage() + "\n");
+        }
+    }
+
+    private Long lerLong() {
         while (!scanner.hasNextLong()) {
             System.out.println("Digite um número inteiro: ");
             scanner.next();
@@ -200,8 +261,7 @@ public class QuestaoController {
         return valor;
     }
 
-
-    private int lerInt(){
+    private int lerInt() {
         while (!scanner.hasNextLong()) {
             System.out.println("Digite um número inteiro: ");
             scanner.next();
@@ -212,13 +272,16 @@ public class QuestaoController {
         return valor;
     }
 
-
     private String getNomeDificuldade(Integer dificuldade) {
         switch (dificuldade) {
-            case 0: return "fácil";
-            case 1: return "média";
-            case 2: return "dificil";
-            default: return "inválida";
+            case 0:
+                return "fácil";
+            case 1:
+                return "média";
+            case 2:
+                return "dificil";
+            default:
+                return "inválida";
         }
     }
 
