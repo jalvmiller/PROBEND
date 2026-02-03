@@ -1,16 +1,39 @@
 package br.com.joaomu.model;
 
+import jakarta.annotation.Generated;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "questoes")
 public class Questao {
     
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String enunciado;
+
+    @Column(nullable = false)
     private String alternativaCorreta;
+
+    @Column(nullable = false)
     private String alternativaIncorreta1;
+
+    @Column(nullable = false)
     private String alternativaIncorreta2;
+    
+    @Column(nullable = false)
     private String alternativaIncorreta3;
+    
+    @Column(nullable = false)
     private String materia;
+
     private String assunto;
+    
+    @Column(nullable = false)
     private Integer dificuldade;
+    
     private String fonte;
     
     public Long getId() {
