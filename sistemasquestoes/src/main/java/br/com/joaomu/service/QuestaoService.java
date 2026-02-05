@@ -99,15 +99,8 @@ public class QuestaoService {
 
 
     public boolean remover(Long id){
-        if (id == null || id <= 0){
-            throw new IllegalArgumentException("ID inválido");
-        }
-
-        boolean removido = repository.remover(id);
-        if (!removido) {
-            throw new IllegalArgumentException("Questao não encontrada");
-        }
-
+        Questao questao = buscarPorId(id);
+        repository.delete(questao);
         return true;
     }
 
@@ -118,9 +111,12 @@ public class QuestaoService {
             throw new IllegalArgumentException("Matéria inválida");
         }
 
+        return repository.findByMaterialIgnoreCase(materia);
+        /* 
         return repository.listarTodas().stream()
             .filter(q -> q.getMateria().equalsIgnoreCase(materia))
             .collect(Collectors.toList());
+        */
     }
 
 
@@ -130,9 +126,12 @@ public class QuestaoService {
             throw new IllegalArgumentException("A dificuldade deve estar entre: 0 (fácil) - 1 (média) - 2 (difícil");
         }
 
+        return repository.findByDificuldade(dificuldade);
+        /* 
         return repository.listarTodas().stream()
             .filter(q -> q.getDificuldade().equals(dificuldade))
             .collect(Collectors.toList());
+        */
     }
 
     public List<Questao> buscarPorAssunto(String assunto){
@@ -140,19 +139,16 @@ public class QuestaoService {
             throw new IllegalArgumentException("Assunto inválido");
         }
 
+        return repository.findByAssuntoIgnoreCase(assunto);
         /*
-        
-        
-        ANÁLISE LOWERCASE
-        
-        */
-
+        ANÁLISE LOWERCASE 
         return repository.listarTodas().stream()
             .filter(q -> q.getAssunto() != null && 
                 q.getAssunto()
                 .toLowerCase()
                 .contains(assunto.toLowerCase()))
                 .collect(Collectors.toList());
+        */
     }
 
 
