@@ -84,23 +84,16 @@ public class QuestaoService {
         return repository.save(questao);
     }
     
+    // findAll
     public List<Questao> listarTodas(){
         return repository.findAll();
     }
 
 
-
+    // método ficou bem mais compacto
     public Questao buscarPorId(Long id){
-        if (id == null || id <= 0){
-            throw new IllegalArgumentException("ID inválido");
-        }
-
-        Questao questao = repository.buscarPorId(id);
-        if (questao == null){
-            throw new IllegalArgumentException("Questão não encontrada");
-        }
-
-        return questao;
+        return repository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Questão não encontrada com ID: " + id));
     }
 
 
