@@ -2,11 +2,11 @@ package br.com.joaomu.service;
 
 import br.com.joaomu.model.Questao;
 import br.com.joaomu.repo.QuestaoRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-
+@Service
 public class QuestaoService {
 
     private QuestaoRepository repository;
@@ -14,23 +14,6 @@ public class QuestaoService {
     public QuestaoService(QuestaoRepository repository){
         this.repository = repository;
     }
-
-    // Validar a entrada de dificuldade
-
-    /* 
-    private void validarDificuldade(Integer dificuldade) {
-        if (dificuldade == null) {
-            throw new IllegalArgumentException("Dificuldade é obrigatória!");
-        }
-
-        if (dificuldade < 0 || dificuldade > 2) {
-            dificuldade = 0;
-            
-            System.out.println("Dificuldade inválida, a dificuldade será fácil por padrão.");
-            return;
-        }
-    }
-    */
 
     public void validarDificuldade(Questao questao) {
         if (questao.getDificuldade() == null || questao.getDificuldade() < 0 || questao.getDificuldade() > 2) {
@@ -43,7 +26,6 @@ public class QuestaoService {
     // Cadastrar nova questão com as regras de negócio, exceções
 
     public Questao validarQuestao(Questao questao){
-
         if(questao.getEnunciado() == null || questao.getEnunciado().isBlank()){
             throw new IllegalArgumentException("Uso de enunciado é obrigatório");
         }
@@ -90,18 +72,20 @@ public class QuestaoService {
     }
 
 
-    
+    // PRIMEIRO MÉTODO COM ALTERAÇÃO VINDA DA IMPLEMENTAÇÃO DA PERSISTÊNCIA DO JPA
+    // O método buscarPorId foi trocado por um método da biblioteca do jpa repository
     public Questao atualizarQuestao(Questao questao){
-        Questao existe = repository.buscarPorId(questao.getId());
-        if (existe == null){
+        Questao existe = repository.findById(questao.getId())
+            .orElseThrow(() -> new IllegalArgumentException("Questão não encontrada com ID: " + questao.getId()));
+        /*if (existe == null){
             throw new IllegalArgumentException("Questão não encontrada com ID: " + questao.getId());
-        }
+        }*/
 
-        return validarQuestao(questao);
+        return repository.save(questao);
     }
     
     public List<Questao> listarTodas(){
-        return repository.listarTodas();
+        return repository.findAll();
     }
 
 
