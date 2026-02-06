@@ -68,7 +68,7 @@ public class QuestaoService {
         }
         
         // Se passou todas as validações, salva
-        return repository.salvar(questao);
+        return repository.save(questao);
     }
 
 

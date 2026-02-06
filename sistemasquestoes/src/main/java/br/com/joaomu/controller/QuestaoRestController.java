@@ -1,110 +1,48 @@
 package br.com.joaomu.controller;
 
-import br.com.joaomu.model.*;
-import br.com.joaomu.service.*;
+import br.com.joaomu.model.Questao;
+import br.com.joaomu.service.QuestaoService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
-import java.util.Scanner;
 
-public class QuestaoController {
+@RestController
+@RequestMapping("/questoes")
+@CrossOrigin("*")
+public class QuestaoRestController {
 
-    private QuestaoService service;
-    private Scanner scanner;
+    private QuestaoService service;;
 
-    public QuestaoController(QuestaoService service, Scanner scanner) {
+    public QuestaoRestController(QuestaoService service) {
         this.service = service;
-        this.scanner = scanner;
     }
 
-    public void cadastrarQuestao() {
-        try {
 
-            System.out.println("\n== Cadastro de questões ==");
-
-            Questao q = new Questao();
-
-            System.out.println("Enunciado: ");
-            q.setEnunciado(scanner.nextLine());
-
-            System.out.println("Alternativa Correta: ");
-            q.setAlternativaCorreta(scanner.nextLine());
-
-            System.out.println("Alternativa Incorreta 1: ");
-            q.setAlternativaIncorreta1(scanner.nextLine());
-
-            System.out.println("Alternativa Incorreta 2: ");
-            q.setAlternativaIncorreta2(scanner.nextLine());
-
-            System.out.println("Alternativa Incorreta 3: ");
-            q.setAlternativaIncorreta3(scanner.nextLine());
-
-            System.out.println("Matéria: ");
-            q.setMateria(scanner.nextLine());
-
-            System.out.println("Assunto: ");
-            q.setAssunto(scanner.nextLine());
-
-            System.out.println("Dificuldade: 0 - Fácil, 1 - Média, 2 - Difícil");
-            q.setDificuldade(scanner.nextInt());
-
-            service.validarDificuldade(q);
-
-            scanner.nextLine(); // consumir \n (quebra de linha) contida no buffer
-
-
-
-            System.out.println("Fonte: ");
-            q.setFonte(scanner.nextLine());
-
-            Questao salva = service.validarQuestao(q);
-
-            System.out.println("\nQuestao " + salva.getId() + " foi cadastrada com sucesso.");
-            // Controller -> Service -> Repo
-            // E de repo, o objeto volta para que salva possa usar o getId
-
-        } catch (IllegalArgumentException e) {
-            System.out.println("\nERRO: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("\nERRO inesperado: " + e.getMessage());
-        }
+    @GetMapping
+    public ResponseEntity<List<Questao>> listarTodas() {
+        return ResponseEntity.ok(service.listarTodas());
     }
 
-    public void ListarQuestoes() {
-        try {
-            List<Questao> lista = service.listarTodas();
 
-            if (lista.isEmpty()) {
-                System.out.println("\nNenhuma questão cadastrada.");
-                return;
-            }
-
-            System.out.println("\n=== Questões Cadastradas ===");
-            for (Questao q : lista) {
-                System.out.println("\nID: " + q.getId());
-                System.out.println("Enunciado: " + q.getEnunciado());
-                System.out.println("Matéria: " + q.getMateria());
-                System.out.println("Dificuldade: " + q.getDificuldade());
-                System.out.println("---");
-            }
-        } catch (Exception e) {
-            System.out.println("\nErro ao listar questões: " + e.getMessage());
-        }
+    @GetMapping("/{id}")
+    public ResponseEntity<Questao> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
     }
 
-    public void removerQuestao() {
-        try {
-            System.out.println("\nInforme o ID da questão: ");
-            Long id = lerLong();
-
-            service.remover(id);
-            System.out.println("\nQuestão removida.");
-
-        } catch (IllegalArgumentException e) {
-            System.out.println("\nErro: " + e.getMessage());
-        } catch (Exception e) {
-            System.out.println("\nErro Ineseperado: " + e.getMessage());
-        }
+    @PostMapping
+    public ResponseEntity<Questao> criar(@RequestBody Questao questao) {
+        Questao salva = service.validarQuestao(questao);
+        return ResponseEntity.status(HttpStatus.CREATED).body(salva);
     }
-
+    
+    /*         TERMINAR                 TERMINAR                          */
+    /*         TERMINAR                 TERMINAR                          */
+    /*         TERMINAR                 TERMINAR                          */
+    /*         TERMINAR                 TERMINAR                          */
+    /*         TERMINAR                 TERMINAR                          */
+    
     public void editarQuestao() {
         try {
             System.out.println("\nInforme o ID da questão a ser editada: ");
