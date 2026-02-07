@@ -11,7 +11,7 @@ import java.util.List;
 public interface QuestaoRepository extends JpaRepository<Questao, Long> {
 
 
-    List<Questao> findByMaterialIgnoreCase(String materia);
+    List<Questao> findByMateriaIgnoreCase(String materia);
 
     List<Questao> findByDificuldade(Integer dificudade);
 

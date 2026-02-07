@@ -75,7 +75,7 @@ public class QuestaoService {
     // PRIMEIRO MÉTODO COM ALTERAÇÃO VINDA DA IMPLEMENTAÇÃO DA PERSISTÊNCIA DO JPA
     // O método buscarPorId foi trocado por um método da biblioteca do jpa repository
     public Questao atualizarQuestao(Questao questao){
-        Questao existe = repository.findById(questao.getId())
+        repository.findById(questao.getId())
             .orElseThrow(() -> new IllegalArgumentException("Questão não encontrada com ID: " + questao.getId()));
         /*if (existe == null){
             throw new IllegalArgumentException("Questão não encontrada com ID: " + questao.getId());
