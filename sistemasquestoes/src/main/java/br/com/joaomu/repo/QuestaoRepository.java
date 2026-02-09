@@ -13,7 +13,7 @@ public interface QuestaoRepository extends JpaRepository<Questao, Long> {
 
     List<Questao> findByMateriaIgnoreCase(String materia);
 
-    List<Questao> findByDificuldade(Integer dificudade);
+    List<Questao> findByDificuldade(Integer dificuldade);
 
     List<Questao> findByAssuntoIgnoreCase(String assunto);
 }

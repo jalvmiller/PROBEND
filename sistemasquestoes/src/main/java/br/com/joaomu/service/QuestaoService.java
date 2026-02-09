@@ -111,7 +111,7 @@ public class QuestaoService {
             throw new IllegalArgumentException("Matéria inválida");
         }
 
-        return repository.findByMaterialIgnoreCase(materia);
+        return repository.findByMateriaIgnoreCase(materia);
         /* 
         return repository.listarTodas().stream()
             .filter(q -> q.getMateria().equalsIgnoreCase(materia))
