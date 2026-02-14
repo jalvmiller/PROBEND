@@ -37,4 +37,14 @@ public class User implements UserDetails {
         return List.of();
     }
     
+
+    // Deixar tudo como true, mudar caso implemente algum tipo de bloqueio eventualmente
+    @Override
+    public boolean isAccountNonExpired() { return true; }
+    @Override
+    public boolean isAccountNonLocked() { return true; }
+    @Override
+    public boolean isCredentialsNonExpired() { return true; }
+    @Override
+    public boolean isEnabled() { return true; }
 }
