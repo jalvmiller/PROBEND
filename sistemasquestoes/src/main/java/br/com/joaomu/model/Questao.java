@@ -1,6 +1,5 @@
 package br.com.joaomu.model;
 
-import jakarta.annotation.Generated;
 import jakarta.persistence.*;
 
 @Entity

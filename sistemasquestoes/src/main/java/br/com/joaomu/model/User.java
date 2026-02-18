@@ -1,6 +1,5 @@
 package br.com.joaomu.model;
 
-import jakarta.annotation.sql.DataSourceDefinition;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.AllArgsConstructor;

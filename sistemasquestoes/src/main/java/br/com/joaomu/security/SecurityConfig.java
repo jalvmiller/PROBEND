@@ -1,7 +1,6 @@
 package br.com.joaomu.security;
 
 import br.com.joaomu.Application;
-import br.com.joaomu.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @SuppressWarnings("unused")
     private final Application application;
     
     private final JwtAuthenticationFilter jwtFilter;
