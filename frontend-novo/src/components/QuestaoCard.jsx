@@ -1,6 +1,8 @@
 function QuestaoCard({ enunciado, materia, dificuldade }) {
     
-    const coresDificuldade = dificuldade === 'Difícil' ? 'border-red-500' : 'border-green-500';
+    const coresDificuldade = 
+        dificuldade === 'Difícil' ? 'border-red-500' :
+        dificuldade === 'Médio' ? 'border-yellow-500': 'border-green-500';
 
     // lembrar que não pode usar aspas e sim crase backtick `
 
