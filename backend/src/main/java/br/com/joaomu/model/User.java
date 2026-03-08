@@ -37,6 +37,17 @@ public class User implements UserDetails {
     }
     
 
+    @Override
+    public String getUsername() {
+    return this.username; 
+    }
+
+    @Override
+    public String getPassword() {
+    return this.password; 
+    }
+
+
     // Deixar tudo como true, mudar caso implemente algum tipo de bloqueio eventualmente
     @Override
     public boolean isAccountNonExpired() { return true; }

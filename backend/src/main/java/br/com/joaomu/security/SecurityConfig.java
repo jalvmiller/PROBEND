@@ -20,12 +20,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig {
 
     @SuppressWarnings("unused")
-    private final Application application;
 
     private final JwtAuthenticationFilter jwtFilter;
 
     public SecurityConfig(JwtAuthenticationFilter jwtFilter, Application application) {
-        this.application = new Application();
         this.jwtFilter = jwtFilter;
     }
 
@@ -36,7 +34,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/questoes/**").authenticated()
+                        .requestMatchers("/api/questoes/**").permitAll() // authenticated desligado
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
