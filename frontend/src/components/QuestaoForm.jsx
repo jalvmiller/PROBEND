@@ -33,7 +33,8 @@ function QuestaoForm( { SalvarSucesso }) {
         e.preventDefault();
 
         try {
-            const resposta = await axios.post("http://localhost:8080/api/questoes", novaQuestao);
+            //const resposta = await axios.post("http://localhost:8080/api/questoes", novaQuestao);
+            const resposta = await axios.post(`${import.meta.env.VITE_API_URL}/questoes`, novaQuestao);
 
             // Avisar o componente pai (App.js) que a questão foi salvo, enviar o novo objeto
             SalvarSucesso(resposta.data);

@@ -20,7 +20,8 @@ function App() {
         setCarregando(true);
         setErro(null); // Resetar antes de buscar
         // context-path = api
-        const resposta = await axios.get("http://localhost:8080/api/questoes");
+        // const resposta = await axios.get("http://localhost:8080/api/questoes");
+        const resposta = await axios.get(`${import.meta.env.VITE_API_URL}/questoes`);
 
         // captura do JSON pelo useState
         setListaQuestoes(resposta.data);
@@ -42,7 +43,7 @@ function App() {
     setListaQuestoes([novaQuestao, ...listaQuestoes]);
   };
 
-  
+
 
   return (
     <div className="min-h-screen bg-slate-100 p-8 flex flex-col items-center">

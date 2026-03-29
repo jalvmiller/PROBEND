@@ -3,6 +3,7 @@ package br.com.joaomu.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 //import java.security.Key;
 import javax.crypto.SecretKey;
@@ -12,7 +13,8 @@ import java.util.Date;
 public class JwtUtil {
 
     // minímo de 32 caracteres para equivaler a 256 bits
-    private final String SECRET_KEY = "DivideEtImperaFortunaIuvat256bitsAAAOOOYEAAAA12845610";
+    @Value("${jwt.secret}") // Segurança para o spring
+    private String SECRET_KEY;
     private final long EXPIRATION_TIME = 86400000; // 24 horas em ms
 
     private SecretKey getSigningKey() {
