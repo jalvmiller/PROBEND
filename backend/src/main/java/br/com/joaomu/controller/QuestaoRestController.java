@@ -15,6 +15,7 @@ public class QuestaoRestController {
 
     private QuestaoService service;
 
+    // Responsabilidade do service é atuar como cérebro, controller só serve como I/O
     public QuestaoRestController(QuestaoService service) {
         this.service = service;
     }
@@ -29,6 +30,7 @@ public class QuestaoRestController {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 
+    // return HTTP 201
     @PostMapping
     public ResponseEntity<Questao> criar(@RequestBody Questao questao) {
         Questao salva = service.validarQuestao(questao);
