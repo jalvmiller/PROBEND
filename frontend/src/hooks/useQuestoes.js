@@ -1,0 +1,46 @@
+import { useState, useEffect } from "react";
+import { questaoService } from "../services/questaoService";
+
+export function useQuestoes() {
+  // useState, primeira iteração com simulação de busca no backend via java/spring
+  //       getter             setter          lista vazia
+  const [listaQuestoes, setListaQuestoes] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(null); // Estado p/ erros
+
+  useEffect(() => {
+    const carregarDadosBanco = async () => {
+      try {
+        setCarregando(true);
+        setErro(null); // Resetar antes de buscar
+
+        const dados = await questaoService.listarTodas();
+        setListaQuestoes(dados);
+      } catch (err) {
+        console.error("Erro ao conectar no Spring", err);
+        setErro("O servidor não está ligado");
+      } finally {
+        setCarregando(false);
+      }
+    };
+
+    carregarDadosBanco();
+    
+  }, []); // array vazio no final, ele indica que esse trecho deve ser executado "onLoad"
+
+
+  const removerDaLista = (id) => {
+    // Cria uma nova lista SEM a questão que tem o ID deletado
+    const listaAtualizada = listaQuestoes.filter(q => q.id !== id);
+    setListaQuestoes(listaAtualizada);
+  };
+
+  // Chamada pelo QuestaoForm quando um POST for bem-sucedido
+  const atualizarLista = (novaQuestao) => {
+    // Nova questão no início da lista para o usuário ver na hora
+    setListaQuestoes([novaQuestao, ...listaQuestoes]);
+  };
+
+  // Retornamos tudo que a tela precisa para funcionar
+  return { listaQuestoes, carregando, erro, removerDaLista, atualizarLista };
+}
