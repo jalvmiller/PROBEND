@@ -2,12 +2,12 @@
 Projeto de férias
 
 ## Stack
-- Backend: Java, Node.js + Express (começar pelo básico, depois adicionar framework)
-- Frontend: React (depois de ter o backend funcional)
-- Banco Relacional
-- Estrutura: Maven (Java) e depois migrar para Node.js
+- Backend: Java (Springboot)
+- Frontend: React, Tailwind
+- Banco Relacional (MySQL Server)
+- Estrutura: Maven (Java)
 
-## Estado atual:
+## Estado atual (atualizar):
 - ✅ Diagrama de classes pronto
 - ✅ Model: Questao.java completo
 - ✅ Repository: QuestaoRepository.java (ArrayList em memória por enquanto)
