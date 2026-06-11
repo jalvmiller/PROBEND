@@ -1,5 +1,5 @@
 # PROBEND
-Projeto de férias
+Projeto de férias, uma plataforma web colaborativa para documentação de questões exatas e algoritmos, usando Java, Spring Boot, e React.
 
 ## Stack
 - Backend: Java (Springboot)
