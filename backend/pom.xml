@@ -99,6 +99,14 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- Dependência do Swagger (Springdoc OpenAPI) -->
+		<!-- Testar sem postman -->
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

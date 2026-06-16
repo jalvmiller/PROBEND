@@ -27,6 +27,7 @@ public class SecurityConfig {
         this.jwtFilter = jwtFilter;
     }
 
+    // Lembrar desse Bean que lida diretamente com permissão de requisições
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -35,6 +36,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/questoes/**").permitAll() // authenticated desligado
+                        .requestMatchers("/api/usuarios/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()   // swagger
+                        .requestMatchers("/swagger-ui.html").permitAll() // swagger
+                        .requestMatchers("/v3/api-docs/**").permitAll()  // swagger
                         .anyRequest().permitAll())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
