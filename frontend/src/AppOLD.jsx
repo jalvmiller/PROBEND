@@ -47,11 +47,7 @@ function App() {
   const [novaQuestao, setNovaQuestao] = useState({
     enunciado: "",
     materia: "",
-    dificuldade: "0",
-    alternativaCorreta: "",
-    alternativaIncorreta1: "",
-    alternativaIncorreta2: "",
-    alternativaIncorreta3: ""
+    dificuldade: "0"
   });
 
 
@@ -108,38 +104,6 @@ function App() {
             <option value="2">Difícil</option>
           </select>
         </div>
-
-        <input
-          className="w-full p-2 border rounded mb-2"
-          placeholder="Alternativa Correta"
-          value={novaQuestao.alternativaCorreta}
-          onChange={(e) => setNovaQuestao({ ...novaQuestao, alternativaCorreta: e.target.value })}
-          required
-        />
-
-        <input
-          className="w-full p-2 border rounded mb-2"
-          placeholder="Alternativa Incorreta 1"
-          value={novaQuestao.alternativaIncorreta1}
-          onChange={(e) => setNovaQuestao({ ...novaQuestao, alternativaIncorreta1: e.target.value })}
-          required
-        />
-
-        <input
-          className="w-full p-2 border rounded mb-2"
-          placeholder="Alternativa Incorreta 2"
-          value={novaQuestao.alternativaIncorreta2}
-          onChange={(e) => setNovaQuestao({ ...novaQuestao, alternativaIncorreta2: e.target.value })}
-          required
-        />
-
-        <input
-          className="w-full p-2 border rounded mb-2"
-          placeholder="Alternativa Incorreta 3"
-          value={novaQuestao.alternativaIncorreta3}
-          onChange={(e) => setNovaQuestao({ ...novaQuestao, alternativaIncorreta3: e.target.value })}
-          required
-        />
 
         <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 w-full">
           Adicionar Questão

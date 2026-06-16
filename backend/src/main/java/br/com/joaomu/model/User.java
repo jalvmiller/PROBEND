@@ -35,6 +35,8 @@ public class User implements UserDetails {
 
     private boolean especialista = false;
 
+    private boolean administrador = false;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(){
         return List.of();

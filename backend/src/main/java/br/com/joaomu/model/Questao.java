@@ -14,18 +14,6 @@ public class Questao {
     private String enunciado;
 
     @Column(nullable = false)
-    private String alternativaCorreta;
-
-    @Column(nullable = false)
-    private String alternativaIncorreta1;
-
-    @Column(nullable = false)
-    private String alternativaIncorreta2;
-    
-    @Column(nullable = false)
-    private String alternativaIncorreta3;
-    
-    @Column(nullable = false)
     private String materia;
 
     private String assunto;
@@ -61,38 +49,6 @@ public class Questao {
 
     public void setEnunciado(String enunciado) {
         this.enunciado = enunciado;
-    }
-
-    public String getAlternativaCorreta() {
-        return alternativaCorreta;
-    }
-
-    public void setAlternativaCorreta(String alternativaCorreta) {
-        this.alternativaCorreta = alternativaCorreta;
-    }
-
-    public String getAlternativaIncorreta1() {
-        return alternativaIncorreta1;
-    }
-
-    public void setAlternativaIncorreta1(String alternativaIncorreta1) {
-        this.alternativaIncorreta1 = alternativaIncorreta1;
-    }
-
-    public String getAlternativaIncorreta2() {
-        return alternativaIncorreta2;
-    }
-
-    public void setAlternativaIncorreta2(String alternativaIncorreta2) {
-        this.alternativaIncorreta2 = alternativaIncorreta2;
-    }
-
-    public String getAlternativaIncorreta3() {
-        return alternativaIncorreta3;
-    }
-
-    public void setAlternativaIncorreta3(String alternativaIncorreta3) {
-        this.alternativaIncorreta3 = alternativaIncorreta3;
     }
 
     public String getMateria() {
