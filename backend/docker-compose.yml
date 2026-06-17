@@ -24,6 +24,15 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: probend-backend
+    working_dir: /app
+    # Até a linha 35, hot reload para desenvolvimento.. mudar na produção
+    # Executa o Spring Boot dentro do container, em modo de desenvolvimento
+    command: sh -c "./mvnw spring-boot:run"    
+    volumes:
+      # Volume bind, dá para montar o código dentro do container
+      # O docker não fica dependente do JAR, pode ter hot reload
+      - ./:/app
+      - ~/.m2/repository:/root/.m2/repository
     depends_on:
       db:
         condition: service_healthy
