@@ -2,12 +2,14 @@ import { questaoService } from "../services/questaoService";
 
 function BotaoExcluir({ idQuestao, aoExcluirSucesso }) {
 
+    // Função que lida com o handle, ou apertar do botão
     const handleDeletar = async () => {
         if (!window.confirm("Tem certeza que quer deletar a questão?")) return;
 
         try {
             // Delegação da chamada para a service
             await questaoService.excluir(idQuestao);
+            
             // Se o Spring respondeu com sucesso, avisamos o componente pai
             aoExcluirSucesso(idQuestao);
             alert("Questão removida do banco de dados!");
@@ -17,7 +19,7 @@ function BotaoExcluir({ idQuestao, aoExcluirSucesso }) {
         }
     };
 
-    
+    // Retorno em si do .jsx, é só o componente.. o tratamento do botão fica aqui por conveniência    
     return (
         <button
             onClick={handleDeletar}

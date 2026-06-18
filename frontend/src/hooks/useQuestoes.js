@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { questaoService } from "../services/questaoService";
 
 export function useQuestoes() {
-  // useState, primeira iteração com simulação de busca no backend via java/spring
+  
   //       getter             setter          lista vazia
   const [listaQuestoes, setListaQuestoes] = useState([]);
   const [carregando, setCarregando] = useState(true);
@@ -15,12 +15,15 @@ export function useQuestoes() {
         setErro(null); // Resetar antes de buscar
 
         const dados = await questaoService.listarTodas();
+        
         setListaQuestoes(dados);
       } catch (err) {
         console.error("Erro ao conectar no Spring", err);
         setErro("O servidor não está ligado");
       } finally {
         setCarregando(false);
+        // O bloco contido no carregando vai aparecer depois do return
+        // com o setCarregando(false)
       }
     };
 

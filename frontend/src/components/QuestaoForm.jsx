@@ -1,12 +1,19 @@
 import { useState } from "react";
 import { questaoService } from "../services/questaoService";
 
+// 
+// 
+
 function QuestaoForm({ SalvarSucesso }) {
 
   const [novaQuestao, setNovaQuestao] = useState({
     enunciado: "",
     materia: "",
-    dificuldade: "0"
+    assunto: "",
+    dificuldade: "0",
+    fonte: "",
+    trechoCodigo: "",
+    linguagemCodigo: ""
   });
 
   const handleSalvar = async (e) => {
@@ -20,7 +27,11 @@ function QuestaoForm({ SalvarSucesso }) {
       setNovaQuestao({
         enunciado: "",
         materia: "",
-        dificuldade: "0"
+        assunto: "",
+        dificuldade: "0",
+        fonte: "",
+        trechoCodigo: "",
+        linguagemCodigo: ""
       });
 
       alert("Questão salva com sucesso!");
@@ -51,6 +62,13 @@ function QuestaoForm({ SalvarSucesso }) {
           required
         />
 
+        <input
+          className="flex-1 p-2 border rounded"
+          placeholder="Assunto"
+          value={novaQuestao.assunto}
+          onChange={(e) => setNovaQuestao({ ...novaQuestao, assunto: e.target.value })}
+        />
+
         <select
           className="p-2 border rounded"
           value={novaQuestao.dificuldade}
@@ -61,6 +79,35 @@ function QuestaoForm({ SalvarSucesso }) {
           <option value="2">Difícil</option>
         </select>
       </div>
+
+      <input
+        className="w-full p-2 border rounded mb-4"
+        placeholder="Fonte (ex: Livro X, Aula Y)"
+        value={novaQuestao.fonte}
+        onChange={(e) => setNovaQuestao({ ...novaQuestao, fonte: e.target.value })}
+      />
+
+      <textarea
+        className="w-full p-2 border rounded mb-3"
+        placeholder="Trecho de código (opcional)"
+        value={novaQuestao.trechoCodigo}
+        onChange={(e) => setNovaQuestao({ ...novaQuestao, trechoCodigo: e.target.value })}
+        rows="4"
+      />
+
+      <select
+        className="w-full p-2 border rounded mb-4"
+        value={novaQuestao.linguagemCodigo}
+        onChange={(e) => setNovaQuestao({ ...novaQuestao, linguagemCodigo: e.target.value })}
+      >
+        <option value="">Sem linguagem</option>
+        <option value="java">Java</option>
+        <option value="python">Python</option>
+        <option value="javascript">JavaScript</option>
+        <option value="cpp">C++</option>
+        <option value="csharp">C#</option>
+        <option value="sql">SQL</option>
+      </select>
 
       <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 w-full">
         Adicionar Questão

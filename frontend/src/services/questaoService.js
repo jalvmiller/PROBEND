@@ -6,6 +6,11 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080/api",
 });
 
+
+// Todas as chamadas HTTP
+// Todas as chamadas HTTP     GET; POST; DELETE
+// Todas as chamadas HTTP
+
 export const questaoService = {
   listarTodas: async () => {
     const response = await api.get("/questoes");

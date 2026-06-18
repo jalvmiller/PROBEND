@@ -8,6 +8,9 @@ import QuestaoForm from "./components/QuestaoForm";
 function App() {
 
   // Resgatando todas as variáveis e funções que vão ser usadas aqui da pasta Hooks
+  // App.jsx é o componente principal.. começa com o import do hook de questões e recebe uma série de "estados" 
+  // São eles, loading; erro; lista de cards; card para cada questão; 
+  // passa o removerDaLista para o card por meio de prop (onExcluir)
   const { listaQuestoes, carregando, erro, removerDaLista, atualizarLista } = useQuestoes();
 
   return (
