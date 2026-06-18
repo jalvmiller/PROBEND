@@ -47,10 +47,37 @@ jobs:
       - name: Make Maven wrapper executable
         run: chmod +x backend/mvnw
 
+      - name: Cache Maven repository
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          # Se o pom.xml mudar, o hashmuda
+          # Quando o hash muda, o Actions não usa o cache antigo, ele cria um novo cache
+          # Evita que dependências antigas sejam usadas quando o projeto muda
+          key: ${{ runner.os }}-maven-${{ hashFiles('backend/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       # Muda o diretório de trabalho para o backend, roda o Maven Wrapper
       # clean = remove build anterior
-      # test  = roda todos os testes Mock
+      # test  = roda todos os testes JUnit com Mock
       - name: Build and test backend
         working-directory: backend
         run: |
           ./mvnw -B clean test
+
+      # Depois dos testes, ele gera um .xml por meio do Maven Surefire Report
+      # Pode ser enviado como artifact para o server do Github, e também pode ser
+      # posto na aba Tests que fica em Actions no Github
+      - name: Upload do relatório do JUnit para a aba de Tests
+        if: always()
+        uses: actions/upload-test-report@v1
+        with:
+          path: backend/target/surefire-reports/*.xml
+
+      - name: Upload surefire reports artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: backend/target/surefire-reports
