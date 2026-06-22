@@ -69,11 +69,6 @@ jobs:
       # Depois dos testes, ele gera um .xml por meio do Maven Surefire Report
       # Pode ser enviado como artifact para o server do Github, e também pode ser
       # posto na aba Tests que fica em Actions no Github
-      - name: Upload do relatório do JUnit para a aba de Tests
-        if: always()
-        uses: actions/upload-test-report@v1
-        with:
-          path: backend/target/surefire-reports/*.xml
 
       - name: Upload surefire reports artifact
         if: always()
