@@ -33,3 +33,7 @@ src/App Sem Prop.jsx
 
 # Arquivos temporários/de teste
 LandingPage.jsx
+/src/components/Dashboard.jsx
+/src/components/Layout.jsx
+/src/components/Navbar.jsx
+/src/components/Sidebar.jsx
