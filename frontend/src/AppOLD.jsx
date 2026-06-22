@@ -1,22 +1,8 @@
-<<<<<<< HEAD
-import Layout from "./components/Layout";
-import Dashboard from "./components/Dashboard";
-
-function App() {
-  return (
-    <Layout>
-      <Dashboard />
-    </Layout>
-  );
-}
-
-=======
 // import
 // não mais -> import './App.css'
 import { useState, useEffect } from "react";
 import axios from "axios";
 import QuestaoCard from "./components/QuestaoCard";
-import QuestaoForm from "./components/QuestaoForm";
 
 // Componente
 function App() {
@@ -29,31 +15,55 @@ function App() {
 
   useEffect(() => {
     const carregarDadosBanco = async () => {
+
       try {
         setCarregando(true);
         setErro(null); // Resetar antes de buscar
         // context-path = api
-        // const resposta = await axios.get("http://localhost:8080/api/questoes");
-        const resposta = await axios.get(`${import.meta.env.VITE_API_URL}/questoes`);
+        const resposta = await axios.get("http://localhost:8080/api/questoes");
 
         // captura do JSON pelo useState
         setListaQuestoes(resposta.data);
       } catch (err) {
+
         console.error("Erro ao conectar no Spring", err);
         setErro("O servidor não está ligado");
+
       } finally {
         setCarregando(false);
       }
     };
+
     carregarDadosBanco();
+
   }, []); // array vazio no final, ele indica que esse trecho deve ser executado "onLoad"
 
 
 
-  // Chamada pelo QuestaoForm quando um POST for bem-sucedido
-  const atualizarLista = (novaQuestao) => {
-    // Nova questão no início da lista para o usuário ver na hora
-    setListaQuestoes([novaQuestao, ...listaQuestoes]);
+  // == Teste, sem uso de arquivo externo jsx == Teste, sem uso de arquivo externo jsx == Teste, sem uso de arquivo externo jsx ==
+  // == Teste, sem uso de arquivo externo jsx == Teste, sem uso de arquivo externo jsx == Teste, sem uso de arquivo externo jsx ==
+  // == Teste, sem uso de arquivo externo jsx == Teste, sem uso de arquivo externo jsx == Teste, sem uso de arquivo externo jsx ==
+
+  const [novaQuestao, setNovaQuestao] = useState({
+    enunciado: "",
+    materia: "",
+    dificuldade: "0"
+  });
+
+
+  const handleSalvar = async (e) => {
+    e.preventDefault();
+
+    try {
+      const resposta = await axios.post("http://localhost:8080/api/questoes", novaQuestao);
+
+      setListaQuestoes([...listaQuestoes, resposta.data]);
+
+      setNovaQuestao({ enunciado: "", materia: "", dificuldade: "0" });
+      alert("Questão salva");
+    } catch (err) {
+      console.error("Erro ", err);
+    }
   };
 
 
@@ -62,8 +72,44 @@ function App() {
     <div className="min-h-screen bg-slate-100 p-8 flex flex-col items-center">
       <h1 className="text-4xl font-black text-slate-900 mb-8 tracking-tighter">PROBEND</h1>
 
-      {/* Chama o componente e passa a função via Prop */}
-      <QuestaoForm SalvarSucesso={atualizarLista} />
+      <form onSubmit={handleSalvar} className="bg-white p-6 rounded-lg shadow-md mb-8 w-full max-w-2xl">
+        <h2 className="text-xl font-bold mb-4">Nova Questão</h2>
+
+        <textarea
+          className="w-full p-2 border rounded mb-3"
+          placeholder="Digite o enunciado:"
+          value={novaQuestao.enunciado}
+          onChange={(e) => setNovaQuestao({ ...novaQuestao, enunciado: e.target.value })}
+
+          required
+        />
+
+        <div className="flex gap-4 mb-4">
+          <input
+            className="flex-1 p-2 border rounded"
+            placeholder="Matéria (ex: Java)"
+            value={novaQuestao.materia}
+            onChange={(e) => setNovaQuestao({ ...novaQuestao, materia: e.target.value })}
+
+            required
+          />
+
+          <select
+            className="p-2 border rounded"
+            value={novaQuestao.dificuldade}
+            onChange={(e) => setNovaQuestao({ ...novaQuestao, dificuldade: e.target.value })}
+          >
+            <option value="0">Fácil</option>
+            <option value="1">Médio</option>
+            <option value="2">Difícil</option>
+          </select>
+        </div>
+
+        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 w-full">
+          Adicionar Questão
+        </button>
+      </form>
+
 
 
       <div className="max-w-2xl w-full">
@@ -110,5 +156,4 @@ function App() {
 }
 
 // export
->>>>>>> 13c637c75863e4c0bf72673ed2f7d2b909532dc4
 export default App;

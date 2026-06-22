@@ -31,6 +31,12 @@ public class User implements UserDetails {
 
     private String nome;
 
+    private Integer pontos = 0;
+
+    private boolean especialista = false;
+
+    private boolean administrador = false;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities(){
         return List.of();

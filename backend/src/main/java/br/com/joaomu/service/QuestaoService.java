@@ -30,31 +30,6 @@ public class QuestaoService {
             throw new IllegalArgumentException("Uso de enunciado é obrigatório");
         }
                 
-        // VALIDAÇÃO 2: Alternativa correta obrigatória
-        if (questao.getAlternativaCorreta() == null || questao.getAlternativaCorreta().isBlank()) {
-            throw new IllegalArgumentException("Alternativa correta é obrigatória!");
-        }
-        
-        // VALIDAÇÃO 3: Pelo menos 2 alternativas incorretas
-        int alternativasIncorretas = 0;
-        if (questao.getAlternativaIncorreta1() != null && !questao.getAlternativaIncorreta1().isBlank()) {
-            alternativasIncorretas++;
-        }
-        if (questao.getAlternativaIncorreta2() != null && !questao.getAlternativaIncorreta2().isBlank()) {
-            alternativasIncorretas++;
-        }
-        if (questao.getAlternativaIncorreta3() != null && !questao.getAlternativaIncorreta3().isBlank()) {
-            alternativasIncorretas++;
-        }
-        
-        if (alternativasIncorretas < 2) {
-            throw new IllegalArgumentException("É necessário pelo menos 2 alternativas incorretas!");
-        }
-
-
-        validarUnicidade(questao); // Caso o usuário tenha informado uma mesma alternativa como correta e incorreta -> exceção 
-        
-
         // VALIDAÇÃO 4: Matéria obrigatória
         if (questao.getMateria() == null || questao.getMateria().isBlank()) {
             throw new IllegalArgumentException("Matéria é obrigatória!");
@@ -151,22 +126,4 @@ public class QuestaoService {
         */
     }
 
-
-    private void validarUnicidade(Questao questao) {
-        String correta = questao.getAlternativaCorreta().toLowerCase().trim(); 
-        //tolowercase-> uniformizar o padrão minúsculo para verif; o trim servirá para remover espaços
-
-        if(correta.equals(questao.getAlternativaIncorreta1().toLowerCase().trim())) {
-            throw new IllegalArgumentException("A alternativa correta não pode ser posta como incorreta");
-        }
-
-        if(correta.equals(questao.getAlternativaIncorreta2().toLowerCase().trim())) {
-            throw new IllegalArgumentException("A alternativa correta não pode ser posta como incorreta");
-        }
-
-        if(correta.equals(questao.getAlternativaIncorreta3().toLowerCase().trim())) {
-            throw new IllegalArgumentException("A alternativa correta não pode ser posta como incorreta");
-        }
-    }
-    
 }

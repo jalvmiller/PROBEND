@@ -30,3 +30,13 @@ src/App Sem Prop.jsx
 .env.development.local
 .env.test.local
 .env.production.local
+<<<<<<< HEAD
+
+# Arquivos temporários/de teste
+LandingPage.jsx
+/src/components/Dashboard.jsx
+/src/components/Layout.jsx
+/src/components/Navbar.jsx
+/src/components/Sidebar.jsx
+=======
+>>>>>>> 13c637c75863e4c0bf72673ed2f7d2b909532dc4
