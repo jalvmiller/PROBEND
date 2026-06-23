@@ -1,6 +1,5 @@
 
 /* troca de todo aquele estilo manual pelo oferecido via tailwind*/
-<<<<<<< HEAD
 @import "tailwindcss";
 
 /* Roboto Condensed do Google*/
@@ -12,7 +11,3 @@
   --font-roboto-condensed: "Roboto Condensed", sans-serif;
   --font-roboto: "Roboto", sans-serif;
 }
-=======
-
-@import "tailwindcss";
->>>>>>> 13c637c75863e4c0bf72673ed2f7d2b909532dc4
