@@ -5,7 +5,7 @@ WORKDIR /app
 COPY . /app
 # Executar a build Maven dentro do container
 # -B = modo batch
-RUN ./mvnw -B -DskipTests package
+RUN ./mvn -B -DskipTests package
 
 # Rodar com uma imagem JRE
 # COPY puxa todos os arquivos da pasta backend pra /app
@@ -16,8 +16,4 @@ COPY --from=build /app/target/sistemasquestoes-0.0.1-SNAPSHOT.jar app.jar
 # A aplicação roda nessa porta
 EXPOSE 8080
 
-# Variáveis de ambiente
-ENV DB_USER=root
-ENV DB_PASSWORD=1234
-ENV JWT_SECRET=ChavePadraoParaDesenvolvimentoApenas
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-Dserver.port=${PORT:8080}", "-jar", "app.jar"]
