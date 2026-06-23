@@ -5,7 +5,7 @@ WORKDIR /app
 COPY . /app
 # Executar a build Maven dentro do container
 # -B = modo batch
-RUN ./mvn -B -DskipTests package
+RUN mvn -B -DskipTests package
 
 # Rodar com uma imagem JRE
 # COPY puxa todos os arquivos da pasta backend pra /app
