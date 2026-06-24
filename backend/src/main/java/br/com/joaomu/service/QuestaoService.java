@@ -9,6 +9,11 @@ import java.util.List;
 @Service
 public class QuestaoService {
 
+    // QuestaoService recebe dados brutos do Controller 
+    // Realiza validações de negócio
+    // Interage com o banco de dados via repository
+    // Retorna os dados para o Controller
+
     private QuestaoRepository repository;
 
     public QuestaoService(QuestaoRepository repository){
@@ -24,7 +29,6 @@ public class QuestaoService {
     }    
 
     // Cadastrar nova questão com as regras de negócio, exceções
-
     public Questao validarQuestao(Questao questao){
         if(questao.getEnunciado() == null || questao.getEnunciado().isBlank()){
             throw new IllegalArgumentException("Uso de enunciado é obrigatório");
@@ -46,17 +50,12 @@ public class QuestaoService {
         return repository.save(questao);
     }
 
-
-    // PRIMEIRO MÉTODO COM ALTERAÇÃO VINDA DA IMPLEMENTAÇÃO DA PERSISTÊNCIA DO JPA
-    // O método buscarPorId foi trocado por um método da biblioteca do jpa repository
     public Questao atualizarQuestao(Questao questao){
         repository.findById(questao.getId())
             .orElseThrow(() -> new IllegalArgumentException("Questão não encontrada com ID: " + questao.getId()));
-        /*if (existe == null){
-            throw new IllegalArgumentException("Questão não encontrada com ID: " + questao.getId());
-        }*/
-
         return repository.save(questao);
+        // O findById retorna um Optional<> que pode estar vazio ou conter um objeto
+        // O orElseThrow lança uma exceção se o Optional estiver vazio, obrigatório fazer isso.
     }
     
     // findAll
