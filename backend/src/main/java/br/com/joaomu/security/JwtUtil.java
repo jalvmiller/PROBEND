@@ -9,16 +9,27 @@ import org.springframework.beans.factory.annotation.Value;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+// JWT é basicamente: 
+// Header (tipo de token + algoritmo de criptografia(HMAC-SHAA nesse caso))
+// Payload ("Claims" que são informações: usuário, data de criação, expiração), 
+// nesse caso, Claims do usuário: quem é subject(username) e quando expira
+// Assinatura (vai garantir a integridade do token), é gerada usando o Header e o Payload,
+// codificados em Base64 e aplicando uma SECRET_KEY.. se alguém altera o payload no cliente,
+// a assinatura não bate mais, logo o token é inválido, já que o servidor vai validar com a 
+// chave secreta.
+
 @Component
 public class JwtUtil {
 
     // minímo de 32 caracteres para equivaler a 256 bits
-    @Value("${jwt.secret}") // Segurança para o spring
+    @Value("${jwt.secret}") // Segurança para o spring, vai suar a chave secreta do application.properties
     private String SECRET_KEY;
     private final long EXPIRATION_TIME = 86400000; // 24 horas em ms
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes()); // CONVERSÃO HMAC-SHA, padrão do JWT.. geração de chave segura
+                                                          // aqui a String vira uma chave segura de fato pronta pra ser
+                                                          // usada na assinatura
     }
 
     public String generateToken(String username) {
@@ -38,6 +49,7 @@ public class JwtUtil {
             .parseSignedClaims(token)
             .getPayload()
             .getSubject();
+            // processo reverso da geração de token, recupera o usuário (subject)
     }
 
     
