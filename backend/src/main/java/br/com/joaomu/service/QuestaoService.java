@@ -86,11 +86,6 @@ public class QuestaoService {
         }
 
         return repository.findByMateriaIgnoreCase(materia);
-        /* 
-        return repository.listarTodas().stream()
-            .filter(q -> q.getMateria().equalsIgnoreCase(materia))
-            .collect(Collectors.toList());
-        */
     }
 
 
@@ -101,11 +96,6 @@ public class QuestaoService {
         }
 
         return repository.findByDificuldade(dificuldade);
-        /* 
-        return repository.listarTodas().stream()
-            .filter(q -> q.getDificuldade().equals(dificuldade))
-            .collect(Collectors.toList());
-        */
     }
 
     public List<Questao> buscarPorAssunto(String assunto){
@@ -114,15 +104,6 @@ public class QuestaoService {
         }
 
         return repository.findByAssuntoIgnoreCase(assunto);
-        /*
-        ANÁLISE LOWERCASE 
-        return repository.listarTodas().stream()
-            .filter(q -> q.getAssunto() != null && 
-                q.getAssunto()
-                .toLowerCase()
-                .contains(assunto.toLowerCase()))
-                .collect(Collectors.toList());
-        */
     }
 
 }
