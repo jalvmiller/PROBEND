@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-// import { authService } from '../services/authService';
+import { authService } from '../services/authService';
+import { useAuth } from '../hooks/useAuth';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Register() {
   const [nome, setNome] = useState('');
@@ -10,13 +12,20 @@ function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
       setError('');
+      const res = await authService.register(username, password, nome);
 
-      console.log('Registrando:', { username, password, nome });
+      // Salva as credenciais recebidas no cadastro no estado global
+      login(res.token, username);
+      // Redireciona o usuário para o Dashboard (raiz)
+      navigate('/');
     } catch (error) {
       console.error(error);
       setError('Erro ao realizar o cadastro. Tente outro username.');
@@ -91,6 +100,13 @@ function Register() {
           >
             {loading ? 'Cadastrando...' : 'Cadastrar'}
           </button>
+
+          <p className="mt-4 text-sm text-center text-slate-600">
+            Já tem uma conta?{' '}
+            <Link to="/login" className="text-blue-500 hover:underline font-semibold">
+              Faça login
+            </Link>
+          </p>
         </div>
       </div>
     </form>

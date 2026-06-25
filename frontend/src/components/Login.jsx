@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-// import { authService } from '../services/authService';
+import { authService } from '../services/authService';
+import { useAuth } from '../hooks/useAuth';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -9,18 +11,23 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
       setError('');
       const res = await authService.login(username, password);
-      console.log(res);
 
+      // Salva as credenciais no estado global (AuthContext)
+      login(res.token, username);
+      // Redireciona o usuário para o Dashboard (raiz)
+      navigate('/');
     } catch (error) {
       console.error(error);
-      setError('Email ou senha incorretos');
-
+      setError('Username ou senha incorretos');
     } finally {
       setLoading(false);
     }
@@ -102,6 +109,13 @@ function Login() {
           >
             {loading ? 'Conectando...' : 'Entrar'}
           </button>
+
+          <p className="mt-4 text-sm text-center text-slate-600">
+            Não tem uma conta?{' '}
+            <Link to="/register" className="text-blue-500 hover:underline font-semibold">
+              Cadastre-se
+            </Link>
+          </p>
         </div>
       </div>
     </form>

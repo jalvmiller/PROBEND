@@ -1,11 +1,4 @@
-import axios from "axios";
-
-// Cria uma instância do axios com a URL base. 
-// Se mudar a porta ou for para produção, muda só aqui (ou no .env)
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080/api",
-});
-
+import api from "./api";
 
 // Todas as chamadas HTTP
 // Todas as chamadas HTTP     GET; POST; DELETE

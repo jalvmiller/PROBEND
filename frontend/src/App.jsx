@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import Register from "./components/Register";
 
 import { AuthProvider } from "./contexts/AuthContext";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   /* 
@@ -15,8 +16,7 @@ function App() {
   Routes funciona como um painel de controle que verifica qual é a URL da barra
   de endereço, e procura de cima pra baixo qual é a rota correspondente.
   
-  Rota pública = se a URL for login, o react carrega o componente Login
-  como o element recebe o componente direto, isso significa que a tela inteira vai
+  Rota Pública = qualquer pessoa acessa e, quando a URL corresponde, a tela vai
   ser limpa e vai renderizar só o card de Login.. não vai usar menus ou o header
   
   Rota Privada = só usuários autenticados acessam e,
@@ -40,13 +40,15 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Rotas Privadas (dentro do Layout) */}
+          {/* Rotas Privadas (protegidas pelo PrivateRoute e dentro do Layout) */}
           <Route
             path="/"
             element={
-              <Layout>
-                <Dashboard />
-              </Layout>
+              <PrivateRoute>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </PrivateRoute>
             }
           />
         </Routes>
