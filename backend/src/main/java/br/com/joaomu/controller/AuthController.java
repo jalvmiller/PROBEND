@@ -14,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -23,7 +23,7 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository,
-                          PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+            PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -50,11 +50,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.username(), request.password())
-        );
+                new UsernamePasswordAuthenticationToken(request.username(), request.password()));
 
         String token = jwtUtil.generateToken(request.username());
-        
+
         return ResponseEntity.ok(new AuthResponse(token));
         // No login, o usuário é autenticado e recebe um token de autenticação
         // o token é devolvido pelo corpo da resposta AuthResponse
