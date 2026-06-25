@@ -5,11 +5,11 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "questoes")
 public class Questao {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String enunciado;
 
@@ -17,16 +17,16 @@ public class Questao {
     private String materia;
 
     private String assunto;
-    
+
     @Column(nullable = false)
     private Integer dificuldade;
-    
+
     private String fonte;
-    
+
     @ManyToOne
     @JoinColumn(name = "autor_id")
     private User autor;
-    
+
     private Integer upvotes = 0;
 
     @Column(columnDefinition = "TEXT")
@@ -34,7 +34,9 @@ public class Questao {
 
     @Column(length = 50)
     private String linguagemCodigo;
-    
+
+    private boolean solucionada = false;
+
     public Long getId() {
         return id;
     }
@@ -113,6 +115,14 @@ public class Questao {
 
     public void setLinguagemCodigo(String linguagemCodigo) {
         this.linguagemCodigo = linguagemCodigo;
+    }
+
+    public boolean isSolucionada() {
+        return solucionada;
+    }
+
+    public void setSolucionada(boolean solucionada) {
+        this.solucionada = solucionada;
     }
 
 }
