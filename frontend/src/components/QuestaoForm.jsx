@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { questaoService } from "../services/questaoService";
 
-// 
-// 
-
 function QuestaoForm({ SalvarSucesso }) {
 
   const [novaQuestao, setNovaQuestao] = useState({
