@@ -4,6 +4,8 @@ import Dashboard from "./components/Dashboard";
 import Login from "./components/Login";
 import Register from "./components/Register";
 
+import { AuthProvider } from "./contexts/AuthContext";
+
 function App() {
   /* 
   BrowserRouter é um componente que cria o ambiente de navegação para a aplicação.
@@ -24,23 +26,32 @@ function App() {
   o usuário vê o menu e o header e, no meio deles, aparece o Dashboard.
   */
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Rotas Públicas */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+    <AuthProvider>
+      {/* O AuthProvider vai envolver toda a aplicação
+        se o usuário estiver logado, ele poderá acessar as rotas privadas
+        se não estiver logado, será redirecionado para a rota pública /login
+        Quando o usuário fizer login, a função login() dentro do AuthContext será chamada
+        que vai atualizar o estado do usuário e do token, como o estado é global, o 
+        React percebe isso e redesenha a tela com o Dashboard logado 
+      */}
+      <BrowserRouter>
+        <Routes>
+          {/* Rotas Públicas */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-        {/* Rotas Privadas (dentro do Layout) */}
-        <Route
-          path="/"
-          element={
-            <Layout>
-              <Dashboard />
-            </Layout>
-          }
-        />
-      </Routes>
-    </BrowserRouter >
+          {/* Rotas Privadas (dentro do Layout) */}
+          <Route
+            path="/"
+            element={
+              <Layout>
+                <Dashboard />
+              </Layout>
+            }
+          />
+        </Routes>
+      </BrowserRouter >
+    </AuthProvider>
   );
 }
 
