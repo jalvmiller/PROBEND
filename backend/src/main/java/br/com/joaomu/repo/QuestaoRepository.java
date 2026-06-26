@@ -2,6 +2,8 @@ package br.com.joaomu.repo;
 
 import br.com.joaomu.model.Questao;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
@@ -17,11 +19,21 @@ import java.util.List;
 @Repository
 public interface QuestaoRepository extends JpaRepository<Questao, Long> {
 
-    // O Spring Data analisa a assinatura desses métodos 
+    // O Spring Data analisa a assinatura desses métodos
     // e gera a consulta SQL automaticamente baseado no nome do método.
     List<Questao> findByMateriaIgnoreCase(String materia);
 
     List<Questao> findByDificuldade(Integer dificuldade);
 
     List<Questao> findByAssuntoIgnoreCase(String assunto);
+
+    // @Query é usado para escrever consultas personalizadas em JPQL
+    // Em outro momento, usar Criteria para melhorar a eficiência e registrar
+    // métrica
+    @Query("SELECT q FROM Questao q WHERE " +
+            "LOWER(q.enunciado) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(q.materia) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(q.assunto) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(q.fonte) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<Questao> search(@Param("keyword") String keyword);
 }
