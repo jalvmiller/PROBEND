@@ -53,6 +53,10 @@ public class QuestaoService {
 
         // Atribuir autor logado se não estiver explicitado
         if (questao.getAutor() == null) {
+            // Uso getAuthentication() para pegar o usuário logado
+            // o "anonymousUser" é um usuário padrão do Spring Security que representa um
+            // usuário não logado Se o usuário for diferente disso, ele está logado e
+            // pega-se o autor por username
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
                 User loggedInUser = userRepository.findByUsername(auth.getName()).orElse(null);
@@ -61,6 +65,25 @@ public class QuestaoService {
         }
 
         // Se passou todas as validações, salva
+        return repository.save(questao);
+    }
+
+    public Questao marcarComoSolucionada(Long id, boolean status) {
+        Questao questao = buscarPorId(id);
+
+        // Pegar contexto do usuário autenticado (JWT)
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
+            throw new IllegalArgumentException("Usuário não autenticado");
+        }
+
+        // auth.getName() = nome que vem pelo JWT, é igual ao que está no banco
+        if (questao.getAutor() == null || !questao.getAutor().getUsername().equals(auth.getName())) {
+            throw new IllegalArgumentException("Usuário não autorizado!");
+        }
+
+        questao.setSolucionada(status);
         return repository.save(questao);
     }
 
