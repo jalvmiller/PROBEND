@@ -2,8 +2,10 @@ package br.com.joaomu.service;
 
 import br.com.joaomu.model.Questao;
 import br.com.joaomu.model.User;
+import br.com.joaomu.model.Resolucao;
 import br.com.joaomu.repo.QuestaoRepository;
 import br.com.joaomu.repo.UserRepository;
+import br.com.joaomu.repo.ResolucaoRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -19,10 +21,13 @@ public class QuestaoService {
     // Retorna os dados para o Controller
     private final QuestaoRepository repository;
     private final UserRepository userRepository;
+    private final ResolucaoRepository resolucaoRepository;
 
-    public QuestaoService(QuestaoRepository repository, UserRepository userRepository) {
+    public QuestaoService(QuestaoRepository repository, UserRepository userRepository,
+            ResolucaoRepository resolucaoRepository) {
         this.repository = repository;
         this.userRepository = userRepository;
+        this.resolucaoRepository = resolucaoRepository;
     }
 
     public void validarDificuldade(Questao questao) {
@@ -144,4 +149,22 @@ public class QuestaoService {
         return repository.search(termo);
     }
 
+    public List<Resolucao> listarResolucoes(Long questaoId) {
+        return resolucaoRepository.findByQuestaoId(questaoId);
+    }
+
+    public Resolucao salvarResolucao(Long questaoId, Resolucao resolucao) {
+        Questao questao = buscarPorId(questaoId);
+        resolucao.setQuestao(questao);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth != null || auth.isAuthenticated() && "anonymousUser".equals(auth.getName())) {
+            User loggedInUser = userRepository.findByUsername(auth.getName()).orElse(null);
+
+            resolucao.setAutor(loggedInUser);
+        }
+
+        return resolucaoRepository.save(resolucao);
+    }
 }
