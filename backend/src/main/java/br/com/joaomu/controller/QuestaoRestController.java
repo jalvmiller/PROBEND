@@ -1,6 +1,7 @@
 package br.com.joaomu.controller;
 
 import br.com.joaomu.model.Questao;
+import br.com.joaomu.model.Resolucao;
 import br.com.joaomu.service.QuestaoService;
 
 import org.springframework.http.HttpStatus;
@@ -95,6 +96,19 @@ public class QuestaoRestController {
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    // Retorna a lista de resoluções daquela questão
+    @GetMapping("/{id}/resolucoes")
+    public ResponseEntity<List<Resolucao>> listarResolucoes(@PathVariable Long id) {
+        return ResponseEntity.ok(service.listarResolucoes(id));
+    }
+
+    // Registra uma nova resolução vinculada à questão
+    @PostMapping("/{id}/resolucoes")
+    public ResponseEntity<Resolucao> criarResolucao(@PathVariable Long id, @RequestBody Resolucao resolucao) {
+        Resolucao salva = service.salvarResolucao(id, resolucao);
+        return ResponseEntity.status(HttpStatus.CREATED).body(salva);
     }
 
 }
