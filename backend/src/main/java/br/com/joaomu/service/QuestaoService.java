@@ -159,7 +159,7 @@ public class QuestaoService {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth != null || auth.isAuthenticated() && "anonymousUser".equals(auth.getName())) {
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
             User loggedInUser = userRepository.findByUsername(auth.getName()).orElse(null);
 
             resolucao.setAutor(loggedInUser);
