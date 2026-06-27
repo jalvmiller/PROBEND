@@ -13,6 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.security.core.context.SecurityContextHolder;
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -58,5 +60,16 @@ public class AuthController {
         // No login, o usuário é autenticado e recebe um token de autenticação
         // o token é devolvido pelo corpo da resposta AuthResponse
         // Retorna HTTP 200 OK caso o login seja realizado normalmente
+    }
+
+    // Retorna os dados do usuário logado
+    @GetMapping("/me")
+    public ResponseEntity<User> me() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+
+        return ResponseEntity.ok(user);
+        // Retorna HTTP 200 OK caso o usuário seja encontrado
     }
 }
