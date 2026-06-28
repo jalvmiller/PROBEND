@@ -1,5 +1,5 @@
 // Ícones
-import { X, Home, BookOpen, Settings } from 'lucide-react';
+import { X, LogOut, Home, BookOpen, Settings } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 // Sidebar fica na lateral esquerda
@@ -106,7 +106,7 @@ function Sidebar({ isOpen, onClose }) {
                         hover:bg-red-600/20 hover:text-red-400 text-slate-400 transition
                         text-left mt-auto font-medium"
                     >
-                        <Logout size={20} />
+                        <LogOut size={20} />
                         <span>Sair</span>
                     </button>
                 </nav>
