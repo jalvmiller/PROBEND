@@ -40,6 +40,10 @@ function QuestaoDetalhes() {
             }
         }
 
+        // carregarDados executa toda vez que o id mudar
+        // [id] determina o ciclo de vida do useEffect
+        // [] determina que o useEffect só executa uma vez (na montagem)
+        // se não tiver nada, executa na montagem e na atualização
         carregarDados();
     }, [id]);
 
