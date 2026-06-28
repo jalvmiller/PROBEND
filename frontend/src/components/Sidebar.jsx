@@ -1,9 +1,12 @@
 // Ícones
 import { X, Home, BookOpen, Settings } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
 // Sidebar fica na lateral esquerda
 // Recebe isOpen para saber se está aberta (em mobile) e onClose para fechar, PROPS
 function Sidebar({ isOpen, onClose }) {
+
+    const { logout } = useAuth();
 
     // <> significa que retorna um fragmento, vão ser dois blocos
     return (
@@ -69,7 +72,7 @@ function Sidebar({ isOpen, onClose }) {
                         <X size={20} />
                     </button>
                 </div>
-                
+
                 {/* Lista de navegação com os links: Dashboard - Questões - Configurações */}
                 {/* space-y-2                    -> espaçamento vertical entre todos os elementos 
                     flex items-center gap-3      -> coloca tudo na mesma linha, gap é espaçamento entre ícone e texto
@@ -97,6 +100,15 @@ function Sidebar({ isOpen, onClose }) {
                         <Settings size={20} />
                         <span>Configurações</span>
                     </a>
+                    <button
+                        onClick={logout}
+                        className="flex items-center w-full gap-3 px-4 py-3 rounded
+                        hover:bg-red-600/20 hover:text-red-400 text-slate-400 transition
+                        text-left mt-auto font-medium"
+                    >
+                        <Logout size={20} />
+                        <span>Sair</span>
+                    </button>
                 </nav>
             </aside>
         </>
