@@ -3,7 +3,7 @@ import Layout from "./components/Layout";
 import Dashboard from "./components/Dashboard";
 import Login from "./components/Login";
 import Register from "./components/Register";
-
+import QuestaoDetalhes from "./components/QuestaoDetalhes";
 import { AuthProvider } from "./contexts/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
 
@@ -41,6 +41,16 @@ function App() {
           <Route path="/register" element={<Register />} />
 
           {/* Rotas Privadas (protegidas pelo PrivateRoute e dentro do Layout) */}
+          <Route
+            path="/questoes/:id"
+            element={
+              <PrivateRoute>
+                <Layout>
+                  <QuestaoDetalhes />
+                </Layout>
+              </PrivateRoute>
+            }
+          />
           <Route
             path="/"
             element={
