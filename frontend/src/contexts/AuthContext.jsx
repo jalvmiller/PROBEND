@@ -1,4 +1,7 @@
 import { createContext, useState, useEffect } from 'react';
+import api from '../services/api';
+// Importa a instância do Axios configurada
+// com interceptor de requisições
 
 // O contexto em si. Ele servirá como a "nuvem" de dados.
 export const AuthContext = createContext(null);
@@ -9,32 +12,42 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchCurrentUser = async (jwtToken) => {
+    try {
+      const response = await api.get('/auth/me');
+      setUser(response.data);
+      // Guarda o objeto usuário completo
+    } catch (err) {
+      comsole.error("Erro ao buscar os dados do usuário logado", err);
+      logout();
+    }
+  };
+
   // O useEffect roda uma única vez quando a aplicação inicia no navegador
   useEffect(() => {
     // Busca se existe um token salvo no localStorage do navegador
     const savedToken = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('username');
 
-    if (savedToken && savedUser) {
+    if (savedToken) {
       setToken(savedToken);
-      setUser({ username: savedUser });
+      fetchCurrentUser(savedToken).finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
-
-    setLoading(false); // Finalizou a checagem inicial
   }, []);
 
   // Função disparada no login bem-sucedido
-  const login = (jwtToken, username) => {
+  const login = async (jwtToken, username) => {
     localStorage.setItem('token', jwtToken);
-    localStorage.setItem('username', username);
     setToken(jwtToken);
-    setUser({ username });
+
+    // Busca pós-login para retornar dados do usuário
+    await fetchCurrentUser(jwtToken);
   };
 
   // Função disparada no logout
   const logout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('username');
     setToken(null);
     setUser(null);
   };
