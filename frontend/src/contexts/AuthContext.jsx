@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
       setUser(response.data);
       // Guarda o objeto usuário completo
     } catch (err) {
-      comsole.error("Erro ao buscar os dados do usuário logado", err);
+      console.error("Erro ao buscar os dados do usuário logado", err);
       logout();
     }
   };
