@@ -106,6 +106,26 @@ function QuestaoDetalhes() {
             return <span key={index}>{parte}</span>;
         })
     }
+
+    const handleAlternarSolucionada = async () => {
+        try {
+            const novoStatus = !questao.solucionada;
+
+            const response = await api.put(`/questoes/${id}/solucionada?status=${novoStatus}`);
+            setQuestao(response.data);
+        } catch (err) {
+            console.error("Erro ao alternar status:", err);
+            alert("Erro alterar ao alterar o status. Só o autor pode fazer isso");
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center min-h-[300px]" >
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+            </div>
+        )
+    };
 }
 
 export default QuestaoDetalhes;
