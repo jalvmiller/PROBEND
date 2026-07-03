@@ -1,4 +1,4 @@
-import { renderizarTextoMath } from '../utils/mathRenderer';
+import { renderizarTextoMath } from '../../utils/mathRenderer';
 
 function ResolucaoCard({ resolucao }) {
     return (

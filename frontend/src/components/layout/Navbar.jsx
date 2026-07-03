@@ -1,7 +1,7 @@
 // import do ícone
 import { Menu } from 'lucide-react';
 import { LogOut } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 
 // Navbar fica no topo da página
 // Função que recebe prop onMenuClick, quando alguém clica no botão do menu

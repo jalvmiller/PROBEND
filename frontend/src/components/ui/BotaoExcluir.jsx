@@ -1,4 +1,4 @@
-import { questaoService } from "../services/questaoService";
+import { questaoService } from "../../services/questaoService";
 
 function BotaoExcluir({ idQuestao, aoExcluirSucesso }) {
 
@@ -9,7 +9,7 @@ function BotaoExcluir({ idQuestao, aoExcluirSucesso }) {
         try {
             // Delegação da chamada para a service
             await questaoService.excluir(idQuestao);
-            
+
             // Se o Spring respondeu com sucesso, avisamos o componente pai
             aoExcluirSucesso(idQuestao);
             alert("Questão removida do banco de dados!");

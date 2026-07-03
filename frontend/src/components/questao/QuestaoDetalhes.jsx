@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import api from '../services/api';
-import { renderizarTextoMath } from '../utils/mathRenderer';
+import { useAuth } from '../../hooks/useAuth';
+import api from '../../services/api';
+import { renderizarTextoMath } from '../../utils/mathRenderer';
 import { ArrowLeft, CheckCircle, Clock } from 'lucide-react';
 import ResolucaoCard from './ResolucaoCard';
 import ResolucaoForm from './ResolucaoForm';

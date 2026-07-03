@@ -1,6 +1,6 @@
 // Ícones
 import { X, LogOut, Home, BookOpen, Settings } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 
 // Sidebar fica na lateral esquerda
 // Recebe isOpen para saber se está aberta (em mobile) e onClose para fechar, PROPS
