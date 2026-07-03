@@ -45,9 +45,9 @@ function Sidebar({ isOpen, onClose }) {
 
                 z-40              -> sidebar fica acima do overlay
                 ${ isOpen ..      -> uma expressão, se for verdade
-                 translate-x-0    -> se verdade, não move no eixo X
-                 translate-x-full -> se não for verdade
-                 desloca 100% da largura para a esquerda
+                translate-x-0    -> se verdade, não move no eixo X
+                translate-x-full -> se não for verdade
+                desloca 100% da largura para a esquerda
                 
                 lg:translate-x-0  -> se for tela grande, nunca fica escondida                 
             */}
