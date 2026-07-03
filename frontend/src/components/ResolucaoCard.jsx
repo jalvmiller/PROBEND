@@ -12,7 +12,13 @@ function ResolucaoCard({ resolucao }) {
                 </span>
             </div>
 
-            {/* Renderização do conteúdo da resolução */}
+            {/* Renderização do conteúdo da resolução
+            * leading-relaxed aumenta o espaçamento entre linhas para melhor leitura
+            * o leading-relaxed seta a altura da linha com 1.625 ou 162.5% do tamanho da fonte
+            * desse modo o texto fica menos "apertado"
+            * o whitespace-pre-wrap mantém a formatação do texto (incluindo quebras de linha)
+            * sendo que o conteúdo vem do banco de dados com quebras de linha \n         
+            */}
             <div className='text-slate-800 leading-relaxed whitespace-pre-wrap'>
                 {renderizarTextoMath(resolucao.conteudo)}
             </div>
