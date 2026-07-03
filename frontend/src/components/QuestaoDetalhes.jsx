@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import api from '../services/api';
-import katex from 'katex';
-import 'katex/dist/katex.min.css';
-import { ArrowLeft, CheckCircle, Clock, Trash2, Edit3, Plus, LogOut } from 'lucide-react';
-// import
+import { renderizarTextoMath } from '../utils/mathRenderer';
+import { ArrowLeft, CheckCircle, Clock } from 'lucide-react';
+import ResolucaoCard from './ResolucaoCard';
+import ResolucaoForm from './ResolucaoForm';
 
 function QuestaoDetalhes() {
 
@@ -16,6 +16,7 @@ function QuestaoDetalhes() {
     const [questao, setQuestao] = useState(null); // estado para armazenar a questão
     const [loading, setLoading] = useState(true); // estado para armazenar o loading
     const [error, setError] = useState('');       // estado para armazenar o error
+    const [enviando, setEnviando] = useState(false);
 
     const [resolucoes, setResolucoes] = useState([]); // estado para armazenar as resoluções
 
@@ -47,66 +48,6 @@ function QuestaoDetalhes() {
         carregarDados();
     }, [id]);
 
-    const renderizarTextoMath = (texto) => {
-        if (!texto) return "";
-
-        // Regex, para encontrar padrões de Math inline (\$) ou em bloco (\$\$). 
-        // O 'g' é para global, pega todos.
-        // A estrutura fica: 
-        // (padrão1|padrão2), onde \$ significa o caractere literal $. 
-        // [\s\S]*? significa qualquer caractere (incluindo quebras de linha)
-        // Ou seja, ele procura por texto contidos dentro de um par de '$' ou '$$',
-        // e captura tudo dentro desse par.
-        const partes = texto.split(/(\$\$[\s\S]*?\$\$|\$[\s\S]*?\$)/g);
-        return partes.map((parte, index) => {
-            // Math Block
-            // Se a parte começar e terminar com '$$', é um Math Block
-            // A estrutura fica:
-            // $$ formula $$ 
-            // displayMode: true, define que é um Math Block
-            // throwOnError: false, define que não vai dar erro se a fórmula estiver errada
-            // key={index}, para garantir que cada div tenha uma chave única
-            // dangerouslySetInnerHTML, para renderizar o HTML gerado pelo KaTeX
-            if (parte.startsWith('$$') && parte.endsWith('$$')) {
-                const formula = parte.slice(2, -2);
-                const html = katex.renderToString(formula, {
-                    displayMode: true,
-                    throwOnError: false
-                });
-
-                return <div
-                    key={index} dangerouslySetInnerHTML={{
-                        __html: html
-                    }}
-                    className="my-4 overflow-x-auto" />;
-            }
-
-            // Math Inline
-            // O 'inline-block' garante que a fórmula não quebre linha e mantenha
-            // o espaçamento correto em relação ao texto
-            // displayMode: false, define que é uma fórmula inline
-            // throwOnError: false, define que não vai dar erro se a fórmula estiver errada
-            // key={index}, para garantir que cada span tenha uma chave única
-            // dangerouslySetInnerHTML, para renderizar o HTML gerado pelo KaTeX
-            if (parte.startsWith('$') && parte.endsWith('$')) {
-                const formula = parte.slice(1, -1);
-                const html = katex.renderToString(formula, {
-                    displayMode: false,
-                    throwOnError: false
-                });
-
-                return <span
-                    key={index} dangerouslySetInnerHTML={{
-                        __html: html
-                    }}
-                    className="inline-block" />;
-            }
-
-            // Texto comum sem Math, só coloca dentro de uma tag span
-            return <span key={index}>{parte}</span>;
-        })
-    }
-
     const handleAlternarSolucionada = async () => {
         try {
             const novoStatus = !questao.solucionada;
@@ -126,6 +67,159 @@ function QuestaoDetalhes() {
             </div>
         )
     };
+
+    const handleSubmeterResolucao = async (dadosResolucao) => {
+        try {
+            setEnviando(true);
+            //faz o post da resolução
+            const response = await api.post(`/questoes/${id}/resolucoes`, dadosResolucao);
+            //adiciona a nova resolução ao array de resoluções
+            // spread com [response.data, ... resolucoes] precisa de colchetes
+            // já que o react considera que [a, ...b] cria um novo array
+            setResolucoes([response.data, ...resolucoes]);
+        } catch (err) {
+            console.error("Erro ao submeter resolução", err);
+            alert("Erro ao submeter resolução. Tente novamente");
+        } finally {
+            setEnviando(false);
+        }
+    };
+
+    // == Renderização do componente de detalhes da questão ==
+    // == Renderização do componente de detalhes da questão ==
+    // == Renderização do componente de detalhes da questão ==
+    // == Renderização do componente de detalhes da questão ==
+    return (
+        <div className="max-w-4xl mx-auto p-4 space-y-6">
+            {/* Botão de Voltar*/}
+            <button
+                onClick={() => navigate(`/`)}
+                className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition font-semibold"
+            >
+                <ArrowLeft size={20} />
+                Voltar
+            </button>
+
+            {/* Janela */}
+            {/* Janela */}
+            {/* Janela */}
+            <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
+                <div className='p-6 bg-slate-50 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
+                    {/* Matéria da Questão - obrigatório*/}
+                    {/* Matéria da Questão - obrigatório*/}
+                    {/* Matéria da Questão - obrigatório*/}
+                    <div>
+                        <span className='text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-4 py-1 rounded-full'>
+                            {questao.materia}
+                        </span>
+
+                        {/* Assunto da Questão - condicionada ao assunto existir*/}
+                        {/* Assunto da Questão - condicionada ao assunto existir*/}
+                        {/* Assunto da questão - condicionada ao assunto existir*/}
+                        {questao.assunto && (
+                            <span className="ml-2 text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                                {questao.assunto}
+                            </span>
+                        )}
+
+                        {/* Autor da Questão - obrigatório*/}
+                        {/* Autor da Questão - obrigatório*/}
+                        {/* Autor da Questão - obrigatório*/}
+                        <h2 className="text-sm tex-slate-400 mt-2">
+                            Criado por <span className='font-semibold text-slate-700'>
+                                {questao.autor?.nome || questao.autor?.username}
+                            </span>
+                        </h2>
+                    </div>
+
+
+                    {/* STATUS DE SOLUÇÃO - obrigatório*/}
+                    {/* STATUS DE SOLUÇÃO - obrigatório*/}
+                    {/* STATUS DE SOLUÇÃO - obrigatório*/}
+                    <div>
+                        {questao.solucionada ? (
+                            <span className="flex items-center gap-1.5 text-xs font-bold text-green-700 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full">
+                                <CheckCircle size={14} />
+                                Solucionada
+                            </span>
+                        ) : (
+                            <span className="flex items-center gap-1.5 text-xs font-bold text-red-700 bg-red-50 border border-red-200 px-3 py-1.5 rounded-full">
+                                <Clock size={14} />
+                                Pendente
+                            </span>
+                        )}
+                    </div>
+                </div>
+
+
+                <div className='p-6 md:p-8 space-y-6'>
+                    <div className='text-slate-800 leading-relaxed text-lg whitespace-pre-wrap'>
+                        {renderizarTextoMath(questao.enunciado)}
+                    </div>
+                    {/* Bloco de Código - condicionada ao trechoCodigo existir*/}
+                    {/* Bloco de Código - condicionada ao trechoCodigo existir*/}
+                    {/* Bloco de Código - condicionada ao trechoCodigo existir*/}
+                    {questao.trechoCodigo && (
+                        <div className='rounded-xl overflow-hidden border border-slate-800 shadow-md'>
+                            <div className='bg-slate-800 text-slate-400 px-4 py-2 text-xs font-mono flex justify-between items-center'>
+                                <span>Código {(questao.linguagemCodigo || 'Texto')}</span>
+                            </div>
+
+                            {/* ====== Trecho de Código ====== */}
+                            <pre className='bg-slate-900 text-slate-100 p-4 text-sm overflow-x-auto'>
+                                <code>{questao.trechoCodigo}</code>
+                            </pre>
+                            {/* ====== Trecho de Código ======*/}
+                        </div>
+                    )}
+
+                    {questao.fonte && (
+                        <p className='text-xs text-slate-400 italic'>Fonte: {questao.fonte}</p>
+                    )}
+
+                    {/* Botão de alternar solução condicionada ao autor */}
+                    {user && questao.autor && questao.autor.username === user.username && (
+                        <div className="pt-6 border-t border-slate-100 flex gap-4">
+                            <button
+                                onClick={handleAlternarSolucionada}
+                                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition cursor-pointer ${questao.solucionada
+                                    ? 'bg-amber-100 text-amber-800 hover:background-amber-200'
+                                    : 'bg-green-600 text-white hover:bg-green-700'
+                                    }`}
+                            >
+                                <CheckCircle size={16} />
+                                {questao.solucionada ? 'Desmarcar como solucionada' : 'Marcar como solucionada'}
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Seção de Resoluções */}
+            {/* Seção de Resoluções */}
+            {/* Seção de Resoluções */}
+            <div className="space-y-6 pt-4">
+                <h3 className="text-slate-800 text-xl font-bold">Resoluções</h3>
+
+                {/* Formulário de Resolução via Prop */}
+                <ResolucaoForm aoSubmeter={handleSubmeterResolucao} enviando={enviando} />
+
+                <div className='space-y-4'>
+                    {resolucoes.length === 0 ? (
+                        <div className='bg-slate-50 text-slate-400 text-center py-10 rounded-2xl border border-dashed border-slate-200'>
+                            Nenhuma resolução enviada ainda.
+                        </div>
+                    ) : (
+                        resolucoes.map(resolucao => (
+                            <ResolucaoCard
+                                key={resolucao.id}
+                                resolucao={resolucao} />
+                        ))
+                    )}
+                </div>
+            </div>
+        </div>
+    );
 }
 
 export default QuestaoDetalhes;
