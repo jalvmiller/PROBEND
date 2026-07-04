@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import BotaoExcluir from "./BotaoExcluir";
+import BotaoExcluir from "../ui/BotaoExcluir";
 import { CheckCircle, Clock } from 'lucide-react';
 
 function QuestaoCard({ questao, onExcluir }) {

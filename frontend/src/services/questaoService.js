@@ -16,7 +16,7 @@ export const questaoService = {
   },
 
   // Busca condicionada pelo ID, usada pela Dashboard
-  busca: async (busca) => {
+  listarTodas: async (busca) => {
     // busca fica entre chaves {}, caso contrário 
     // (busca) não é reconhecido como objeto, e 
     // sim como uma String pura
