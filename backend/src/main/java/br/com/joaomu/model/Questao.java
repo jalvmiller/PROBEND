@@ -35,7 +35,7 @@ public class Questao {
     @Column(length = 50)
     private String linguagemCodigo;
 
-    private boolean solucionada = false;
+    private Boolean solucionada = false;
 
     public Long getId() {
         return id;
@@ -117,11 +117,11 @@ public class Questao {
         this.linguagemCodigo = linguagemCodigo;
     }
 
-    public boolean isSolucionada() {
-        return solucionada;
+    public Boolean isSolucionada() {
+        return solucionada != null && solucionada;
     }
 
-    public void setSolucionada(boolean solucionada) {
+    public void setSolucionada(Boolean solucionada) {
         this.solucionada = solucionada;
     }
 
