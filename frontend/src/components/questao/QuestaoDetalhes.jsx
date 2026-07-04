@@ -11,7 +11,7 @@ function QuestaoDetalhes() {
 
     const { id } = useParams();             // recebe o id da url
     const navigate = useNavigate();         // para navegação
-    const { logout } = useAuth();           // deslogar
+    const { user, logout } = useAuth();           // deslogar
 
     const [questao, setQuestao] = useState(null); // estado para armazenar a questão
     const [loading, setLoading] = useState(true); // estado para armazenar o loading
