@@ -54,17 +54,29 @@ public class QuestaoRestController {
     // Retorna 201 Created caso a criação ocorra normalmente
 
     @PutMapping("/{id}")
-    public ResponseEntity<Questao> atualizar(@PathVariable Long id, @RequestBody Questao questao) {
-        questao.setId(id);
-        Questao atualizada = service.atualizarQuestao(questao);
-        return ResponseEntity.ok(atualizada);
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Questao questao) {
+        try {
+            questao.setId(id);
+            Questao atualizada = service.atualizarQuestao(questao);
+            return ResponseEntity.ok(atualizada);
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
     // Retorna 200 OK caso a atualização ocorra normalmente
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> remover(@PathVariable Long id) {
-        service.remover(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> remover(@PathVariable Long id) {
+        try {
+            service.remover(id);
+            return ResponseEntity.noContent().build();
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
     // Retorna 204 No Content caso a remoção ocorra normalmente
 
