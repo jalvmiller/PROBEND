@@ -98,12 +98,27 @@ public class QuestaoService {
 
     @Transactional
     public Questao atualizarQuestao(Questao questao) {
-        repository.findById(questao.getId())
+        Questao existente = repository.findById(questao.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Questão não encontrada com ID: " + questao.getId()));
-        return repository.save(questao);
-        // O findById retorna um Optional<> que pode estar vazio ou conter um objeto
-        // O orElseThrow lança uma exceção se o Optional estiver vazio, obrigatório
-        // fazer isso.
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
+            throw new SecurityException("Usuário não autenticado");
+        }
+
+        if (existente.getAutor() == null || !existente.getAutor().getUsername().equals(auth.getName())) {
+            throw new SecurityException("Você não tem permissão para alterar esta questão");
+        }
+
+        existente.setEnunciado(questao.getEnunciado());
+        existente.setMateria(questao.getMateria());
+        existente.setAssunto(questao.getAssunto());
+        existente.setDificuldade(questao.getDificuldade());
+        existente.setFonte(questao.getFonte());
+        existente.setTrechoCodigo(questao.getTrechoCodigo());
+        existente.setLinguagemCodigo(questao.getLinguagemCodigo());
+
+        return repository.save(existente);
     }
 
     // findAll
@@ -120,6 +135,16 @@ public class QuestaoService {
     @Transactional
     public boolean remover(Long id) {
         Questao questao = buscarPorId(id);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
+            throw new SecurityException("Usuário não autenticado");
+        }
+
+        if (questao.getAutor() == null || !questao.getAutor().getUsername().equals(auth.getName())) {
+            throw new SecurityException("Você não tem permissão para remover esta questão");
+        }
+
         repository.delete(questao);
         return true;
     }
