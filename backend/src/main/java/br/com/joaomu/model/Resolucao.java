@@ -20,7 +20,7 @@ public class Resolucao {
 
     private Integer upvotes = 0;
 
-    private boolean verificadoPorEspecialista = false; // Apenas User com "especialista=true" pode alterar isso
+    private Boolean verificadoPorEspecialista = false; // Apenas User com "especialista=true" pode alterar isso
 
     // Relações com as outras tabelas
     @ManyToOne
@@ -36,12 +36,12 @@ public class Resolucao {
     }
 
     public Resolucao(String conteudo, String trechoCodigo, String linguagemCodigo, Integer upvotes,
-            boolean verificadoPorEspecialista, Questao questao, User autor) {
+            Boolean verificadoPorEspecialista, Questao questao, User autor) {
         this.conteudo = conteudo;
         this.trechoCodigo = trechoCodigo;
         this.linguagemCodigo = linguagemCodigo;
-        this.upvotes = upvotes;
-        this.verificadoPorEspecialista = verificadoPorEspecialista;
+        this.upvotes = upvotes != null ? upvotes : 0;
+        this.verificadoPorEspecialista = verificadoPorEspecialista != null ? verificadoPorEspecialista : false;
         this.questao = questao;
         this.autor = autor;
     }
@@ -83,15 +83,15 @@ public class Resolucao {
     }
 
     public void setUpvotes(Integer upvotes) {
-        this.upvotes = upvotes;
+        this.upvotes = upvotes != null ? upvotes : 0;
     }
 
-    public boolean isVerificadoPorEspecialista() {
-        return verificadoPorEspecialista;
+    public Boolean isVerificadoPorEspecialista() {
+        return verificadoPorEspecialista != null && verificadoPorEspecialista;
     }
 
-    public void setVerificadoPorEspecialista(boolean verificadoPorEspecialista) {
-        this.verificadoPorEspecialista = verificadoPorEspecialista;
+    public void setVerificadoPorEspecialista(Boolean verificadoPorEspecialista) {
+        this.verificadoPorEspecialista = verificadoPorEspecialista != null ? verificadoPorEspecialista : false;
     }
 
     public Questao getQuestao() {
