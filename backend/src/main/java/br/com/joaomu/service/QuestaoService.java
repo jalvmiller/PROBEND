@@ -9,10 +9,12 @@ import br.com.joaomu.repo.ResolucaoRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class QuestaoService {
 
     // QuestaoService recebe dados brutos do Controller
@@ -39,6 +41,7 @@ public class QuestaoService {
     }
 
     // Cadastrar nova questão com as regras de negócio, exceções
+    @Transactional
     public Questao validarQuestao(Questao questao) {
         if (questao.getEnunciado() == null || questao.getEnunciado().isBlank()) {
             throw new IllegalArgumentException("Uso de enunciado é obrigatório");
@@ -73,6 +76,7 @@ public class QuestaoService {
         return repository.save(questao);
     }
 
+    @Transactional
     public Questao marcarComoSolucionada(Long id, boolean status) {
         Questao questao = buscarPorId(id);
 
@@ -92,6 +96,7 @@ public class QuestaoService {
         return repository.save(questao);
     }
 
+    @Transactional
     public Questao atualizarQuestao(Questao questao) {
         repository.findById(questao.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Questão não encontrada com ID: " + questao.getId()));
@@ -112,6 +117,7 @@ public class QuestaoService {
                 .orElseThrow(() -> new IllegalArgumentException("Questão não encontrada com ID: " + id));
     }
 
+    @Transactional
     public boolean remover(Long id) {
         Questao questao = buscarPorId(id);
         repository.delete(questao);
@@ -153,6 +159,7 @@ public class QuestaoService {
         return resolucaoRepository.findByQuestaoId(questaoId);
     }
 
+    @Transactional
     public Resolucao salvarResolucao(Long questaoId, Resolucao resolucao) {
         Questao questao = buscarPorId(questaoId);
         resolucao.setQuestao(questao);
