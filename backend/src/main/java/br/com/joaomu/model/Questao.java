@@ -1,6 +1,9 @@
 package br.com.joaomu.model;
 
 import jakarta.persistence.*;
+import java.util.List;
+import java.util.ArrayList;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "questoes")
@@ -36,6 +39,20 @@ public class Questao {
     private String linguagemCodigo;
 
     private Boolean solucionada = false;
+
+    @Column(name = "data_insercao")
+    private java.time.LocalDateTime dataInsercao;
+
+    @OneToMany(mappedBy = "questao", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Resolucao> resolucoes = new ArrayList<>();
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.dataInsercao == null) {
+            this.dataInsercao = java.time.LocalDateTime.now();
+        }
+    }
 
     public Long getId() {
         return id;
@@ -125,4 +142,23 @@ public class Questao {
         this.solucionada = solucionada;
     }
 
+    public List<Resolucao> getResolucoes() {
+        return resolucoes;
+    }
+
+    public void setResolucoes(List<Resolucao> resolucoes) {
+        this.resolucoes = resolucoes;
+    }
+
+    public java.time.LocalDateTime getDataInsercao() {
+        return dataInsercao;
+    }
+
+    public void setDataInsercao(java.time.LocalDateTime dataInsercao) {
+        this.dataInsercao = dataInsercao;
+    }
+
+    public int getNumeroResolucoes() {
+        return this.resolucoes != null ? this.resolucoes.size() : 0;
+    }
 }
