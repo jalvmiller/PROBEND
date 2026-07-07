@@ -39,8 +39,7 @@ function QuestaoForm({ SalvarSucesso }) {
     };
 
     return (
-        <form onSubmit={handleSalvar} className="bg-white p-6 rounded-lg shadow-md mb-8 w-full max-w-2xl">
-            <h2 className="text-xl font-bold mb-4">Nova Questão</h2>
+        <form onSubmit={handleSalvar} className="w-full">
 
             <textarea
                 className="w-full p-2 border rounded mb-3"
