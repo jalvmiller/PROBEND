@@ -56,6 +56,14 @@ export function useQuestoes() {
 		}
 	};
 
+	const editarNaLista = (questaoAtualizada) => {
+		setListaQuestoes(prev => prev.map(q => q.id === questaoAtualizada.id ? questaoAtualizada : q));
+		// O map faz uma cópia de cada elemento e os une em um novo array.
+		// Se o id não bater, ele retorna o original, senão, retorna o atualizado.
+		// prev => prev.map(...)
+		// prev é o estado anterior, a seta indica função anônima que usa de prev como argumento
+	};
+
 	// Retornamos tudo que a tela precisa para funcionar
-	return { listaQuestoes, carregando, erro, removerDaLista, atualizarLista, pesquisar };
+	return { listaQuestoes, carregando, erro, removerDaLista, atualizarLista, pesquisar, editarNaLista };
 }
