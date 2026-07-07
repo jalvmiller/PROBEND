@@ -15,6 +15,18 @@ export const questaoService = {
     return response.data;
   },
 
+  atualizar: async (id, questao) => {
+    const response = await api.put(`/questoes/${id}`, questao);
+    return response.data;
+  },
+
+  busca: async (termo) => {
+    const response = await api.get("/questoes", {
+      params: termo ? { busca: termo } : {}
+    });
+    return response.data;
+  },
+
   // Busca condicionada pelo ID, usada pela Dashboard
   listarTodas: async (busca) => {
     // busca fica entre chaves {}, caso contrário 
