@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { useState } from 'react';
 import QuestaoForm from './QuestaoForm';
 import QuestaoCard from '../components/questao/QuestaoCard';
@@ -11,7 +11,7 @@ function Dashboard() {
 	const [termoBusca, setTermoBusca] = useState('');
 
 	// Pega os métodos relacionados ao objeto questões pelo hook
-	const { listaQuestoes, carregando, erro, removerDaLista, atualizarLista, pesquisar } = useQuestoes();
+	const { listaQuestoes, carregando, erro, removerDaLista, atualizarLista, pesquisar, editarNaLista } = useQuestoes();
 
 	// Quando uma questão é salva com sucesso, fecha o formulário
 	const handleSalvarQuestao = (questao) => {
@@ -26,13 +26,14 @@ function Dashboard() {
 				<h2 className="text-3xl font-bold text-slate-900">Questões</h2>
 			</div>
 
-			{/* Botão de Adicionar Questão */}
 			<div className="flex justify-end">
 				<button
 					onClick={() => setMostrarForm(!mostrarForm)}
-					className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold"
+					className={`flex items-center gap-2 text-white px-6 py-3 rounded-lg transition font-semibold ${
+						mostrarForm ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'
+					}`}
 				>
-					<Plus size={20} />
+					{mostrarForm ? <X size={20} /> : <Plus size={20} />}
 					{mostrarForm ? 'Cancelar' : 'Adicionar Questão'}
 				</button>
 			</div>
@@ -93,6 +94,7 @@ function Dashboard() {
 								key={questao.id}
 								questao={questao}
 								onExcluir={() => removerDaLista(questao.id)}
+								onEditarSucesso={editarNaLista}
 							/>
 						))
 					)}
