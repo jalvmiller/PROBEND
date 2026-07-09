@@ -11,14 +11,42 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
         fonte: questao.fonte || "",
         trechoCodigo: questao.trechoCodigo || "",
         linguagemCodigo: questao.linguagemCodigo || ""
-        // Os atributos que não aparecem aqui já estão no banco de dados
-        // A dificuldade é salva como String, mas no banco de dados é Integer
-        // !== undefined significa diferente de undefined (null) 
-        // ? String(...) garante que a dificuldade seja sempre salva como String
     });
     const [salvando, setSalvando] = useState(false);
+    const [melhorandoIA, setMelhorandoIA] = useState(false);
 
     if (!isOpen) return null;
+
+    const handleMelhorarEnunciadoIA = async () => {
+        if (!dados.enunciado.trim()) {
+            alert("Por favor, digite alguma coisa no enunciado para que a IA possa aprimorar.");
+            return;
+        }
+        setMelhorandoIA(true);
+        try {
+            const dadosSugeridos = await questaoService.iaSugerir(
+                "Melhore o enunciado desta questão para torná-lo mais claro, corrigindo erros gramaticais e aprimorando expressões matemáticas, mantendo o sentido original.",
+                dados.enunciado
+            );
+            if (dadosSugeridos && dadosSugeridos.enunciado) {
+                setDados(prev => ({
+                    ...prev,
+                    enunciado: dadosSugeridos.enunciado,
+                    materia: dadosSugeridos.materia || prev.materia,
+                    assunto: dadosSugeridos.assunto || prev.assunto,
+                    dificuldade: dadosSugeridos.dificuldade !== undefined ? String(dadosSugeridos.dificuldade) : prev.dificuldade,
+                    trechoCodigo: dadosSugeridos.trechoCodigo || prev.trechoCodigo,
+                    linguagemCodigo: dadosSugeridos.linguagemCodigo || prev.linguagemCodigo
+                }));
+                alert("Enunciado aprimorado com sucesso pela IA!");
+            }
+        } catch (err) {
+            console.error("Erro ao aprimorar com IA:", err);
+            alert("Erro ao aprimorar enunciado com a IA. Certifique-se de que a API Key do Gemini está configurada.");
+        } finally {
+            setMelhorandoIA(false);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -53,9 +81,19 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-1">
-                            Enunciado
-                        </label>
+                        <div className="flex justify-between items-center mb-1">
+                            <label className="block text-sm font-semibold text-slate-700">
+                                Enunciado
+                            </label>
+                            <button
+                                type="button"
+                                onClick={handleMelhorarEnunciadoIA}
+                                className="text-xs font-bold text-violet-600 hover:text-violet-800 transition flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                                disabled={melhorandoIA}
+                            >
+                                {melhorandoIA ? "Aprimorando..." : "🪄 Melhorar com IA"}
+                            </button>
+                        </div>
                         <textarea
                             className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
                             placeholder="Digite o enunciado"

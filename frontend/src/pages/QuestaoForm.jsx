@@ -13,6 +13,54 @@ function QuestaoForm({ SalvarSucesso }) {
         linguagemCodigo: ""
     });
 
+    const [promptIA, setPromptIA] = useState("");
+    const [gerandoIA, setGerandoIA] = useState(false);
+
+    const handleGerarEsbocoIA = async () => {
+        if (!promptIA.trim()) {
+            alert("Por favor, digite uma ideia para a IA no campo do Copiloto.");
+            return;
+        }
+        setGerandoIA(true);
+        try {
+            const dadosSugeridos = await questaoService.iaSugerir(promptIA, novaQuestao.enunciado);
+            setNovaQuestao({
+                enunciado: dadosSugeridos.enunciado || "",
+                materia: dadosSugeridos.materia || "",
+                assunto: dadosSugeridos.assunto || "",
+                dificuldade: String(dadosSugeridos.dificuldade ?? "0"),
+                fonte: dadosSugeridos.fonte || "Gerado por Gemini",
+                trechoCodigo: dadosSugeridos.trechoCodigo || "",
+                linguagemCodigo: dadosSugeridos.linguagemCodigo || ""
+            });
+            alert("Esboço gerado com sucesso! Você pode revisar os campos abaixo.");
+        } catch (err) {
+            console.error("Erro ao gerar esboço com IA:", err);
+            alert("Erro ao obter sugestão da IA. Certifique-se de que a API Key do Gemini está configurada.");
+        } finally {
+            setGerandoIA(false);
+        }
+    };
+
+    const handleCriarTotalIA = async () => {
+        if (!promptIA.trim()) {
+            alert("Por favor, digite uma ideia para a IA no campo do Copiloto.");
+            return;
+        }
+        setGerandoIA(true);
+        try {
+            const questaoSalva = await questaoService.iaCriarTotal(promptIA);
+            SalvarSucesso(questaoSalva);
+            setPromptIA("");
+            alert("Questão gerada e cadastrada no banco de dados com sucesso!");
+        } catch (err) {
+            console.error("Erro ao publicar com IA:", err);
+            alert("Erro ao publicar questão direta com a IA. Certifique-se de que a API Key do Gemini está configurada.");
+        } finally {
+            setGerandoIA(false);
+        }
+    };
+
     const handleSalvar = async (e) => {
         e.preventDefault();
 
@@ -40,6 +88,42 @@ function QuestaoForm({ SalvarSucesso }) {
 
     return (
         <form onSubmit={handleSalvar} className="w-full">
+
+            {/* Bloco Auxiliar de IA */}
+            <div className="mb-6 p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                <label className="block text-sm font-bold text-slate-700 flex items-center gap-1">
+                    🪄 Copiloto de Criação IA (Gemini)
+                </label>
+                <p className="text-xs text-slate-500">
+                    Digite sua ideia (ex: "Crie uma questão de Cálculo 1 sobre limites fundamentais") e deixe a IA preencher o formulário para você.
+                </p>
+                <textarea
+                    className="w-full p-2 border border-slate-300 rounded text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                    placeholder="Descreva a questão que deseja criar..."
+                    value={promptIA}
+                    onChange={(e) => setPromptIA(e.target.value)}
+                    rows="2"
+                    disabled={gerandoIA}
+                />
+                <div className="flex gap-2">
+                    <button
+                        type="button"
+                        onClick={handleGerarEsbocoIA}
+                        className="flex-1 bg-violet-600 hover:bg-violet-700 text-white text-xs font-bold py-2 px-3 rounded transition disabled:opacity-50 cursor-pointer"
+                        disabled={gerandoIA}
+                    >
+                        {gerandoIA ? "Gerando..." : "💡 Preencher Esboço"}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={handleCriarTotalIA}
+                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 px-3 rounded transition disabled:opacity-50 cursor-pointer"
+                        disabled={gerandoIA}
+                    >
+                        {gerandoIA ? "Publicando..." : "✨ Publicar Direto"}
+                    </button>
+                </div>
+            </div>
 
             <textarea
                 className="w-full p-2 border rounded mb-3"
