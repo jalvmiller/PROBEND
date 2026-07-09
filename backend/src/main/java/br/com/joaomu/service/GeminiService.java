@@ -19,6 +19,11 @@ public class GeminiService {
 	@Value("${gemini.api.key:}")
 	private String apiKey;
 
+	// Pega o modelo do Gemini do arquivo application.properties via anotação
+	@Value("${gemini.api.model:gemini-3.5-flash}")
+	private String apiModel;
+
+
 	// Inicializa o cliente HTTP com um timeout de 15 segundos, esse cliente é
 	// padrão e vem da biblioteca java.net.http
 	private final HttpClient httpClient = HttpClient.newBuilder()
@@ -67,7 +72,7 @@ public class GeminiService {
 		String promptCompleto = instrucoesPrompt + entradaUsuario;
 
 		try {
-			String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key="
+			String url = "https://generativelanguage.googleapis.com/v1beta/models/" + apiModel + ":generateContent?key="
 					+ apiKey;
 			// Monta a URL que será enviada para a API do Gemini
 			// utiliza o endpoint oficial da Google API Studio para o modelo 1.5 do gemini,
