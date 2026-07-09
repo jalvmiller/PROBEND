@@ -41,5 +41,15 @@ export const questaoService = {
     });
 
     return response.data;
+  },
+
+  iaSugerir: async (prompt, rascunhoEnunciado) => {
+    const response = await api.post("/questoes/ia-sugerir", { prompt, rascunhoEnunciado });
+    return response.data;
+  },
+
+  iaCriarTotal: async (prompt) => {
+    const response = await api.post("/questoes/ia-criar-total", { prompt });
+    return response.data;
   }
 };
