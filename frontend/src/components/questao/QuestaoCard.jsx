@@ -4,6 +4,7 @@ import { CheckCircle, Clock, Edit2, User, Calendar, MessageSquare } from 'lucide
 import { useAuth } from '../../hooks/useAuth';
 import QuestaoEditModal from './QuestaoEditModal';
 import { useState } from 'react';
+import { renderizarTextoMath } from '../../utils/mathRenderer';
 
 function QuestaoCard({ questao, onExcluir, onEditarSucesso }) {
     const { user } = useAuth();
@@ -71,7 +72,7 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso }) {
 
             {/* Enunciado truncado com "..." se passar do limite de seu espaço */}
             <h2 className="text-lg font-semibold text-slate-800 line-clamp-2 hover:line-clamp-none transition-all duration-300 cursor-pointer" title="Clique para expandir o enunciado">
-                {questao.enunciado}
+                {renderizarTextoMath(questao.enunciado)}
             </h2>
 
             {/* Metadados: Autor, Resoluções, Data de inserção */}
