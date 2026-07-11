@@ -1,6 +1,7 @@
 // Ícones
 import { X, LogOut, Home, BookOpen, Settings } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { Link } from 'react-router-dom';
 
 // Sidebar fica na lateral esquerda
 // Recebe isOpen para saber se está aberta (em mobile) e onClose para fechar, PROPS
@@ -79,27 +80,27 @@ function Sidebar({ isOpen, onClose }) {
                     hover:bg-blue-600 transition -> muda a cor do fundo ao passar o mouse, transição suave de cor                
                 */}
                 <nav className="p-4 space-y-2">
-                    <a
-                        href="#"
-                        className="flex items-center gap-3 px-4 py-3 rounded hover:bg-blue-600 transition"
+                    <Link
+                        to="/"
+                        className="flex items-center gap-3 px-4 py-3 rounded hover:bg-blue-600 dark:hover:bg-slate-800 transition"
                     >
                         <Home size={20} />
                         <span>Dashboard</span>
-                    </a>
-                    <a
-                        href="#"
-                        className="flex items-center gap-3 px-4 py-3 rounded hover:bg-blue-600 transition"
+                    </Link>
+                    <Link
+                        to="/"
+                        className="flex items-center gap-3 px-4 py-3 rounded hover:bg-blue-600 dark:hover:bg-slate-800 transition"
                     >
                         <BookOpen size={20} />
                         <span>Questões</span>
-                    </a>
-                    <a
-                        href="#"
-                        className="flex items-center gap-3 px-4 py-3 rounded hover:bg-blue-600 transition"
+                    </Link>
+                    <Link
+                        to="/configuracoes"
+                        className="flex items-center gap-3 px-4 py-3 rounded hover:bg-blue-600 dark:hover:bg-slate-800 transition"
                     >
                         <Settings size={20} />
                         <span>Configurações</span>
-                    </a>
+                    </Link>
                     <button
                         onClick={logout}
                         className="flex items-center w-full gap-3 px-4 py-3 rounded
