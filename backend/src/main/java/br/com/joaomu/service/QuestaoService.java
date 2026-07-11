@@ -141,7 +141,10 @@ public class QuestaoService {
             throw new SecurityException("Usuário não autenticado");
         }
 
-        if (questao.getAutor() == null || !questao.getAutor().getUsername().equals(auth.getName())) {
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isAdmin && (questao.getAutor() == null || !questao.getAutor().getUsername().equals(auth.getName()))) {
             throw new SecurityException("Você não tem permissão para remover esta questão");
         }
 

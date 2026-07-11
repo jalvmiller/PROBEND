@@ -2,8 +2,15 @@ package br.com.joaomu.model;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
+
+// Para guardar permissões/role, a interface GrantedAuthority deve ser
+// implementada, e a classe SimpleGrantedAuthority é uma implementação
+// simples de GrantedAuthority que encapsula uma string como permissão.
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+// ArrayList é usada para criar uma lista de permissões/authorities
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -95,9 +102,29 @@ public class User implements UserDetails {
     }
 
     // Métodos exigidos pelo UserDetails
+    // O getAuthorities retornava uma lista vazia antes das roles,
+    // agora ele retorna uma lista de permissões baseada no tipo de usuário
+    // Collection<? extends GrantedAuthority> significa que a coleção
+    // retorna uma lista de objetos que implementam GrantedAuthority, ou seja,
+    // qualquer objeto de uma classe que herde GrantedAuthority (conceito de
+    // Wildcard) indicado pelo "?"
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+
+        // Todo usuário autenticado tem a permissão padrão de usuário comum
+        // As outras roles (especialista, administrador) são atribuídas condicionalmente
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+
+        if (this.especialista) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_SPECIALIST"));
+        }
+
+        if (this.administrador) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
+
+        return authorities;
     }
 
     @Override
