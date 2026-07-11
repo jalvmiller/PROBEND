@@ -3,6 +3,7 @@ import Layout from "./components/layout/Layout";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Configuracoes from "./pages/Configuracoes";
 import QuestaoDetalhes from "./components/questao/QuestaoDetalhes";
 import { AuthProvider } from "./contexts/AuthContext";
 import PrivateRoute from "./components/layout/PrivateRoute";
@@ -47,6 +48,16 @@ function App() {
 							<PrivateRoute>
 								<Layout>
 									<QuestaoDetalhes />
+								</Layout>
+							</PrivateRoute>
+						}
+					/>
+					<Route
+						path="/configuracoes"
+						element={
+							<PrivateRoute>
+								<Layout>
+									<Configuracoes />
 								</Layout>
 							</PrivateRoute>
 						}
