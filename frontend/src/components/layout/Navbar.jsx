@@ -14,7 +14,7 @@ function Navbar({ onMenuClick }) {
     // bg blue 600 -> fundo azul
     // text white  -> texto branco
     // shadow lg   -> sombra embaixo da barra
-    <nav className="bg-blue-600 text-white shadow-lg">
+    <nav className="bg-blue-600 dark:bg-slate-900 text-white shadow-lg border-b border-transparent dark:border-slate-800 transition-colors duration-300">
 
       {/*
             max-w-7xl       -> largura máxima
@@ -36,9 +36,9 @@ function Navbar({ onMenuClick }) {
             hover:bg-blue-700 -> quando passa o mouse, muda para azul mais escuro
             rounded só deixa as bordas arredondadas
         */}
-        <button
+         <button
           onClick={onMenuClick}
-          className="lg:hidden p-2 hover:bg-blue-700 rounded"
+          className="lg:hidden p-2 hover:bg-blue-700 dark:hover:bg-slate-800 rounded"
           aria-label="Abrir menu"
         >
           <Menu size={24} />
@@ -52,9 +52,10 @@ function Navbar({ onMenuClick }) {
             <button
               onClick={logout}
               className="flex items-center gap-1 
-                text-sm bg-blue-700 hover:bg-blue-800
+                text-sm bg-blue-700 hover:bg-blue-800 dark:bg-slate-800 dark:hover:bg-slate-700
                 px-3 py-2 rounded 
-                transition font-semibold">
+                transition font-semibold"
+            >
               <LogOut size={16} />
               <span>Sair</span>
             </button>
