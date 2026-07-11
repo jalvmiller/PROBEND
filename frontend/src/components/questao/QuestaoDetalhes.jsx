@@ -102,10 +102,10 @@ function QuestaoDetalhes() {
 
             {/* Janela */}
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 overflow-hidden transition-colors duration-300">
-                <div className='p-6 bg-slate-50 dark:bg-slate-850/40 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors duration-300'>
+                <div className='p-6 bg-slate-50 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors duration-300'>
                     {/* Matéria da Questão - obrigatório*/}
                     <div>
-                        <span className='text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 px-4 py-1 rounded-full border border-blue-105 dark:border-blue-900/40'>
+                        <span className='text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 px-4 py-1 rounded-full border border-blue-100 dark:border-blue-900/40'>
                             {questao.materia}
                         </span>
 
@@ -117,7 +117,7 @@ function QuestaoDetalhes() {
                         )}
 
                         {/* Autor da Questão - obrigatório*/}
-                        <h2 className="text-sm text-slate-550 dark:text-slate-450 mt-2">
+                        <h2 className="text-sm text-slate-500 dark:text-slate-400 mt-2">
                             Criado por <span className='font-semibold text-slate-700 dark:text-slate-300'>
                                 {questao.autor?.nome || questao.autor?.username}
                             </span>
@@ -133,7 +133,7 @@ function QuestaoDetalhes() {
                                 Solucionada
                             </span>
                         ) : (
-                            <span className="flex items-center gap-1.5 text-xs font-bold text-red-750 dark:text-red-400 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 px-3 py-1.5 rounded-full">
+                            <span className="flex items-center gap-1.5 text-xs font-bold text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 px-3 py-1.5 rounded-full">
                                 <Clock size={14} />
                                 Pendente
                             </span>
@@ -148,13 +148,13 @@ function QuestaoDetalhes() {
                     </div>
                     {/* Bloco de Código - condicionada ao trechoCodigo existir*/}
                     {questao.trechoCodigo && (
-                        <div className='rounded-xl overflow-hidden border border-slate-800 dark:border-slate-750 shadow-md'>
-                            <div className='bg-slate-800 dark:bg-slate-850 text-slate-400 dark:text-slate-300 px-4 py-2 text-xs font-mono flex justify-between items-center'>
+                        <div className='rounded-xl overflow-hidden border border-slate-800 dark:border-slate-700 shadow-md'>
+                            <div className='bg-slate-800 dark:bg-slate-800 text-slate-400 dark:text-slate-300 px-4 py-2 text-xs font-mono flex justify-between items-center'>
                                 <span>Código {(questao.linguagemCodigo || 'Texto')}</span>
                             </div>
 
                             {/* ====== Trecho de Código ====== */}
-                            <pre className='bg-slate-900 dark:bg-slate-950 text-slate-105 dark:text-slate-200 p-4 text-sm overflow-x-auto'>
+                            <pre className='bg-slate-900 dark:bg-slate-950 text-slate-300 dark:text-slate-200 p-4 text-sm overflow-x-auto'>
                                 <code>{questao.trechoCodigo}</code>
                             </pre>
                             {/* ====== Trecho de Código ======*/}

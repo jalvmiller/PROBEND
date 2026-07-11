@@ -60,7 +60,7 @@ function Configuracoes() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-550 mb-1">
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400 mb-1">
                             Nome Completo
                         </label>
                         <p className="text-slate-800 dark:text-slate-200 font-semibold text-base">
@@ -69,7 +69,7 @@ function Configuracoes() {
                     </div>
 
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-550 mb-1">
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400 mb-1">
                             Nome de Usuário
                         </label>
                         <p className="text-slate-800 dark:text-slate-200 font-semibold text-base">
@@ -82,7 +82,7 @@ function Configuracoes() {
                             <Award size={20} />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-550">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
                                 Pontuação
                             </label>
                             <p className="text-slate-800 dark:text-slate-200 font-bold text-base">
@@ -96,14 +96,14 @@ function Configuracoes() {
                             <Shield size={20} />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-550">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
                                 Perfil de Acesso (Role)
                             </label>
                             <span className={`inline-block text-xs font-extrabold uppercase px-2 py-0.5 rounded border mt-1 ${user?.administrador
                                 ? 'bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/40'
                                 : user?.especialista
                                     ? 'bg-purple-50 dark:bg-purple-950/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-900/40'
-                                    : 'bg-slate-50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-450 border-slate-200 dark:border-slate-700'
+                                    : 'bg-slate-50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-700'
                                 }`}>
                                 {obterRoleLabel()}
                             </span>
@@ -115,7 +115,7 @@ function Configuracoes() {
             {/* CARD 2: Tema Escuro */}
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 p-6 space-y-6 transition-colors duration-300">
                 <div className="flex items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
-                    <div className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 p-3 rounded-full">
+                    <div className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 p-3 rounded-full">
                         {escuro ? <Moon size={28} /> : <Sun size={28} />}
                     </div>
                     <div>

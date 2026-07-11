@@ -19,8 +19,8 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso }) {
             questao.dificuldade === 1 ? 'Médio' : 'Fácil';
 
     const badgesDificuldade =
-        questao.dificuldade === 2 ? 'bg-red-50 text-red-700 border-red-200' :
-            questao.dificuldade === 1 ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-green-50 text-green-700 border-green-200';
+        questao.dificuldade === 2 ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/20 dark:text-red-400 dark:border-red-900/40' :
+            questao.dificuldade === 1 ? 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950/20 dark:text-amber-400 dark:border-amber-900/40' : 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/20 dark:text-green-400 dark:border-green-900/40';
 
     const isAutor = user && questao.autor && questao.autor.username === user.username;
 
@@ -48,7 +48,7 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso }) {
                         {questao.materia}
                     </span>
                     {questao.assunto && (
-                        <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-850 px-2.5 py-1 rounded-md border border-slate-100 dark:border-slate-800">
+                        <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-100 dark:border-slate-800">
                             {questao.assunto}
                         </span>
                     )}
@@ -79,15 +79,15 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso }) {
             <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-500 dark:text-slate-400">
                 <div className="flex items-center gap-1.5">
                     <User size={14} className="text-slate-400" />
-                    <span>Autor: <span className="font-semibold text-slate-700 dark:text-slate-350">{questao.autor?.nome || questao.autor?.username || 'Anônimo'}</span></span>
+                    <span>Autor: <span className="font-semibold text-slate-700 dark:text-slate-300">{questao.autor?.nome || questao.autor?.username || 'Anônimo'}</span></span>
                 </div>
                 <div className="flex items-center gap-1.5">
                     <MessageSquare size={14} className="text-slate-400" />
-                    <span>Resoluções: <span className="font-semibold text-slate-700 dark:text-slate-350">{questao.numeroResolucoes ?? 0}</span></span>
+                    <span>Resoluções: <span className="font-semibold text-slate-700 dark:text-slate-300">{questao.numeroResolucoes ?? 0}</span></span>
                 </div>
                 <div className="flex items-center gap-1.5">
                     <Calendar size={14} className="text-slate-400" />
-                    <span>Inserida em: <span className="font-semibold text-slate-700 dark:text-slate-350">{formatarData(questao.dataInsercao)}</span></span>
+                    <span>Inserida em: <span className="font-semibold text-slate-700 dark:text-slate-300">{formatarData(questao.dataInsercao)}</span></span>
                 </div>
             </div>
 

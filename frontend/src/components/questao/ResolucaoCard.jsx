@@ -26,9 +26,9 @@ function ResolucaoCard({ resolucao }) {
             {/* Renderização do trecho de código (se houver) */}
             {resolucao.trechoCodigo && (
                 // Janela do trecho de código
-                <div className='rounded-xl overflow-hidden border border-slate-800 dark:border-slate-750 shadow-md'>
+                <div className='rounded-xl overflow-hidden border border-slate-800 dark:border-slate-700 shadow-md'>
                     {/* Cabeçalho do trecho de código */}
-                    <div className='bg-slate-800 dark:bg-slate-850 text-slate-400 dark:text-slate-300 px-4 py-1.5 text-xs font-mono'>
+                    <div className='bg-slate-800 dark:bg-slate-800 text-slate-400 dark:text-slate-300 px-4 py-1.5 text-xs font-mono'>
                         {resolucao.linguagemCodigo || "Código"}
                     </div>
                     {/* Corpo do trecho de código */}

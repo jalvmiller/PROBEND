@@ -67,35 +67,35 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
     };
 
     return (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[95vh] overflow-y-auto p-6 relative animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-colors duration-300">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl max-w-2xl w-full max-h-[95vh] overflow-y-auto p-6 relative border border-transparent dark:border-slate-800 transition-colors duration-300 animate-in fade-in zoom-in-95 duration-200">
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition"
+                    className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer"
                     type="button"
                 >
                     <X size={20} />
                 </button>
 
-                <h2 className="text-xl font-bold text-slate-900 mb-6">Editar Questão</h2>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-6 transition-colors">Editar Questão</h2>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <div className="flex justify-between items-center mb-1">
-                            <label className="block text-sm font-semibold text-slate-700">
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 transition-colors">
                                 Enunciado
                             </label>
                             <button
                                 type="button"
                                 onClick={handleMelhorarEnunciadoIA}
-                                className="text-xs font-bold text-violet-600 hover:text-violet-800 transition flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                                className="text-xs font-bold text-violet-600 hover:text-violet-800 dark:text-violet-400 dark:hover:text-violet-300 transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
                                 disabled={melhorandoIA}
                             >
                                 {melhorandoIA ? "Aprimorando..." : "🪄 Melhorar com IA"}
                             </button>
                         </div>
                         <textarea
-                            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                            className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
                             placeholder="Digite o enunciado"
                             value={dados.enunciado}
                             onChange={(e) => setDados({ ...dados, enunciado: e.target.value })}
@@ -106,12 +106,12 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1 transition-colors">
                                 Matéria
                             </label>
                             <input
                                 type="text"
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
                                 placeholder="Ex: Java, Cálculo"
                                 value={dados.materia}
                                 onChange={(e) => setDados({ ...dados, materia: e.target.value })}
@@ -120,12 +120,12 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1 transition-colors">
                                 Assunto
                             </label>
                             <input
                                 type="text"
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
                                 placeholder="Ex: OOP, Limites"
                                 value={dados.assunto}
                                 onChange={(e) => setDados({ ...dados, assunto: e.target.value })}
@@ -133,11 +133,11 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-1">
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1 transition-colors">
                                 Dificuldade
                             </label>
                             <select
-                                className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
                                 value={dados.dificuldade}
                                 onChange={(e) => setDados({ ...dados, dificuldade: e.target.value })}
                             >
@@ -149,12 +149,12 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-1">
+                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1 transition-colors">
                             Fonte
                         </label>
                         <input
                             type="text"
-                            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                            className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
                             placeholder="Ex: Livro X, Aula Y"
                             value={dados.fonte}
                             onChange={(e) => setDados({ ...dados, fonte: e.target.value })}
@@ -162,11 +162,11 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-1">
+                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1 transition-colors">
                             Trecho de código (opcional)
                         </label>
                         <textarea
-                            className="w-full p-2 border rounded font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                            className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
                             placeholder="Insira o código aqui"
                             value={dados.trechoCodigo}
                             onChange={(e) => setDados({ ...dados, trechoCodigo: e.target.value })}
@@ -175,11 +175,11 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-1">
+                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1 transition-colors">
                             Linguagem do código
                         </label>
                         <select
-                            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                            className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
                             value={dados.linguagemCodigo}
                             onChange={(e) => setDados({ ...dados, linguagemCodigo: e.target.value })}
                         >
@@ -193,18 +193,18 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                         </select>
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-4 border-t">
+                    <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800 transition-colors">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 border rounded text-slate-600 hover:bg-slate-50 font-semibold transition"
+                            className="px-4 py-2 border border-slate-300 dark:border-slate-800 rounded text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold transition-colors cursor-pointer"
                             disabled={salvando}
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold transition flex items-center justify-center min-w-[80px]"
+                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold transition-colors flex items-center justify-center min-w-[80px] cursor-pointer"
                             disabled={salvando}
                         >
                             {salvando ? "Salvando..." : "Salvar"}

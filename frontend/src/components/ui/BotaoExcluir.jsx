@@ -23,7 +23,7 @@ function BotaoExcluir({ idQuestao, aoExcluirSucesso }) {
     return (
         <button
             onClick={handleDeletar}
-            className="p-2 text-red-500 hover:bg-red-50 rounded-full transition-colors group"
+            className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-full transition-colors group cursor-pointer"
             title="Excluir Questão"
         >
             Excluir Questão

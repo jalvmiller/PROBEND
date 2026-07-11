@@ -24,14 +24,14 @@ function ResolucaoForm({ aoSubmeter, enviando }) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg border border-slate-100 p-6 space-y-4">
-            <h4 className="font-bold text-slate-700 text-lg">Registrar uma Resolução</h4>
+        <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 p-6 space-y-4 transition-colors duration-300">
+            <h4 className="font-bold text-slate-700 dark:text-slate-200 text-lg transition-colors">Registrar uma Resolução</h4>
 
             <textarea
                 value={conteudo}
                 onChange={(e) => setConteudo(e.target.value)}
                 placeholder="Explique sua resolução aqui (suporta LaTeX como $E=mc^2$ ou $$\frac{a}{b}$$)..."
-                className="w-full p-4 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition min-h-[120px]"
+                className="w-full p-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors min-h-[120px]"
                 required
             />
 
@@ -39,16 +39,16 @@ function ResolucaoForm({ aoSubmeter, enviando }) {
                 value={codigo}
                 onChange={(e) => setCodigo(e.target.value)}
                 placeholder="Trecho de código (opcional)"
-                className="w-full p-4 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm transition min-h-[80px]"
+                className="w-full p-4 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm transition-colors min-h-[80px]"
             />
 
             {codigo && (
                 <div className="flex flex-col gap-2">
-                    <label className="text-xs font-semibold text-slate-400 uppercase">Linguagem</label>
+                    <label className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase transition-colors">Linguagem</label>
                     <select
                         value={linguagem}
                         onChange={(e) => setLinguagem(e.target.value)}
-                        className="p-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition w-full sm:w-48 bg-white"
+                        className="p-2 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors w-full sm:w-48 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100"
                     >
                         <option value="">Sem linguagem</option>
                         <option value="java">Java</option>
