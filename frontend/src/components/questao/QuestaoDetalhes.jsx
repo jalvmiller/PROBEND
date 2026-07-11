@@ -94,39 +94,31 @@ function QuestaoDetalhes() {
             {/* Botão de Voltar*/}
             <button
                 onClick={() => navigate(`/`)}
-                className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition font-semibold"
+                className="flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 transition font-semibold"
             >
                 <ArrowLeft size={20} />
                 Voltar
             </button>
 
             {/* Janela */}
-            {/* Janela */}
-            {/* Janela */}
-            <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
-                <div className='p-6 bg-slate-50 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
-                    {/* Matéria da Questão - obrigatório*/}
-                    {/* Matéria da Questão - obrigatório*/}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 overflow-hidden transition-colors duration-300">
+                <div className='p-6 bg-slate-50 dark:bg-slate-850/40 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors duration-300'>
                     {/* Matéria da Questão - obrigatório*/}
                     <div>
-                        <span className='text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-4 py-1 rounded-full'>
+                        <span className='text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 px-4 py-1 rounded-full border border-blue-105 dark:border-blue-900/40'>
                             {questao.materia}
                         </span>
 
                         {/* Assunto da Questão - condicionada ao assunto existir*/}
-                        {/* Assunto da Questão - condicionada ao assunto existir*/}
-                        {/* Assunto da questão - condicionada ao assunto existir*/}
                         {questao.assunto && (
-                            <span className="ml-2 text-xs font-bold uppercase tracking-wider text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+                            <span className="ml-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
                                 {questao.assunto}
                             </span>
                         )}
 
                         {/* Autor da Questão - obrigatório*/}
-                        {/* Autor da Questão - obrigatório*/}
-                        {/* Autor da Questão - obrigatório*/}
-                        <h2 className="text-sm tex-slate-400 mt-2">
-                            Criado por <span className='font-semibold text-slate-700'>
+                        <h2 className="text-sm text-slate-550 dark:text-slate-450 mt-2">
+                            Criado por <span className='font-semibold text-slate-700 dark:text-slate-300'>
                                 {questao.autor?.nome || questao.autor?.username}
                             </span>
                         </h2>
@@ -134,16 +126,14 @@ function QuestaoDetalhes() {
 
 
                     {/* STATUS DE SOLUÇÃO - obrigatório*/}
-                    {/* STATUS DE SOLUÇÃO - obrigatório*/}
-                    {/* STATUS DE SOLUÇÃO - obrigatório*/}
                     <div>
                         {questao.solucionada ? (
-                            <span className="flex items-center gap-1.5 text-xs font-bold text-green-700 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full">
+                            <span className="flex items-center gap-1.5 text-xs font-bold text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/40 px-3 py-1.5 rounded-full">
                                 <CheckCircle size={14} />
                                 Solucionada
                             </span>
                         ) : (
-                            <span className="flex items-center gap-1.5 text-xs font-bold text-red-700 bg-red-50 border border-red-200 px-3 py-1.5 rounded-full">
+                            <span className="flex items-center gap-1.5 text-xs font-bold text-red-750 dark:text-red-400 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 px-3 py-1.5 rounded-full">
                                 <Clock size={14} />
                                 Pendente
                             </span>
@@ -153,20 +143,18 @@ function QuestaoDetalhes() {
 
 
                 <div className='p-6 md:p-8 space-y-6'>
-                    <div className='text-slate-800 leading-relaxed text-lg whitespace-pre-wrap'>
+                    <div className='text-slate-800 dark:text-slate-100 leading-relaxed text-lg whitespace-pre-wrap transition-colors duration-300'>
                         {renderizarTextoMath(questao.enunciado)}
                     </div>
                     {/* Bloco de Código - condicionada ao trechoCodigo existir*/}
-                    {/* Bloco de Código - condicionada ao trechoCodigo existir*/}
-                    {/* Bloco de Código - condicionada ao trechoCodigo existir*/}
                     {questao.trechoCodigo && (
-                        <div className='rounded-xl overflow-hidden border border-slate-800 shadow-md'>
-                            <div className='bg-slate-800 text-slate-400 px-4 py-2 text-xs font-mono flex justify-between items-center'>
+                        <div className='rounded-xl overflow-hidden border border-slate-800 dark:border-slate-750 shadow-md'>
+                            <div className='bg-slate-800 dark:bg-slate-850 text-slate-400 dark:text-slate-300 px-4 py-2 text-xs font-mono flex justify-between items-center'>
                                 <span>Código {(questao.linguagemCodigo || 'Texto')}</span>
                             </div>
 
                             {/* ====== Trecho de Código ====== */}
-                            <pre className='bg-slate-900 text-slate-100 p-4 text-sm overflow-x-auto'>
+                            <pre className='bg-slate-900 dark:bg-slate-950 text-slate-105 dark:text-slate-200 p-4 text-sm overflow-x-auto'>
                                 <code>{questao.trechoCodigo}</code>
                             </pre>
                             {/* ====== Trecho de Código ======*/}
@@ -174,16 +162,16 @@ function QuestaoDetalhes() {
                     )}
 
                     {questao.fonte && (
-                        <p className='text-xs text-slate-400 italic'>Fonte: {questao.fonte}</p>
+                        <p className='text-xs text-slate-400 dark:text-slate-500 italic'>Fonte: {questao.fonte}</p>
                     )}
 
                     {/* Botão de alternar solução condicionada ao autor */}
                     {user && questao.autor && questao.autor.username === user.username && (
-                        <div className="pt-6 border-t border-slate-100 flex gap-4">
+                        <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex gap-4">
                             <button
                                 onClick={handleAlternarSolucionada}
                                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition cursor-pointer ${questao.solucionada
-                                    ? 'bg-amber-100 text-amber-800 hover:background-amber-200'
+                                    ? 'bg-amber-100 dark:bg-amber-950/20 text-amber-800 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-900/40'
                                     : 'bg-green-600 text-white hover:bg-green-700'
                                     }`}
                             >
@@ -196,17 +184,15 @@ function QuestaoDetalhes() {
             </div>
 
             {/* Seção de Resoluções */}
-            {/* Seção de Resoluções */}
-            {/* Seção de Resoluções */}
             <div className="space-y-6 pt-4">
-                <h3 className="text-slate-800 text-xl font-bold">Resoluções</h3>
+                <h3 className="text-slate-800 dark:text-slate-100 text-xl font-bold transition-colors">Resoluções</h3>
 
                 {/* Formulário de Resolução via Prop */}
                 <ResolucaoForm aoSubmeter={handleSubmeterResolucao} enviando={enviando} />
 
                 <div className='space-y-4'>
                     {resolucoes.length === 0 ? (
-                        <div className='bg-slate-50 text-slate-400 text-center py-10 rounded-2xl border border-dashed border-slate-200'>
+                        <div className='bg-slate-50 dark:bg-slate-900 text-slate-400 dark:text-slate-500 text-center py-10 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800'>
                             Nenhuma resolução enviada ainda.
                         </div>
                     ) : (

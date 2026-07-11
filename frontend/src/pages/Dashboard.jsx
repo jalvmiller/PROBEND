@@ -23,7 +23,7 @@ function Dashboard() {
 		<div className="space-y-6">
 			{/* Header da Dashboard */}
 			<div className="flex items-center justify-between">
-				<h2 className="text-3xl font-bold text-slate-900">Questões</h2>
+				<h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 transition-colors">Questões</h2>
 			</div>
 
 			<div className="flex justify-end">
@@ -40,18 +40,18 @@ function Dashboard() {
 
 			{/* Formulário (aparece/desaparece ao clicar) */}
 			{mostrarForm && (
-				<div className="bg-white rounded-lg shadow-md p-6">
-					<h3 className="text-xl font-bold mb-4">Nova Questão</h3>
+				<div className="bg-white dark:bg-slate-900 rounded-lg shadow-md p-6 border border-transparent dark:border-slate-800 transition-colors">
+					<h3 className="text-xl font-bold mb-4 text-slate-900 dark:text-slate-100">Nova Questão</h3>
 					<QuestaoForm SalvarSucesso={handleSalvarQuestao} />
 				</div>
 			)}
 
 			{/* Barra de Pesquisa */}
-			<div className='bg-white rounded-lg shadow-md p-4'>
+			<div className='bg-white dark:bg-slate-900 rounded-lg shadow-md p-4 border border-transparent dark:border-slate-800 transition-colors'>
 				<input
 					type="text"
 					placeholder='Pesquisar por enunciado, matéria, assunto ou fonte'
-					className='w-full p-3 border border-slate-200 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-transparent transition'
+					className='w-full p-3 border border-slate-200 dark:border-slate-850 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-transparent transition-colors'
 					value={termoBusca}
 					onChange={(e) => {
 						setTermoBusca(e.target.value);
@@ -61,10 +61,10 @@ function Dashboard() {
 			</div>
 
 			{/* Bloco contendo a lista de questões */}
-			<div className="bg-white rounded-lg shadow-md p-6">
+			<div className="bg-white dark:bg-slate-900 rounded-lg shadow-md p-6 border border-transparent dark:border-slate-800 transition-colors">
 				{/* Cabeçalho do bloco */}
-				<div className="mb-6 pb-4 border-b border-slate-200">
-					<h3 className="text-lg font-semibold text-slate-900">
+				<div className="mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
+					<h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
 						{listaQuestoes.length} Questão(ões)
 					</h3>
 				</div>
@@ -78,12 +78,12 @@ function Dashboard() {
 						</div>
 					) : erro ? (
 						// Caso haja erro
-						<div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-center">
+						<div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 px-4 py-3 rounded text-center">
 							<p>{erro}</p>
 						</div>
 					) : listaQuestoes.length === 0 ? (
 						// Caso não haja questões
-						<div className="text-center text-slate-500 py-10">
+						<div className="text-center text-slate-505 dark:text-slate-400 py-10">
 							<p>Nenhuma questão foi encontrada.</p>
 							<p className="text-sm mt-2">Clique em "Adicionar Questão" para criar uma!</p>
 						</div>
