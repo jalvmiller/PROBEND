@@ -11,4 +11,9 @@
   --font-roboto: "Roboto", sans-serif;
 }
 
+/* recurso específico do Tailwind para tema escuro, é uma regra personalizada que diz ao compilador
+do Tailwind que ele deve gerar classes específicas para o tema escuro 
+sempre que a classe 'dark' for encontrada no elemento raiz do documento
+(<html>) ou em qualquer um de seus descendentes.
+*/
 @variant dark (&:where(.dark, .dark *));
