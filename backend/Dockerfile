@@ -7,9 +7,9 @@ COPY . /app
 # -B = modo batch
 RUN ./mvnw -B -DskipTests package
 
-# Rodar com uma imagem JRE
+# Rodar com uma imagem JDK para permitir compilação local no desenvolvimento
 # COPY puxa todos os arquivos da pasta backend pra /app
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:21-jdk-jammy
 WORKDIR /app
 COPY --from=build /app/target/sistemasquestoes-0.0.1-SNAPSHOT.jar app.jar
 
