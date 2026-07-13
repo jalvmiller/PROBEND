@@ -117,6 +117,12 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>2.26.25</version>
+		</dependency>
+
 		<!-- Dependência do Swagger (Springdoc OpenAPI) -->
 		<!-- Testar sem postman -->
 		<dependency>
