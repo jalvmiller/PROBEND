@@ -57,6 +57,7 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root1234
       JWT_SECRET: ChavePadraoParaDesenvolvimentoApenas
+      MINIO_ENDPOINT: "http://minio:9000"
     restart: unless-stopped
 
 # Persistencia dos dados -> Volume
