@@ -111,6 +111,7 @@ public class QuestaoService {
         }
 
         existente.setEnunciado(questao.getEnunciado());
+        existente.setImagemUrl(questao.getImagemUrl());
         existente.setMateria(questao.getMateria());
         existente.setAssunto(questao.getAssunto());
         existente.setDificuldade(questao.getDificuldade());
