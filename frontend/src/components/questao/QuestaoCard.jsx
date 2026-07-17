@@ -9,10 +9,15 @@ import { renderizarTextoMath } from '../../utils/mathRenderer';
 function QuestaoCard({ questao, onExcluir, onEditarSucesso }) {
     const { user } = useAuth();
     const [modalEditOpen, setModalEditOpen] = useState(false);
+    const [expandido, setExpandido] = useState(false);
 
-    const coresDificuldade =
-        questao.dificuldade === 2 ? 'border-red-500' :
-            questao.dificuldade === 1 ? 'border-yellow-500' : 'border-green-500';
+    const glowDificuldade =
+        questao.dificuldade === 2 ? 'bg-red-500/10 dark:bg-red-500/20' :
+            questao.dificuldade === 1 ? 'bg-amber-500/10 dark:bg-amber-500/20' : 'bg-green-500/10 dark:bg-green-500/20';
+
+    const hoverBorderDificuldade =
+        questao.dificuldade === 2 ? 'hover:border-red-300 dark:hover:border-red-900/60' :
+            questao.dificuldade === 1 ? 'hover:border-amber-300 dark:hover:border-amber-900/60' : 'hover:border-green-300 dark:hover:border-green-900/60';
 
     const textoDificuldade =
         questao.dificuldade === 2 ? 'Difícil' :
@@ -40,7 +45,10 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso }) {
     };
 
     return (
-        <div className={`bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-lg border-l-8 ${coresDificuldade} mb-4 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]`}>
+        <div className={`group relative overflow-hidden bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-md border border-slate-100 dark:border-slate-800/80 ${hoverBorderDificuldade} mb-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.01]`}>
+            {/* Spotlight Gradient de Dificuldade */}
+            <div className={`absolute -top-16 -right-16 w-36 h-36 rounded-full ${glowDificuldade} blur-2xl pointer-events-none transition-all duration-500 group-hover:scale-125`} />
+
             {/* Linha superior: Matéria/Assunto e Status/Dificuldade */}
             <div className='flex flex-wrap justify-between items-start gap-2 mb-3'>
                 <div className="flex flex-wrap items-center gap-2">
@@ -71,7 +79,13 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso }) {
             </div>
 
             {/* Enunciado truncado com "..." se passar do limite de seu espaço */}
-            <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 line-clamp-2 hover:line-clamp-none transition-all duration-300 cursor-pointer" title="Clique para expandir o enunciado">
+            {/* line-clamp-2 condicionado pelo clique do usuário*/}
+            <h2
+                onClick={() => setExpandido(!expandido)}
+                className={`text-lg font-semibold text-slate-800 dark:text-slate-100 transition-all duration-300 cursor-pointer ${expandido ? '' : 'line-clamp-2'
+                    }`}
+                title="Clique para expandir ou recolher o enunciado"
+            >
                 {renderizarTextoMath(questao.enunciado)}
             </h2>
 
