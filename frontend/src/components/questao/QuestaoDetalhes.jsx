@@ -146,6 +146,18 @@ function QuestaoDetalhes() {
                     <div className='text-slate-800 dark:text-slate-100 leading-relaxed text-lg whitespace-pre-wrap transition-colors duration-300'>
                         {renderizarTextoMath(questao.enunciado)}
                     </div>
+
+                    {/* Imagem da Questão */}
+                    {questao.imagemUrl && (
+                        <div className="my-4 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm bg-slate-50 dark:bg-slate-950/20 p-2">
+                            <img
+                                src={questao.imagemUrl.startsWith("http") ? questao.imagemUrl : `http://localhost:8080${questao.imagemUrl}`}
+                                alt="Imagem da questão"
+                                className="max-h-80 mx-auto object-contain rounded"
+                            />
+                        </div>
+                    )}
+
                     {/* Bloco de Código - condicionada ao trechoCodigo existir*/}
                     {questao.trechoCodigo && (
                         <div className='rounded-xl overflow-hidden border border-slate-800 dark:border-slate-700 shadow-md'>
