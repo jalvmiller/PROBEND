@@ -16,6 +16,10 @@ public class Questao {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String enunciado;
 
+    // Coluna que receberá a URL proxy da imagem
+    @Column(name = "imagem_url", length = 500)
+    private String imagemUrl;
+
     @Column(nullable = false)
     private String materia;
 
@@ -68,6 +72,14 @@ public class Questao {
 
     public void setEnunciado(String enunciado) {
         this.enunciado = enunciado;
+    }
+
+    public String getImagemUrl() {
+        return imagemUrl;
+    }
+
+    public void setImagemUrl(String imagemUrl) {
+        this.imagemUrl = imagemUrl;
     }
 
     public String getMateria() {
