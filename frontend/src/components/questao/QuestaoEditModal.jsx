@@ -5,6 +5,7 @@ import { questaoService } from "../../services/questaoService";
 function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
     const [dados, setDados] = useState({
         enunciado: questao.enunciado || "",
+        imagemUrl: questao.imagemUrl || "",
         materia: questao.materia || "",
         assunto: questao.assunto || "",
         dificuldade: questao.dificuldade !== undefined ? String(questao.dificuldade) : "0",
@@ -14,6 +15,24 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
     });
     const [salvando, setSalvando] = useState(false);
     const [melhorandoIA, setMelhorandoIA] = useState(false);
+    const [enviandoImagem, setEnviandoImagem] = useState(false);
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setEnviandoImagem(true);
+        try {
+            const data = await questaoService.uploadImagem(file);
+            setDados(prev => ({ ...prev, imagemUrl: data.imageUrl }));
+            alert("Imagem enviada com sucesso!");
+        } catch (err) {
+            console.error("Erro ao enviar imagem:", err);
+            alert("Erro ao enviar imagem.");
+        } finally {
+            setEnviandoImagem(false);
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -159,6 +178,37 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                             value={dados.fonte}
                             onChange={(e) => setDados({ ...dados, fonte: e.target.value })}
                         />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1 transition-colors">
+                            Imagem da Questão (Opcional)
+                        </label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            disabled={enviandoImagem}
+                            className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                        />
+                        {enviandoImagem && <p className="text-xs text-blue-500 mt-1">Enviando imagem...</p>}
+                        
+                        {dados.imagemUrl && (
+                            <div className="mt-2 relative inline-block">
+                                <img 
+                                    src={dados.imagemUrl.startsWith("http") ? dados.imagemUrl : `http://localhost:8080${dados.imagemUrl}`} 
+                                    alt="Preview" 
+                                    className="max-h-32 rounded border border-slate-200 dark:border-slate-800"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setDados(prev => ({ ...prev, imagemUrl: "" }))}
+                                    className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 text-xs w-6 h-6 flex items-center justify-center cursor-pointer font-bold"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <div>
