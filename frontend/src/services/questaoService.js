@@ -51,5 +51,16 @@ export const questaoService = {
   iaCriarTotal: async (prompt) => {
     const response = await api.post("/questoes/ia-criar-total", { prompt });
     return response.data;
+  },
+
+  uploadImagem: async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await api.post("/questoes/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+    return response.data;
   }
 };

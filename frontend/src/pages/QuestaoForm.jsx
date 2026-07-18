@@ -5,6 +5,7 @@ function QuestaoForm({ SalvarSucesso }) {
 
     const [novaQuestao, setNovaQuestao] = useState({
         enunciado: "",
+        imagemUrl: "",
         materia: "",
         assunto: "",
         dificuldade: "0",
@@ -13,8 +14,26 @@ function QuestaoForm({ SalvarSucesso }) {
         linguagemCodigo: ""
     });
 
+    const [enviandoImagem, setEnviandoImagem] = useState(false);
     const [promptIA, setPromptIA] = useState("");
     const [gerandoIA, setGerandoIA] = useState(false);
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setEnviandoImagem(true);
+        try {
+            const data = await questaoService.uploadImagem(file);
+            setNovaQuestao(prev => ({ ...prev, imagemUrl: data.imageUrl }));
+            alert("Imagem enviada com sucesso!");
+        } catch (err) {
+            console.error("Erro ao enviar imagem:", err);
+            alert("Erro ao enviar imagem.");
+        } finally {
+            setEnviandoImagem(false);
+        }
+    };
 
     const handleGerarEsbocoIA = async () => {
         if (!promptIA.trim()) {
@@ -71,6 +90,7 @@ function QuestaoForm({ SalvarSucesso }) {
             // Limpar formulário para o próximo POST
             setNovaQuestao({
                 enunciado: "",
+                imagemUrl: "",
                 materia: "",
                 assunto: "",
                 dificuldade: "0",
@@ -174,6 +194,40 @@ function QuestaoForm({ SalvarSucesso }) {
                 onChange={(e) => setNovaQuestao({ ...novaQuestao, trechoCodigo: e.target.value })}
                 rows="4"
             />
+
+            {/* Campo de Upload de Imagem */}
+            <div className="mb-4">
+                <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 mb-1">
+                    Imagem da Questão (Opcional)
+                </label>
+                <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    disabled={enviandoImagem}
+                    className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                />
+                {enviandoImagem && <p className="text-xs text-blue-500 mt-1">Enviando imagem...</p>}
+
+                {novaQuestao.imagemUrl && (
+                    <div className="mt-2 relative inline-block">
+                        <img
+                            src={novaQuestao.imagemUrl.startsWith("http") ? novaQuestao.imagemUrl : `http://localhost:8080${novaQuestao.imagemUrl}`}
+                            alt="Preview da imagem"
+                            className="max-h-40 rounded border border-slate-200 dark:border-slate-800"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setNovaQuestao(prev => ({ ...prev, imagemUrl: "" }))}
+                            className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 text-xs w-6 h-6 flex items-center justify-center cursor-pointer font-bold"
+                            title="Remover imagem"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                )}
+            </div>
+
 
             <select
                 className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded mb-4 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
