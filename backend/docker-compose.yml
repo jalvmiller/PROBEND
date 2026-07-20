@@ -33,6 +33,17 @@ services:
     volumes:
       - minio_data:/data
 
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: probend-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672" # AMQP (mensageria)
+      - "15672:15672" # Interface web do RabbitMQ (RabbitMQ Management)
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+
   backend:
     build:
       context: .
