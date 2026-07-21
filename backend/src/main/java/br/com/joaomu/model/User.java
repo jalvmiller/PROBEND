@@ -30,6 +30,9 @@ public class User implements UserDetails {
 
     private String nome;
 
+    @Column(unique = true)
+    private String email;
+
     private Integer pontos = 0;
 
     private boolean especialista = false;
@@ -41,12 +44,13 @@ public class User implements UserDetails {
     }
 
     // Construtor Completo (AllArgsConstructor)
-    public User(Long id, String username, String password, String nome, Integer pontos, boolean especialista,
+    public User(Long id, String username, String password, String nome, String email, Integer pontos, boolean especialista,
             boolean administrador) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.nome = nome;
+        this.email = email;
         this.pontos = pontos;
         this.especialista = especialista;
         this.administrador = administrador;
@@ -75,6 +79,14 @@ public class User implements UserDetails {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Integer getPontos() {

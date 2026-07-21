@@ -25,7 +25,7 @@ public class ResolucaoService {
         // DTO/Record contendo dados brutos para o envio de e-mail de resolução.
         // O DTO é serializado para JSON automaticamente pelo Spring AMQP
         ResolucaoEmailEvent event = new ResolucaoEmailEvent(
-                questao.getAutor().getUsername(), // emailDestinatario
+                questao.getAutor().getEmail(), // emailDestinatario real
                 questao.getAutor().getNome() != null ? questao.getAutor().getNome() : questao.getAutor().getUsername(), // nomeDestinatario
                 questao.getMateria() + (questao.getAssunto() != null ? " - " + questao.getAssunto() : ""), // tituloQuestao
                 resolucao.getAutor().getNome() != null ? resolucao.getAutor().getNome()

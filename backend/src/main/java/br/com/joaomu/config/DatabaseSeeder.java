@@ -41,6 +41,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 			admin.setUsername("admin");
 			admin.setPassword(passwordEncoder.encode("admin123"));
 			admin.setNome("Admin Probend");
+			admin.setEmail("admin@probend.com");
 			admin.setPontos(100);
 			admin.setEspecialista(true);
 			admin.setAdministrador(true);
@@ -49,6 +50,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 			especialista.setUsername("especialista");
 			especialista.setPassword(passwordEncoder.encode("especialista123"));
 			especialista.setNome("Maria Especialista");
+			especialista.setEmail("especialista@probend.com");
 			especialista.setPontos(50);
 			especialista.setEspecialista(true);
 			especialista.setAdministrador(false);
@@ -57,6 +59,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 			user.setUsername("user");
 			user.setPassword(passwordEncoder.encode("user123"));
 			user.setNome("João Aluno");
+			user.setEmail("user@probend.com");
 			user.setPontos(10);
 			user.setEspecialista(false);
 			user.setAdministrador(false);
