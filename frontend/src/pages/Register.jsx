@@ -6,6 +6,7 @@ import { useNavigate, Link } from 'react-router-dom';
 
 function Register() {
   const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,7 +21,7 @@ function Register() {
     try {
       setLoading(true);
       setError('');
-      const res = await authService.register(username, password, nome);
+      const res = await authService.register(username, password, nome, email);
 
       // Salva as credenciais recebidas no cadastro no estado global
       login(res.token, username);
@@ -52,6 +53,20 @@ function Register() {
               onChange={(e) => setNome(e.target.value)}
               className='w-full px-3 py-2 border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors'
               placeholder="Inserir seu nome"
+              required
+            />
+          </div>
+
+          <div className='mb-4'>
+            <label className="block text-slate-700 dark:text-slate-300 text-sm font-semibold mb-2 transition-colors">
+              E-mail
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className='w-full px-3 py-2 border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors'
+              placeholder="Inserir seu e-mail"
               required
             />
           </div>
