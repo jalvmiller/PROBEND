@@ -141,6 +141,12 @@
 			<artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
 
+		<!-- Dependência do e-mail, Spring Boot Starter Mail -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
 		<!-- Dependência do Swagger (Springdoc OpenAPI) -->
 		<!-- Testar sem postman -->
 		<dependency>
@@ -157,8 +163,8 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-                	<mainClass>br.com.joaomu.Application</mainClass>
-            	</configuration>
+					<mainClass>br.com.joaomu.Application</mainClass>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

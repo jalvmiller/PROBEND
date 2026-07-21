@@ -12,7 +12,7 @@ import br.com.joaomu.dto.ResolucaoEmailEvent;
 @Service
 public class ResolucaoService {
 
-    // O backend não bloqueia a requisição do usuário esperando o email 
+    // O backend não bloqueia a requisição do usuário esperando o email
     // ser enviado. Outro microserviço cuida da fila no próprio tempo
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -25,17 +25,17 @@ public class ResolucaoService {
         // DTO/Record contendo dados brutos para o envio de e-mail de resolução.
         // O DTO é serializado para JSON automaticamente pelo Spring AMQP
         ResolucaoEmailEvent event = new ResolucaoEmailEvent(
-            questao.getAutor().getUsername(), // emailDestinatario
-            questao.getAutor().getNome() != null ? questao.getAutor().getNome() : questao.getAutor().getUsername(), // nomeDestinatario
-            questao.getMateria() + (questao.getAssunto() != null ? " - " + questao.getAssunto() : ""), // tituloQuestao
-            resolucao.getAutor().getNome() != null ? resolucao.getAutor().getNome() : resolucao.getAutor().getUsername() // autorResolucao
+                questao.getAutor().getUsername(), // emailDestinatario
+                questao.getAutor().getNome() != null ? questao.getAutor().getNome() : questao.getAutor().getUsername(), // nomeDestinatario
+                questao.getMateria() + (questao.getAssunto() != null ? " - " + questao.getAssunto() : ""), // tituloQuestao
+                resolucao.getAutor().getNome() != null ? resolucao.getAutor().getNome()
+                        : resolucao.getAutor().getUsername() // autorResolucao
         );
 
         // Mensagem event enviada para a exchange sob a Routing Key
         rabbitTemplate.convertAndSend(
-            RabbitMQConfig.EXCHANGE_PROBEND,
-            RabbitMQConfig.ROUTING_KEY_EMAIL,
-            event
-        );
+                RabbitMQConfig.EXCHANGE_PROBEND,
+                RabbitMQConfig.ROUTING_KEY_EMAIL,
+                event);
     }
 }

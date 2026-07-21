@@ -25,11 +25,14 @@ public class QuestaoService {
     private final UserRepository userRepository;
     private final ResolucaoRepository resolucaoRepository;
 
+    private final ResolucaoService resolucaoService;
+
     public QuestaoService(QuestaoRepository repository, UserRepository userRepository,
-            ResolucaoRepository resolucaoRepository) {
+            ResolucaoRepository resolucaoRepository, ResolucaoService resolucaoService) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.resolucaoRepository = resolucaoRepository;
+        this.resolucaoService = resolucaoService;
     }
 
     public void validarDificuldade(Questao questao) {
@@ -201,6 +204,10 @@ public class QuestaoService {
             resolucao.setAutor(loggedInUser);
         }
 
-        return resolucaoRepository.save(resolucao);
+        Resolucao resolucaoSalva = resolucaoRepository.save(resolucao);
+
+        resolucaoService.salvarResolucaoNotificar(resolucaoSalva, questao);
+
+        return resolucaoSalva;
     }
 }
