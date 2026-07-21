@@ -70,6 +70,11 @@ services:
       JWT_SECRET: ChavePadraoParaDesenvolvimentoApenas
       MINIO_ENDPOINT: "http://minio:9000"
       GEMINI_API_KEY: "${GEMINI_API_KEY}"
+      RABBITMQ_HOST: rabbitmq
+      SPRING_MAIL_USERNAME: "${SPRING_MAIL_USERNAME}"
+      SPRING_MAIL_PASSWORD: "${SPRING_MAIL_PASSWORD}"
+      SPRING_MAIL_HOST: "${SPRING_MAIL_HOST}"
+      SPRING_MAIL_PORT: "${SPRING_MAIL_PORT}"
     restart: unless-stopped
 
 # Persistencia dos dados -> Volume
