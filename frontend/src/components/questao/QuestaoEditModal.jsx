@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { questaoService } from "../../services/questaoService";
 
@@ -85,7 +86,7 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
         }
     };
 
-    return (
+    return createPortal(
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-colors duration-300">
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl max-w-2xl w-full max-h-[95vh] overflow-y-auto p-6 relative border border-transparent dark:border-slate-800 transition-colors duration-300 animate-in fade-in zoom-in-95 duration-200">
                 <button
@@ -145,7 +146,7 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                             <input
                                 type="text"
                                 className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
-                                placeholder="Ex: OOP, Limites"
+                                placeholder="Ex: Orientação a Objetos"
                                 value={dados.assunto}
                                 onChange={(e) => setDados({ ...dados, assunto: e.target.value })}
                             />
@@ -167,57 +168,46 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                         </div>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1 transition-colors">
-                            Fonte
-                        </label>
-                        <input
-                            type="text"
-                            className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
-                            placeholder="Ex: Livro X, Aula Y"
-                            value={dados.fonte}
-                            onChange={(e) => setDados({ ...dados, fonte: e.target.value })}
-                        />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1 transition-colors">
+                                Fonte / Origem
+                            </label>
+                            <input
+                                type="text"
+                                className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                                placeholder="Ex: Autoral, Livro X, Aula Y"
+                                value={dados.fonte}
+                                onChange={(e) => setDados({ ...dados, fonte: e.target.value })}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1 transition-colors">
+                                Upload de Imagem Ilustrativa
+                            </label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                disabled={enviandoImagem}
+                                className="w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 dark:file:bg-blue-950/40 dark:file:text-blue-400 hover:file:bg-blue-100 dark:hover:file:bg-blue-900/60 transition-all cursor-pointer"
+                            />
+                            {dados.imagemUrl && (
+                                <p className="text-xs text-green-600 dark:text-green-400 mt-1 truncate">
+                                    ✓ Imagem anexada
+                                </p>
+                            )}
+                        </div>
                     </div>
 
                     <div>
                         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1 transition-colors">
-                            Imagem da Questão (Opcional)
-                        </label>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            disabled={enviandoImagem}
-                            className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                        />
-                        {enviandoImagem && <p className="text-xs text-blue-500 mt-1">Enviando imagem...</p>}
-                        
-                        {dados.imagemUrl && (
-                            <div className="mt-2 relative inline-block">
-                                <img 
-                                    src={dados.imagemUrl.startsWith("http") ? dados.imagemUrl : `http://localhost:8080${dados.imagemUrl}`} 
-                                    alt="Preview" 
-                                    className="max-h-32 rounded border border-slate-200 dark:border-slate-800"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setDados(prev => ({ ...prev, imagemUrl: "" }))}
-                                    className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1 text-xs w-6 h-6 flex items-center justify-center cursor-pointer font-bold"
-                                >
-                                    ✕
-                                </button>
-                            </div>
-                        )}
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1 transition-colors">
-                            Trecho de código (opcional)
+                            Trecho de Código (Opcional)
                         </label>
                         <textarea
-                            className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
-                            placeholder="Insira o código aqui"
+                            className="w-full p-2 font-mono text-sm border border-slate-300 dark:border-slate-800 rounded bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                            placeholder="Cole o código-fonte referente à questão aqui..."
                             value={dados.trechoCodigo}
                             onChange={(e) => setDados({ ...dados, trechoCodigo: e.target.value })}
                             rows="4"
@@ -226,17 +216,18 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
 
                     <div>
                         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1 transition-colors">
-                            Linguagem do código
+                            Linguagem do Código
                         </label>
                         <select
                             className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
                             value={dados.linguagemCodigo}
                             onChange={(e) => setDados({ ...dados, linguagemCodigo: e.target.value })}
                         >
-                            <option value="">Sem linguagem</option>
-                            <option value="java">Java</option>
-                            <option value="python">Python</option>
+                            <option value="">Texto Simples</option>
                             <option value="javascript">JavaScript</option>
+                            <option value="python">Python</option>
+                            <option value="java">Java</option>
+                            <option value="c">C</option>
                             <option value="cpp">C++</option>
                             <option value="csharp">C#</option>
                             <option value="sql">SQL</option>
@@ -262,7 +253,8 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                     </div>
                 </form>
             </div>
-        </div>
+        </div>,
+        document.body
     );
 }
 
