@@ -49,28 +49,28 @@ Quando os containers estiverem rodando via Docker Compose, os serviços estarão
 ## 📁 Estrutura de Diretórios
 ```text
 PROBEND/
-├── backend/                  # Código fonte Java (Spring Boot)
+├── backend/                   ### Código fonte Java (Spring Boot)
 │   ├── src/
 │   │   └── main/
 │   │       ├── java/br/com/joaomu/
-│   │       │   ├── config/       # Configurações de serviços (MinIO, RabbitMQ, Mail, Security, OpenAPI)
-│   │       │   ├── controller/   # Endpoints REST (Auth, Usuários, Questões, etc.)
-│   │       │   ├── dto/          # Data Transfer Objects
-│   │       │   ├── listener/     # Listeners de mensageria (RabbitMQ)
-│   │       │   ├── model/        # Entidades JPA
-│   │       │   ├── repo/         # Repositórios JPA
-│   │       │   ├── security/     # Filtros e configurações de segurança JWT
-│   │       │   └── service/      # Regras de negócio e integração
+│   │       │   ├── config/                  # Configurações de serviços (MinIO, Mail; etc)
+│   │       │   ├── controller/              # Endpoints REST (Auth, Usuários, Questões, etc)
+│   │       │   ├── dto/                     # Data Transfer Objects
+│   │       │   ├── listener/                # Listeners de mensageria (RabbitMQ)
+│   │       │   ├── model/                   # Entidades JPA
+│   │       │   ├── repo/                    # Repositórios JPA
+│   │       │   ├── security/                # Filtros e configurações de segurança JWT
+│   │       │   └── service/                 # Regras de negócio e integração
 │   │       └── resources/
-│   │           ├── db/migration/ # Migrações SQL do Flyway (V1__, V2__, etc.)
-│   │           └── application.properties # Propriedades da aplicação
+│   │           ├── db/migration/            # Migrações SQL do Flyway (V1__, V2__, etc.)
+│   │           └── application.properties   # Propriedades da aplicação
 │   ├── Dockerfile            # Dockerfile do backend Spring Boot
 │   ├── docker-compose.yml    # Orquestração (MySQL, MinIO, RabbitMQ, Mailpit, Backend)
 │   └── pom.xml               # Arquivo de dependências Maven
 │
-├── frontend/                 # Código fonte React (Vite)
+├── frontend/                 ### Código fonte React (Vite)
 │   ├── src/
-│   │   ├── assets/           # Arquivos estáticos (imagens, ícones, etc.)
+│   │   ├── assets/           # Arquivos estáticos (imagens, ícones, etc)
 │   │   ├── components/       # Componentes reutilizáveis
 │   │   ├── contexts/         # Contextos globais (ex: AuthContext)
 │   │   ├── hooks/            # Hooks customizados (ex: useUser)
