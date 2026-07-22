@@ -11,7 +11,7 @@ function QuestaoDetalhes() {
 
     const { id } = useParams();             // recebe o id da url
     const navigate = useNavigate();         // para navegação
-    const { user, logout } = useAuth();           // deslogar
+    const { user } = useAuth();
 
     const [questao, setQuestao] = useState(null); // estado para armazenar a questão
     const [loading, setLoading] = useState(true); // estado para armazenar o loading
@@ -85,6 +85,14 @@ function QuestaoDetalhes() {
         }
     };
 
+    const textoDificuldade =
+        questao?.dificuldade === 2 ? 'Difícil' :
+            questao?.dificuldade === 1 ? 'Médio' : 'Fácil';
+
+    const badgesDificuldade =
+        questao?.dificuldade === 2 ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/20 dark:text-red-400 dark:border-red-900/40' :
+            questao?.dificuldade === 1 ? 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950/20 dark:text-amber-400 dark:border-amber-900/40' : 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/20 dark:text-green-400 dark:border-green-900/40';
+
     // == Renderização do componente de detalhes da questão ==
     // == Renderização do componente de detalhes da questão ==
     // == Renderização do componente de detalhes da questão ==
@@ -100,21 +108,30 @@ function QuestaoDetalhes() {
                 Voltar
             </button>
 
+            {error && (
+                <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 p-4 rounded-xl text-center font-semibold">
+                    {error}
+                </div>
+            )}
+
             {/* Janela */}
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 overflow-hidden transition-colors duration-300">
                 <div className='p-6 bg-slate-50 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors duration-300'>
-                    {/* Matéria da Questão - obrigatório*/}
+                    {/* Informações da Questão (Matéria, Assunto, Dificuldade e Autor) */}
                     <div>
-                        <span className='text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 px-4 py-1 rounded-full border border-blue-100 dark:border-blue-900/40'>
-                            {questao.materia}
-                        </span>
-
-                        {/* Assunto da Questão - condicionada ao assunto existir*/}
-                        {questao.assunto && (
-                            <span className="ml-2 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
-                                {questao.assunto}
+                        <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md">
+                                {questao.materia}
                             </span>
-                        )}
+                            {questao.assunto && (
+                                <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-100 dark:border-slate-800">
+                                    {questao.assunto}
+                                </span>
+                            )}
+                            <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded border ${badgesDificuldade}`}>
+                                {textoDificuldade}
+                            </span>
+                        </div>
 
                         {/* Autor da Questão - obrigatório*/}
                         <h2 className="text-sm text-slate-500 dark:text-slate-400 mt-2">
