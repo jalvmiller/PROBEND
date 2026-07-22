@@ -6,25 +6,25 @@ Este repositório foi estruturado com conteinerização (**Docker**), migraçõe
 
 ## 🛠️ Stack
 ### **Backend (Tecnologias Estruturais)**
-♠️   **Java 21** & **Spring Boot 3**
-♠️   **Spring Security & JWT** (Autenticação Stateless e Autorização)
-♠️   **Spring Data JPA & Hibernate** (ORM e persistência de dados)
-♠️   **MySQL 8.0** (Banco de dados relacional oficial)
+- ♠️   **Java 21** & **Spring Boot 3**
+- ♠️   **Spring Security & JWT** (Autenticação Stateless e Autorização)
+- ♠️   **Spring Data JPA & Hibernate** (ORM e persistência de dados)
+- ♠️   **MySQL 8.0** (Banco de dados relacional oficial)
 
 ### **Backend (Ferramentas)**
-🔧   **Flyway Migration** (Gerenciamento e versionamento automatizado do banco de dados)
-🔧   **MinIO / AWS S3 SDK** (Armazenamento de arquivos e anexos compatível com S3)
-🔧   **RabbitMQ & Spring AMQP** (Mensageria e processamento assíncrono)
-🔧   **Spring Mail & Mailpit** (Envio e testes de e-mail em ambiente local)
-🔧   **Springdoc OpenAPI (Swagger)** (Documentação interativa da API)
-🔧   **Maven** (Gerenciador de dependências e build)
+- 🔧   **Flyway Migration** (Gerenciamento e versionamento automatizado do banco de dados)
+- 🔧   **MinIO / AWS S3 SDK** (Armazenamento de arquivos e anexos compatível com S3)
+- 🔧   **RabbitMQ & Spring AMQP** (Mensageria e processamento assíncrono)
+- 🔧   **Spring Mail & Mailpit** (Envio e testes de e-mail em ambiente local)
+- 🔧   **Springdoc OpenAPI (Swagger)** (Documentação interativa da API)
+- 🔧   **Maven** (Gerenciador de dependências e build)
 
 ### **Frontend**
-📚   **React 18** com **Vite** (Build rápido, HMR e ecossistema moderno)
-📚   **Axios** (Cliente HTTP para integração com a API REST)
-📚   **React Router** (Navegação client-side)
-📚   **KaTeX / MathJax** (Renderização de expressões matemáticas em LaTeX)
-📚   **CSS Customizado** (Interface responsiva e otimizada)
+- 📚   **React 18** com **Vite** (Build rápido, HMR e ecossistema moderno)
+- 📚   **Axios** (Cliente HTTP para integração com a API REST)
+- 📚   **React Router** (Navegação client-side)
+- 📚   **KaTeX / MathJax** (Renderização de expressões matemáticas em LaTeX)
+- 📚   **CSS Customizado** (Interface responsiva e otimizada)
 
 ### **Infraestrutura**
 *   **Docker & Docker Compose** (Ambiente padronizado)
