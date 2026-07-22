@@ -1,51 +1,68 @@
-# 🎓 PROBEND (nome provisório)
+<div align="center">
 
-**PROBEND** é um sistema de gerenciamento e preparação de questões de matérias exatas e de algoritmos.
+# 🎓 PROBEND (Nome Provisório)
 
-Este repositório foi estruturado com conteinerização (**Docker**), migrações de banco de dados versionadas (**Flyway**), armazenamento de objetos em nuvem/local (**MinIO/S3**), mensageria assíncrona (**RabbitMQ**), servidor mock de e-mails (**Mailpit**), segurança stateless com **JWT**, e documentação interativa de APIs com **Swagger (OpenAPI)**.
+![Java](https://img.shields.io/badge/Java%2021-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot%203-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![React](https://img.shields.io/badge/React%2018-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![MySQL](https://img.shields.io/badge/MySQL%208.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+</div>
 
-## 🛠️ Stack
-### **Backend (Tecnologias Estruturais)**
-- ♠️   **Java 21** & **Spring Boot 3**
-- ♠️   **Spring Security & JWT** (Autenticação Stateless e Autorização)
-- ♠️   **Spring Data JPA & Hibernate** (ORM e persistência de dados)
-- ♠️   **MySQL 8.0** (Banco de dados relacional oficial)
+### 📌 Sobre o Projeto + Stack Completa
+<div align="center">
+É uma plataforma voltada para a criação, compartilhamento e renderização de questões  de matemática e de algoritmos de diferentes linguagens de programação. É um projeto pessoal que uso para aprender tecnologias e conceitos que podem ser aplicados em uma Stack com Java Spring Boot e React. Por conta disso, existem vários comentários pelos arquivos do projeto. 
+</div>
 
-### **Backend (Ferramentas)**
-- 🔧   **Flyway Migration** (Gerenciamento e versionamento automatizado do banco de dados)
-- 🔧   **MinIO / AWS S3 SDK** (Armazenamento de arquivos e anexos compatível com S3)
-- 🔧   **RabbitMQ & Spring AMQP** (Mensageria e processamento assíncrono)
-- 🔧   **Spring Mail & Mailpit** (Envio e testes de e-mail em ambiente local)
-- 🔧   **Springdoc OpenAPI (Swagger)** (Documentação interativa da API)
-- 🔧   **Maven** (Gerenciador de dependências e build)
+### **♠️Backend (Tecnologias Estruturais) & APIs**
+ ![Java](https://img.shields.io/badge/-Java%2021-007396?style=flat-square&logo=openjdk&logoColor=white) **Java 21 & Spring Boot 3** — Núcleo e lógica da aplicação REST API\
+ ![Spring Security](https://img.shields.io/badge/-Spring%20Security-6DB33F?style=flat-square&logo=springsecurity&logoColor=white) **Spring Security & JWT** — Autenticação *stateless* e controle de acesso granular\
+ ![Hibernate](https://img.shields.io/badge/-Spring%20Data%20JPA-59666C?style=flat-square&logo=hibernate&logoColor=white) **Spring Data JPA & Hibernate** — Mapeamento objeto-relacional (ORM)\
+ ![MySQL](https://img.shields.io/badge/-MySQL%208.0-4479A1?style=flat-square&logo=mysql&logoColor=white) **MySQL 8.0** — Banco de dados relacional oficial\
+ ![Flyway](https://img.shields.io/badge/-Flyway-CC0200?style=flat-square&logo=flyway&logoColor=white) **Flyway** — Versionamento e migração automatizada de schemas\
+ ![Swagger](https://img.shields.io/badge/-OpenAPI%20%2F%20Swagger-85EA2D?style=flat-square&logo=swagger&logoColor=black) **Springdoc OpenAPI** — Documentação interativa e testável das rotas
 
-### **Frontend**
-- 📚   **React 18** com **Vite** (Build rápido, HMR e ecossistema moderno)
-- 📚   **Axios** (Cliente HTTP para integração com a API REST)
-- 📚   **React Router** (Navegação client-side)
-- 📚   **KaTeX / MathJax** (Renderização de expressões matemáticas em LaTeX)
-- 📚   **CSS Customizado** (Interface responsiva e otimizada)
+### **🔧Mensageria, Storage & Serviços Integrados**
+ ![RabbitMQ](https://img.shields.io/badge/-RabbitMQ-FF6600?style=flat-square&logo=rabbitmq&logoColor=white) **RabbitMQ & Spring AMQP** — Fila de mensagens para tarefas assíncronas (ex: envio de e-mails)\
+ ![MinIO](https://img.shields.io/badge/-MinIO%20%2F%20S3-C42C23?style=flat-square&logo=minio&logoColor=white) **MinIO SDK** — Armazenamento local compatível com AWS S3 para mídias/anexos\
+ ![Mailpit](https://img.shields.io/badge/-Spring%20Mail%20%2B%20Mailpit-00828A?style=flat-square&logo=mail.ru&logoColor=white) **Mailpit** — Servidor local para captura e visualização de e-mails de teste
 
-### **Infraestrutura**
-*   **Docker & Docker Compose** (Ambiente padronizado)
+### **📚Frontend & Interface**
+ ![React](https://img.shields.io/badge/-React%2018-61DAFB?style=flat-square&logo=react&logoColor=black) **React 18 & Vite** — Interface reativa com compilação e HMR\
+ ![Axios](https://img.shields.io/badge/-Axios-5A29E4?style=flat-square&logo=axios&logoColor=white) **Axios** — Cliente HTTP para integração com as APIs\
+ ![KaTeX](https://img.shields.io/badge/-KaTeX%20%2F%20MathJax-000000?style=flat-square&logo=latex&logoColor=white) **KaTeX / MathJax** — Engine para renderização de fórmulas matemáticas em LaTeX\
+ ![CSS](https://img.shields.io/badge/-CSS3%20Customizado-1572B6?style=flat-square&logo=css3&logoColor=white) **CSS Customizado** — Layout responsivo e estilização modular
+
+### 🚀 Painéis e Serviços Locais;
+
+Após subir via docker compose, utilize os links abaixo para acessar as interfaces administrativas e serviços dev:
+
+| Serviço | Porta | URL de Acesso | Credenciais Padrão |
+| :--- | :---: | :--- | :--- |
+| **Frontend App** | `5173` | [localhost:5173](http://localhost:5173) | *N/A* |
+| **Backend API & Swagger UI** | `8080` | [localhost:8080/api/swagger-ui/index.html](http://localhost:8080/api/swagger-ui/index.html) | *Acesso público* |
+| **MinIO Console** | `9001` | [localhost:9001](http://localhost:9001) | `minioadmin` / `minioadminpassword` |
+| **MinIO API (S3 Endpoint)** | `9000` | [localhost:9000](http://localhost:9000) | *Definidas via SDK / .env* |
+| **RabbitMQ Management** | `15672` | [localhost:15672](http://localhost:15672) | `guest` / `guest` |
+| **Mailpit Web UI** | `8025` | [localhost:8025](http://localhost:8025) | *Sem autenticação* |
+
 ---
 
-## 🌐 Painéis e Serviços Locais
+### 🔧 Passos para Executar (pré-requisitos: Docker e **Docker Compose** instalados);
 
-Quando os containers estiverem rodando via Docker Compose, os serviços estarão nas seguintes portas locais:
+### 
+```bash
+# 1. Clone o repositório
+git clone [https://github.com/joaomu/probend.git](https://github.com/joaomu/probend.git)
 
-| Serviço | Descrição | URL Local | Credenciais Padrão |
-| :--- | :--- | :--- | :--- |
-| **Frontend App** | Aplicação React (Servidor Dev) | [http://localhost:5173](http://localhost:5173) | N/A |
-| **Backend API / Swagger UI** | Documentação Interativa da API | [http://localhost:8080/api/swagger-ui/index.html](http://localhost:8080/api/swagger-ui/index.html) | *Acesso livre* |
-| **MinIO Console** | Painel do Object Storage S3 | [http://localhost:9001](http://localhost:9001) | `minioadmin` / `minioadminpassword` |
-| **MinIO API (S3 Endpoint)** | Endpoint S3 para upload/download | [http://localhost:9000] | N/A |
-| **RabbitMQ Management** | Painel de Gestão de Mensageria e Filas | [http://localhost:15672](http://localhost:15672) | `guest` / `guest` |
-| **Mailpit Web UI** | Visualizador de E-mails de Teste | [http://localhost:8025](http://localhost:8025) | N/A |
+# 2. Acesse o diretório do projeto
+cd probend
 
----
+# 3. Suba o ecossistema completo de containers
+docker compose up -d
 
-## 📁 Estrutura de Diretórios
+```
+### 📁 Estrutura de Diretórios
 ```text
 PROBEND/
 ├── backend/                   ### Código fonte Java (Spring Boot)
@@ -82,7 +99,7 @@ PROBEND/
 └── README.md                 # Instruções e documentação geral do projeto
 ```
 
-## 🔎 Diagrama Sequencial em Mermaid (Criação de Questão)
+### 🔎 Diagrama Sequencial em Mermaid (Criação de Questão)
 ```mermaid
 sequenceDiagram
     autonumber
