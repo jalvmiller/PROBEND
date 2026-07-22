@@ -6,43 +6,42 @@ Este repositório foi estruturado com conteinerização (**Docker**), migraçõe
 
 ## 🛠️ Stack
 ### **Backend (Tecnologias Estruturais)**
-*   **Java 21** & **Spring Boot 3**
-*   **Spring Security & JWT** (Autenticação Stateless e Autorização)
-*   **Spring Data JPA & Hibernate** (ORM e persistência de dados)
-*   **MySQL 8.0** (Banco de dados relacional oficial)
+♠️   **Java 21** & **Spring Boot 3**
+♠️   **Spring Security & JWT** (Autenticação Stateless e Autorização)
+♠️   **Spring Data JPA & Hibernate** (ORM e persistência de dados)
+♠️   **MySQL 8.0** (Banco de dados relacional oficial)
 
 ### **Backend (Ferramentas)**
-*   **Flyway Migration** (Gerenciamento e versionamento automatizado do banco de dados)
-*   **MinIO / AWS S3 SDK** (Armazenamento de arquivos e anexos compatível com S3)
-*   **RabbitMQ & Spring AMQP** (Mensageria e processamento assíncrono)
-*   **Spring Mail & Mailpit** (Envio e testes de e-mail em ambiente local)
-*   **Springdoc OpenAPI (Swagger)** (Documentação interativa da API)
-*   **Maven** (Gerenciador de dependências e build)
+🔧   **Flyway Migration** (Gerenciamento e versionamento automatizado do banco de dados)
+🔧   **MinIO / AWS S3 SDK** (Armazenamento de arquivos e anexos compatível com S3)
+🔧   **RabbitMQ & Spring AMQP** (Mensageria e processamento assíncrono)
+🔧   **Spring Mail & Mailpit** (Envio e testes de e-mail em ambiente local)
+🔧   **Springdoc OpenAPI (Swagger)** (Documentação interativa da API)
+🔧   **Maven** (Gerenciador de dependências e build)
 
 ### **Frontend**
-*   **React 18** com **Vite** (Build rápido, HMR e ecossistema moderno)
-*   **Axios** (Cliente HTTP para integração com a API REST)
-*   **React Router** (Navegação client-side)
-*   **KaTeX / MathJax** (Renderização de expressões matemáticas em LaTeX)
-*   **CSS Customizado** (Interface responsiva e otimizada)
+📚   **React 18** com **Vite** (Build rápido, HMR e ecossistema moderno)
+📚   **Axios** (Cliente HTTP para integração com a API REST)
+📚   **React Router** (Navegação client-side)
+📚   **KaTeX / MathJax** (Renderização de expressões matemáticas em LaTeX)
+📚   **CSS Customizado** (Interface responsiva e otimizada)
 
 ### **Infraestrutura**
 *   **Docker & Docker Compose** (Ambiente padronizado)
-
 ---
 
 ## 🌐 Painéis e Serviços Locais
 
-Quando os containers estiverem rodando via Docker Compose, os serviços estarão acessíveis nas seguintes portas locais:
+Quando os containers estiverem rodando via Docker Compose, os serviços estarão nas seguintes portas locais:
 
 | Serviço | Descrição | URL Local | Credenciais Padrão |
 | :--- | :--- | :--- | :--- |
+| **Frontend App** | Aplicação React (Servidor Dev) | [http://localhost:5173](http://localhost:5173) | N/A |
 | **Backend API / Swagger UI** | Documentação Interativa da API | [http://localhost:8080/api/swagger-ui/index.html](http://localhost:8080/api/swagger-ui/index.html) | *Acesso livre* |
 | **MinIO Console** | Painel do Object Storage S3 | [http://localhost:9001](http://localhost:9001) | `minioadmin` / `minioadminpassword` |
-| **MinIO API (S3 Endpoint)** | Endpoint S3 para upload/download | `http://localhost:9000` | N/A |
+| **MinIO API (S3 Endpoint)** | Endpoint S3 para upload/download | [http://localhost:9000] | N/A |
 | **RabbitMQ Management** | Painel de Gestão de Mensageria e Filas | [http://localhost:15672](http://localhost:15672) | `guest` / `guest` |
 | **Mailpit Web UI** | Visualizador de E-mails de Teste | [http://localhost:8025](http://localhost:8025) | N/A |
-| **Frontend App** | Aplicação React (Servidor Dev) | [http://localhost:5173](http://localhost:5173) | N/A |
 
 ---
 
@@ -83,7 +82,7 @@ PROBEND/
 └── README.md                 # Instruções e documentação geral do projeto
 ```
 
-## Diagrama Sequencial em Mermaid (Criação de Questão)
+## 🔎 Diagrama Sequencial em Mermaid (Criação de Questão)
 ```mermaid
 sequenceDiagram
     autonumber
@@ -91,7 +90,7 @@ sequenceDiagram
     participant API as Backend (Spring Boot + JWT)
     participant Gemini as Gemini AI API
     participant MinIO as MinIO (Imagens)
-    participant DB as PostgreSQL (Flyway)
+    participant DB as MySQL (Flyway)
     participant Queue as RabbitMQ
     participant Mail as Mailpit / Mailtrap
 
