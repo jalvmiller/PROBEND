@@ -39,7 +39,7 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso }) {
                 month: '2-digit',
                 year: 'numeric'
             });
-        } catch (e) {
+        } catch {
             return "Não informada";
         }
     };
