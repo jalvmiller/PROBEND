@@ -82,3 +82,37 @@ PROBEND/
 │
 └── README.md                 # Instruções e documentação geral do projeto
 ```
+
+## Diagrama Sequencial em Mermaid (Criação de Questão)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Cliente as Frontend (React + Tailwind)
+    participant API as Backend (Spring Boot + JWT)
+    participant Gemini as Gemini AI API
+    participant MinIO as MinIO (Imagens)
+    participant DB as PostgreSQL (Flyway)
+    participant Queue as RabbitMQ
+    participant Mail as Mailpit / Mailtrap
+
+    Cliente->>API: POST /api/questoes/(Header: JWT)
+    Note over API: Filtro de Autenticação valida o Token JWT
+    
+    opt
+        API->>Gemini: Envia prompt com os dados/contexto
+        Gemini-->>API: Retorna JSON com formulário estruturado
+    end
+    opt Se houver upload de imagem
+        API->>MinIO: Upload da imagem
+        MinIO-->>API: Retorna URL / Identificador do Objeto
+    end
+
+    API->>DB: Salva registro da transação
+    API->>Queue: Publica mensagem na fila "email_notifications"
+    API-->>Cliente: HTTP 201 Created (Dados do Formulário)
+
+    par Processamento Assíncrono
+        Queue->>API: Consumidor processa mensagem da fila
+        API->>Mail: Envia e-mail de notificação/confirmação
+    end
+```
