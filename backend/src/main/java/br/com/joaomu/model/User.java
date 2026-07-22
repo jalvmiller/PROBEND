@@ -30,6 +30,10 @@ public class User implements UserDetails {
 
     private String nome;
 
+    private String avatar;
+    // foto de perfil do usuário (url)
+    // usuarios/avatar/{id}.jpg
+
     @Column(unique = true)
     private String email;
 
@@ -44,7 +48,8 @@ public class User implements UserDetails {
     }
 
     // Construtor Completo (AllArgsConstructor)
-    public User(Long id, String username, String password, String nome, String email, Integer pontos, boolean especialista,
+    public User(Long id, String username, String password, String nome, String email, Integer pontos,
+            boolean especialista,
             boolean administrador) {
         this.id = id;
         this.username = username;
