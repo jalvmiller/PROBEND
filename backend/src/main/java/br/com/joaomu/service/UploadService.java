@@ -72,7 +72,7 @@ public class UploadService {
             // Retorna a rota proxy da API para obter a imagem,
             // isso serve para ocultar o endereço real do storage por segurança;
             // e controlar o acesso às imagens por um Controller do Spring
-            return "/questoes/imagens/" + fileName;
+            return "/midia/imagens/" + fileName;
         } catch (IOException e) {
             throw new RuntimeException("Falha ao salvar a imagem", e);
         }
