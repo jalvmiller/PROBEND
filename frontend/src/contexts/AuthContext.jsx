@@ -65,7 +65,7 @@ export function AuthProvider({ children }) {
   // o !!token é uma forma de converter o token em boolean, ou seja, se o token existir
   // ele será true, se não existir ele será false
   return (
-    <AuthContext.Provider value={{ user, token, isAuthenticated: !!token, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, token, isAuthenticated: !!token, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
