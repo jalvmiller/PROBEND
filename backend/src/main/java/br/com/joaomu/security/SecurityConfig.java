@@ -49,6 +49,7 @@ public class SecurityConfig {
                 // cada requisição é independente e tem que trazer o token
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/midia/**").permitAll()
                         .requestMatchers("/questoes/**").permitAll() // authenticated desligado
                         .requestMatchers("/usuarios/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll() // swagger
