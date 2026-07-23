@@ -48,7 +48,7 @@ public class User implements UserDetails {
     }
 
     // Construtor Completo (AllArgsConstructor)
-    public User(Long id, String username, String password, String nome, String email, Integer pontos,
+    public User(Long id, String username, String password, String nome, String email, String avatar, Integer pontos,
             boolean especialista,
             boolean administrador) {
         this.id = id;
@@ -56,6 +56,7 @@ public class User implements UserDetails {
         this.password = password;
         this.nome = nome;
         this.email = email;
+        this.avatar = avatar;
         this.pontos = pontos;
         this.especialista = especialista;
         this.administrador = administrador;
@@ -92,6 +93,14 @@ public class User implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public Integer getPontos() {
