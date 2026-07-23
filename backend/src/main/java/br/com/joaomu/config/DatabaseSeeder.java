@@ -1,11 +1,12 @@
 package br.com.joaomu.config;
 
-import br.com.joaomu.model.Questao;
-import br.com.joaomu.model.Resolucao;
-import br.com.joaomu.model.User;
-import br.com.joaomu.repo.QuestaoRepository;
-import br.com.joaomu.repo.ResolucaoRepository;
-import br.com.joaomu.repo.UserRepository;
+import br.com.joaomu.entity.Questao;
+import br.com.joaomu.entity.Resolucao;
+import br.com.joaomu.entity.User;
+import br.com.joaomu.repository.QuestaoRepository;
+import br.com.joaomu.repository.ResolucaoRepository;
+import br.com.joaomu.repository.UserRepository;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;

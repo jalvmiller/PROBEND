@@ -1,4 +1,4 @@
-package br.com.joaomu.model;
+package br.com.joaomu.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -7,10 +7,10 @@ import lombok.AllArgsConstructor;
 
 @Entity
 @Table(name = "upvotes", uniqueConstraints = {
-    // Garante que um usuário só pode dar UM upvote por questão
-    @UniqueConstraint(columnNames = {"usuario_id", "questao_id"}),
-    // Garante que um usuário só pode dar UM upvote por resolução
-    @UniqueConstraint(columnNames = {"usuario_id", "resolucao_id"})
+        // Garante que um usuário só pode dar UM upvote por questão
+        @UniqueConstraint(columnNames = { "usuario_id", "questao_id" }),
+        // Garante que um usuário só pode dar UM upvote por resolução
+        @UniqueConstraint(columnNames = { "usuario_id", "resolucao_id" })
 })
 
 @Data
@@ -26,12 +26,14 @@ public class Upvote {
     @JoinColumn(name = "usuario_id", nullable = false)
     private User usuario;
 
-    // Se for um upvote em uma Questão, este campo será preenchido e o resolucao será null
+    // Se for um upvote em uma Questão, este campo será preenchido e o resolucao
+    // será null
     @ManyToOne
     @JoinColumn(name = "questao_id")
     private Questao questao;
 
-    // Se for um upvote em uma Resolução, este campo será preenchido e o questao será null
+    // Se for um upvote em uma Resolução, este campo será preenchido e o questao
+    // será null
     @ManyToOne
     @JoinColumn(name = "resolucao_id")
     private Resolucao resolucao;
@@ -41,7 +43,8 @@ public class Upvote {
     @PreUpdate
     private void validarAlvo() {
         if ((questao == null && resolucao == null) || (questao != null && resolucao != null)) {
-            throw new IllegalStateException("O upvote deve estar vinculado exclusivamente a uma Questão OU a uma Resolução.");
+            throw new IllegalStateException(
+                    "O upvote deve estar vinculado exclusivamente a uma Questão OU a uma Resolução.");
         }
     }
 }

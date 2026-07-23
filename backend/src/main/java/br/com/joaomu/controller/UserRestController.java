@@ -1,6 +1,6 @@
 package br.com.joaomu.controller;
 
-import br.com.joaomu.model.User;
+import br.com.joaomu.entity.User;
 import br.com.joaomu.service.UserService;
 import org.springframework.web.bind.annotation.*;
 

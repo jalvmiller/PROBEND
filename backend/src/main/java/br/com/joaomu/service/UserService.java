@@ -1,7 +1,8 @@
 package br.com.joaomu.service;
 
-import br.com.joaomu.model.User;
-import br.com.joaomu.repo.UserRepository;
+import br.com.joaomu.entity.User;
+import br.com.joaomu.repository.UserRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;

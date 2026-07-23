@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
-import br.com.joaomu.model.Questao;
-import br.com.joaomu.model.Resolucao;
 import br.com.joaomu.config.RabbitMQConfig;
 import br.com.joaomu.dto.ResolucaoEmailEvent;
+import br.com.joaomu.entity.Questao;
+import br.com.joaomu.entity.Resolucao;
 
 @Service
 public class ResolucaoService {

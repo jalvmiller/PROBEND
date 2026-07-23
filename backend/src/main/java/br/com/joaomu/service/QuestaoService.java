@@ -1,11 +1,12 @@
 package br.com.joaomu.service;
 
-import br.com.joaomu.model.Questao;
-import br.com.joaomu.model.User;
-import br.com.joaomu.model.Resolucao;
-import br.com.joaomu.repo.QuestaoRepository;
-import br.com.joaomu.repo.UserRepository;
-import br.com.joaomu.repo.ResolucaoRepository;
+import br.com.joaomu.entity.Questao;
+import br.com.joaomu.entity.Resolucao;
+import br.com.joaomu.entity.User;
+import br.com.joaomu.repository.QuestaoRepository;
+import br.com.joaomu.repository.ResolucaoRepository;
+import br.com.joaomu.repository.UserRepository;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;

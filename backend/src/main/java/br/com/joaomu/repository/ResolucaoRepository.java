@@ -1,8 +1,9 @@
-package br.com.joaomu.repo;
+package br.com.joaomu.repository;
 
-import br.com.joaomu.model.Resolucao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import br.com.joaomu.entity.Resolucao;
 
 import java.util.List;
 

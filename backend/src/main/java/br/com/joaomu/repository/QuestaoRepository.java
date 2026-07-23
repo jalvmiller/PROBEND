@@ -1,10 +1,12 @@
-package br.com.joaomu.repo;
+package br.com.joaomu.repository;
 
-import br.com.joaomu.model.Questao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import br.com.joaomu.entity.Questao;
+
 import java.util.List;
 
 /*

@@ -1,4 +1,4 @@
-package br.com.joaomu.model;
+package br.com.joaomu.entity;
 
 import jakarta.persistence.*;
 

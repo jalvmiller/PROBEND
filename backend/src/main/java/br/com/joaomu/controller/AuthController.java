@@ -3,9 +3,8 @@ package br.com.joaomu.controller;
 import br.com.joaomu.dto.AuthResponse;
 import br.com.joaomu.dto.LoginRequest;
 import br.com.joaomu.dto.RegisterRequest;
-
-import br.com.joaomu.model.User;
-import br.com.joaomu.repo.UserRepository;
+import br.com.joaomu.entity.User;
+import br.com.joaomu.repository.UserRepository;
 import br.com.joaomu.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

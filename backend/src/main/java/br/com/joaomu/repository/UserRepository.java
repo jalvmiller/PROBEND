@@ -1,7 +1,9 @@
-package br.com.joaomu.repo;
+package br.com.joaomu.repository;
 
-import br.com.joaomu.model.*;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import br.com.joaomu.entity.*;
+
 import java.util.Optional;
 
 // Optional = objeto ou null,
