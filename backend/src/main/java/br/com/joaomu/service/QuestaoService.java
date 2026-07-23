@@ -15,7 +15,7 @@ import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class QuestaoService {
+public class QuestaoService implements CrudService<Questao, Long> {
 
     // QuestaoService recebe dados brutos do Controller
     // Realiza validações de negócio
@@ -125,19 +125,35 @@ public class QuestaoService {
         return repository.save(existente);
     }
 
+    @Override
+    @Transactional
+    public Questao salvar(Questao entity) {
+        return validarQuestao(entity);
+    }
+
+    @Override
+    @Transactional
+    public Questao atualizar(Long id, Questao entity) {
+        entity.setId(id);
+        return atualizarQuestao(entity);
+    }
+
     // findAll
-    public List<Questao> listarTodas() {
+    @Override
+    public List<Questao> listarTodos() {
         return repository.findAll();
     }
 
     // método ficou bem mais compacto
+    @Override
     public Questao buscarPorId(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Questão não encontrada com ID: " + id));
     }
 
+    @Override
     @Transactional
-    public boolean remover(Long id) {
+    public void remover(Long id) {
         Questao questao = buscarPorId(id);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -153,7 +169,6 @@ public class QuestaoService {
         }
 
         repository.delete(questao);
-        return true;
     }
 
     public List<Questao> buscarPorMateria(String materia) {
@@ -180,6 +195,7 @@ public class QuestaoService {
         return repository.findByAssuntoIgnoreCase(assunto);
     }
 
+    @Override
     public List<Questao> buscarPorTermo(String termo) {
         if (termo == null || termo.isBlank()) {
             return repository.findAll();
