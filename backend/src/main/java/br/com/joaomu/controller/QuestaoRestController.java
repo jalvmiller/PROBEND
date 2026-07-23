@@ -36,24 +36,8 @@ public class QuestaoRestController extends BaseRestController<Questao, Long> {
         this.geminiService = geminiService;
     }
 
-    // Listar nodas trabalha com a busca
-    @Override
-    @GetMapping
-    public ResponseEntity<List<Questao>> listarTodas() {
-        return super.listarTodas();
-    }
-
-    // Listar nodas trabalha com a busca
-    @GetMapping(params = "busca")
-    public ResponseEntity<List<Questao>> buscarPorTermo(@RequestParam String busca) {
-        if (busca != null && !busca.isBlank()) {
-            return ResponseEntity.ok(questaoService.buscarPorTermo(busca));
-        }
-        return super.listarTodas();
-    }
-
+    // Listagem trabalha com a busca (herdado do BaseRestController)
     // @PathVariable captura variáveis da URL, o Spring injeta ${id} na variável id
-
     // @RequestBody converte o body da requisição (vem em JSON) para um objeto Java
 
     // o status é passado via request param, o ? é obrigatório
