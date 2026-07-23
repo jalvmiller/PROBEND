@@ -56,7 +56,7 @@ export const questaoService = {
   uploadImagem: async (file) => {
     const formData = new FormData();
     formData.append("file", file);
-    const response = await api.post("/questoes/upload", formData, {
+    const response = await api.post("/midia/upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data"
       }
