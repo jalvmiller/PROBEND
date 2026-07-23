@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useUser } from '../hooks/useUser';
+import { getMediaUrl } from '../utils/urlUtils';
 import { Moon, Sun, User, Award, Shield, Pencil } from 'lucide-react';
 
 function Configuracoes() {
@@ -34,6 +35,8 @@ function Configuracoes() {
         return 'Usuário Comum';
     };
 
+    const avatarUrl = getMediaUrl(user?.avatar);
+
     return (
         <div className="max-w-4xl mx-auto p-4 space-y-6">
             <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 transition-colors">
@@ -49,11 +52,11 @@ function Configuracoes() {
                         className="relative group w-20 h-20 rounded-full cursor-pointer flex-shrink-0 overflow-hidden shadow-md ring-2 ring-blue-500/20 dark:ring-blue-400/20"
                         title="Clique para alterar a foto de perfil"
                     >
-                        {user?.avatar ? (
+                        {avatarUrl ? (
                             <img
-                                src={user.avatar}
-                                alt={user.nome || 'Avatar'}
-                                className="w-full h-full object-cover "
+                                src={avatarUrl}
+                                alt={user?.nome || 'Avatar'}
+                                className="w-full h-full object-cover"
                             />
                         ) : (
                             <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/20 dark:to-slate-800 text-blue-600 dark:text-blue-400 flex items-center justify-center">
@@ -80,66 +83,62 @@ function Configuracoes() {
                             {user?.nome || user?.username}
                         </h3>
                         <p className="text-sm text-slate-500 dark:text-slate-400">
-                            Clique na imagem acima para alterar sua foto de perfil
+                            Clique na imagem para alterar sua foto de perfil
                         </p>
                     </div>
                 </div>
 
-                <div>
-                    <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Meu Perfil</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Informações da sua conta</p>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400 mb-1">
-                        Nome Completo
-                    </label>
-                    <p className="text-slate-800 dark:text-slate-200 font-semibold text-base">
-                        {user?.nome || 'Não informado'}
-                    </p>
-                </div>
-
-                <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400 mb-1">
-                        Nome de Usuário
-                    </label>
-                    <p className="text-slate-800 dark:text-slate-200 font-semibold text-base">
-                        @{user?.username}
-                    </p>
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 p-2 rounded-lg">
-                        <Award size={20} />
-                    </div>
+                {/* Dados da Conta */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
-                            Pontuação
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400 mb-1">
+                            Nome Completo
                         </label>
-                        <p className="text-slate-800 dark:text-slate-200 font-bold text-base">
-                            {user?.pontos ?? 0} pontos
+                        <p className="text-slate-800 dark:text-slate-200 font-semibold text-base">
+                            {user?.nome || 'Não informado'}
                         </p>
                     </div>
-                </div>
 
-                <div className="flex items-center gap-2">
-                    <div className="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 p-2 rounded-lg">
-                        <Shield size={20} />
-                    </div>
                     <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
-                            Perfil de Acesso (Role)
+                        <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400 mb-1">
+                            Nome de Usuário
                         </label>
-                        <span className={`inline-block text-xs font-extrabold uppercase px-2 py-0.5 rounded border mt-1 ${user?.administrador
-                            ? 'bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/40'
-                            : user?.especialista
-                                ? 'bg-purple-50 dark:bg-purple-950/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-900/40'
-                                : 'bg-slate-50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-700'
-                            }`}>
-                            {obterRoleLabel()}
-                        </span>
+                        <p className="text-slate-800 dark:text-slate-200 font-semibold text-base">
+                            @{user?.username}
+                        </p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 p-2 rounded-lg">
+                            <Award size={20} />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+                                Pontuação
+                            </label>
+                            <p className="text-slate-800 dark:text-slate-200 font-bold text-base">
+                                {user?.pontos ?? 0} pontos
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <div className="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 p-2 rounded-lg">
+                            <Shield size={20} />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+                                Perfil de Acesso (Role)
+                            </label>
+                            <span className={`inline-block text-xs font-extrabold uppercase px-2 py-0.5 rounded border mt-1 ${user?.administrador
+                                ? 'bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/40'
+                                : user?.especialista
+                                    ? 'bg-purple-50 dark:bg-purple-950/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-900/40'
+                                    : 'bg-slate-50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+                                }`}>
+                                {obterRoleLabel()}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
