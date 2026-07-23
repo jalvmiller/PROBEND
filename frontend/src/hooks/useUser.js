@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import api from '../services/api';
+import { useAuth } from './useAuth';
 
 /**
  * Hook para gerenciar o upload de foto de perfil (avatar).
@@ -10,6 +11,7 @@ export function useUser(onSuccess) {
     const fileInputRef = useRef(null);
     const [carregando, setCarregando] = useState(false);
     const [erro, setErro] = useState(null);
+    const { setUser } = useAuth();
 
     // Função para acionar a janela nativa de escolha de arquivos
     const abrirSeletorDeArquivo = () => {
@@ -36,6 +38,11 @@ export function useUser(onSuccess) {
                     'Content-Type': 'multipart/form-data',
                 },
             });
+
+            // Atualiza o estado global do usuário no AuthContext
+            if (setUser) {
+                setUser(response.data);
+            }
 
             if (onSuccess) {
                 onSuccess(response.data);
