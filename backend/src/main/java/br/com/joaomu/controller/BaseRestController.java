@@ -15,9 +15,13 @@ public abstract class BaseRestController<T, ID> {
         this.service = service;
     }
 
+    // Listar todas trabalha com a busca por termo opcional (?busca=...)
     @GetMapping
-    public ResponseEntity<List<T>> listarTodas() {
-        return ResponseEntity.ok(service.listarTodas());
+    public ResponseEntity<List<T>> listarTodas(@RequestParam(required = false) String busca) {
+        if (busca != null && !busca.isBlank()) {
+            return ResponseEntity.ok(service.buscarPorTermo(busca));
+        }
+        return ResponseEntity.ok(service.listarTodos());
     }
 
     @GetMapping("/{id}")
