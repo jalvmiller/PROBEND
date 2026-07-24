@@ -17,3 +17,8 @@ buildNumber.properties
 .classpath
 uml/CLASSESMVP1.drawio
 uml/DIAGCASO.drawio
+# Environment variables and secrets
+.env
+*.env
+.env.local
+.env.*.local
