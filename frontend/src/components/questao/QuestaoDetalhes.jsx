@@ -150,7 +150,7 @@ function QuestaoDetalhes() {
                                 Solucionada
                             </span>
                         ) : (
-                            <span className="flex items-center gap-1.5 text-xs font-bold text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 px-3 py-1.5 rounded-full">
+                            <span className="text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 px-2.5 py-1 rounded-full flex items-center gap-1 text-xs font-bold">
                                 <Clock size={14} />
                                 Pendente
                             </span>
