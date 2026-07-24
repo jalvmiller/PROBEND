@@ -11,7 +11,11 @@
 
 ### 📌 Sobre o Projeto + Stack Completa
 <div align="center">
-É uma plataforma voltada para a criação, compartilhamento e renderização de questões  de matemática e de algoritmos de diferentes linguagens de programação. É um projeto pessoal que uso para aprender tecnologias e conceitos que podem ser aplicados em uma Stack com Java Spring Boot e React. Por conta disso, existem vários comentários pelos arquivos do projeto. 
+É uma plataforma voltada para a criação, compartilhamento e renderização de questões  de matemática e de algoritmos de diferentes linguagens de programação.
+<br><br>
+Está sendo um projeto pessoal que uso para aprender tecnologias e conceitos que podem ser aplicados em uma Stack com Java Spring Boot e React. Por conta disso, existem vários comentários pelos arquivos do projeto.<br><br>
+
+[![Kanban & Backlog](https://img.shields.io/badge/GitHub_Projects-Kanban_%26_Backlog-238636?style=for-the-badge&logo=github&logoColor=white)](https://github.com/users/jalvmiller/projects/3/views/1)
 </div>
 
 ### **♠️Backend (Tecnologias Estruturais) & APIs**
