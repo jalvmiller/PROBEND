@@ -5,8 +5,8 @@ import { useAuth } from '../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
 
 function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('user');
+  const [password, setPassword] = useState('user123');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -57,6 +57,19 @@ function Login() {
 
           {error && <p className='text-red-750 dark:text-red-400 mb-4 text-sm text-center bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 p-2 rounded transition-colors'>{error}</p>}
 
+          <div className="mb-5 p-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 rounded-lg text-xs text-slate-700 dark:text-slate-300">
+            <p className="font-semibold text-blue-900 dark:text-blue-300 mb-1 flex items-center gap-1">
+              💡 Credenciais de Teste (Seeder no BD)
+            </p>
+            <p className="text-slate-600 dark:text-slate-400 mb-2">
+              Esta aplicação contém um usuário padrão cadastrado via seeder no banco de dados:
+            </p>
+            <div className="flex items-center justify-between bg-white dark:bg-slate-950 px-3 py-1.5 rounded border border-blue-100 dark:border-blue-900/50 font-mono text-xs text-slate-800 dark:text-slate-200">
+              <div><span className="text-slate-500 dark:text-slate-400 font-sans">Usuário:</span> <strong className="text-blue-600 dark:text-blue-400">user</strong></div>
+              <div><span className="text-slate-500 dark:text-slate-400 font-sans">Senha:</span> <strong className="text-blue-600 dark:text-blue-400">user123</strong></div>
+            </div>
+          </div>
+
           <div className='mb-4'>
             <label className="block text-slate-700 dark:text-slate-300 text-sm font-semibold mb-2 transition-colors">
               Username
@@ -66,7 +79,7 @@ function Login() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className='w-full px-3 py-2 border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors'
-              placeholder="Inserir seu username"
+              placeholder="user"
               required
             />
           </div>
@@ -86,7 +99,7 @@ function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className='w-full px-3 py-2 border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 transition-colors'
-                placeholder="Inserir sua senha"
+                placeholder="user123"
                 required
               />
               {/* pr-10 = padding right de 10px, coloca um espaçamento interno no lado direito do input.
