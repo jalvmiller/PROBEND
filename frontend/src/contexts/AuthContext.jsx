@@ -46,11 +46,24 @@ export function AuthProvider({ children }) {
   };
 
   // Função disparada no logout
-  const logout = () => {
-    localStorage.removeItem('token');
-    setToken(null);
-    setUser(null);
+  const logout = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        // Chama o endpoint de logout enviando o JWT no header
+        await api.post('/auth/logout', {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao fazer logout", error);
+    } finally {
+      // Apaga do armazenamento local do navegador
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
   };
+
 
   // Enquanto estiver verificando o localStorage, mostrar um loading na tela
   if (loading) {
