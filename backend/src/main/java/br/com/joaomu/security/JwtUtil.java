@@ -34,31 +34,45 @@ public class JwtUtil {
 
     public String generateToken(String username) {
         return Jwts.builder()
-            .subject(username)
-            .issuedAt(new Date())
-            .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-            .signWith( getSigningKey() ) // assinar o token com a chave
-            .compact(); // token é gerado como string compacta, padrão da doc do JWT
+                .subject(username)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(getSigningKey()) // assinar o token com a chave
+                .compact(); // token é gerado como string compacta, padrão da doc do JWT
     }
-
 
     public String extractUsername(String token) {
         return Jwts.parser()
-            .verifyWith(getSigningKey())
-            .build()
-            .parseSignedClaims(token)
-            .getPayload()
-            .getSubject();
-            // processo reverso da geração de token, recupera o usuário (subject)
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
+        // processo reverso da geração de token, recupera o usuário (subject)
     }
 
-    
+    public long getRemainingExpirationTime(String token) {
+        try {
+            Date expiration = Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getExpiration();
+
+            long remaining = expiration.getTime() - System.currentTimeMillis();
+            return Math.max(remaining, 0);
+        } catch (Exception e) { // método para calcular o tempo restante do token
+            return 0; // Se der erro, retorna 0, pois o token está inválido
+        }
+    }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token);
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token);
 
             return true;
         } catch (Exception e) {

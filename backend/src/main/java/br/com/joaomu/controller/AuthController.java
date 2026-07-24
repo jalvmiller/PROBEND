@@ -6,12 +6,13 @@ import br.com.joaomu.dto.RegisterRequest;
 import br.com.joaomu.entity.User;
 import br.com.joaomu.repository.UserRepository;
 import br.com.joaomu.security.JwtUtil;
+import br.com.joaomu.security.TokenBlacklistService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @RestController
@@ -22,13 +23,15 @@ public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final TokenBlacklistService blacklistService;
 
     public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository,
-            PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+            PasswordEncoder passwordEncoder, JwtUtil jwtUtil, TokenBlacklistService blacklistService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.blacklistService = blacklistService;
     }
 
     @PostMapping("/register")
@@ -60,6 +63,25 @@ public class AuthController {
         // No login, o usuário é autenticado e recebe um token de autenticação
         // o token é devolvido pelo corpo da resposta AuthResponse
         // Retorna HTTP 200 OK caso o login seja realizado normalmente
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+
+        // Retirar o token do header
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+
+            // Descobre quanto tempo ainda falta para o token expirar
+            long remainingTime = jwtUtil.getRemainingExpirationTime(token);
+
+            if (remainingTime > 0) {
+                blacklistService.blacklistToken(token, remainingTime);
+            }
+        }
+
+        return ResponseEntity.ok("Logout realizado com sucesso.");
     }
 
     // Retorna os dados do usuário logado
