@@ -3,6 +3,8 @@ import { useState } from 'react';
 import QuestaoForm from './QuestaoForm';
 import QuestaoList from '../components/questao/QuestaoList';
 import { useQuestoes } from '../hooks/useQuestoes';
+import PainelEstatisticas from '../components/dashboard/PainelEstatisticas';
+import BotaoAdicionarQuestao from '../components/dashboard/BotaoAdicionarQuestao';
 
 function Dashboard() {
 	// Estado para controlar se o formulário está visível
@@ -25,16 +27,10 @@ function Dashboard() {
 				<h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 transition-colors">Questões</h2>
 			</div>
 
-			<div className="flex justify-end">
-				<button
-					onClick={() => setMostrarForm(!mostrarForm)}
-					className={`flex items-center gap-2 text-white px-6 py-3 rounded-lg transition font-semibold ${mostrarForm ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'
-						}`}
-				>
-					{mostrarForm ? <X size={20} /> : <Plus size={20} />}
-					{mostrarForm ? 'Cancelar' : 'Adicionar Questão'}
-				</button>
-			</div>
+			<BotaoAdicionarQuestao
+				onClick={() => setMostrarForm(!mostrarForm)}
+				mostrarForm={mostrarForm}
+			/>
 
 			{/* Formulário (aparece/desaparece ao clicar) */}
 			{mostrarForm && (
@@ -43,6 +39,8 @@ function Dashboard() {
 					<QuestaoForm SalvarSucesso={handleSalvarQuestao} />
 				</div>
 			)}
+
+			<PainelEstatisticas listaQuestoes={listaQuestoes} />
 
 			{/* Barra de Pesquisa */}
 			<div className="bg-white dark:bg-slate-900 rounded-lg shadow-md p-4 border border-transparent dark:border-slate-800 transition-colors">
