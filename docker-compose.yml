@@ -61,7 +61,7 @@ services:
 
   backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     container_name: probend-backend
     working_dir: /app
@@ -71,7 +71,7 @@ services:
     volumes:
       # Volume bind, dá para montar o código dentro do container
       # O docker não fica dependente do JAR, pode ter hot reload
-      - ./:/app
+      - ./backend:/app
       - ~/.m2/repository:/root/.m2/repository
     depends_on:
       db:
@@ -103,6 +103,17 @@ services:
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
     restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: probend-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
 
 # Persistencia dos dados -> Volume
 volumes:
