@@ -1,7 +1,7 @@
 package br.com.joaomu.service;
 
-import br.com.joaomu.model.Questao;
-import br.com.joaomu.repo.QuestaoRepository;
+import br.com.joaomu.entity.Questao;
+import br.com.joaomu.repository.QuestaoRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,10 +39,12 @@ public class QuestaoServiceTest {
     }
 
     // Padrão AAA
-    // Uso do when + save -> casos onde existe a necessidade de chamar uma dependência externa
+    // Uso do when + save -> casos onde existe a necessidade de chamar uma
+    // dependência externa
     // Repositório, API, serviço
-    // Nessa debaixo ele chega a usar.. justamente por conta do uso do repositório para salvar
-    // Na seguinte, não há o uso..  é só uma validação que vai dar trigger na exceção
+    // Nessa debaixo ele chega a usar.. justamente por conta do uso do repositório
+    // para salvar
+    // Na seguinte, não há o uso.. é só uma validação que vai dar trigger na exceção
 
     // Nesse teste -> induz validação
     @Test
@@ -55,7 +57,8 @@ public class QuestaoServiceTest {
 
         // Assert - verifica se o resultado está correto
         // assertNotNull só precisa do retorno, e já consegue conferir
-        // aseertEquals usa a String que foi enviada no set, e o getenunciado do resultado
+        // aseertEquals usa a String que foi enviada no set, e o getenunciado do
+        // resultado
         assertNotNull(resultado);
         assertEquals("Qual é a capital do Brasil?", resultado.getEnunciado());
         assertEquals("Geografia", resultado.getMateria());
@@ -69,9 +72,8 @@ public class QuestaoServiceTest {
 
         // Act & Assert - verifica se lança a exceção correta
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> questaoService.validarQuestao(questao)
-        );
+                IllegalArgumentException.class,
+                () -> questaoService.validarQuestao(questao));
 
         assertEquals("Uso de enunciado é obrigatório", exception.getMessage());
     }
@@ -84,9 +86,8 @@ public class QuestaoServiceTest {
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> questaoService.validarQuestao(questao)
-        );
+                IllegalArgumentException.class,
+                () -> questaoService.validarQuestao(questao));
 
         assertEquals("Uso de enunciado é obrigatório", exception.getMessage());
     }
@@ -99,9 +100,8 @@ public class QuestaoServiceTest {
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> questaoService.validarQuestao(questao)
-        );
+                IllegalArgumentException.class,
+                () -> questaoService.validarQuestao(questao));
 
         assertEquals("Matéria é obrigatória!", exception.getMessage());
     }
@@ -114,9 +114,8 @@ public class QuestaoServiceTest {
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> questaoService.validarQuestao(questao)
-        );
+                IllegalArgumentException.class,
+                () -> questaoService.validarQuestao(questao));
 
         assertEquals("Matéria é obrigatória!", exception.getMessage());
     }
@@ -129,9 +128,8 @@ public class QuestaoServiceTest {
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> questaoService.validarQuestao(questao)
-        );
+                IllegalArgumentException.class,
+                () -> questaoService.validarQuestao(questao));
 
         assertEquals("Questões de dificuldade alta precisam ter fonte!", exception.getMessage());
     }

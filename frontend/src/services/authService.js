@@ -8,8 +8,8 @@ export const authService = {
   },
 
   // Realiza o cadastro enviando os dados esperados pelo backend (RegisterRequest)
-  register: async (username, password, nome) => {
-    const response = await api.post('/auth/register', { username, password, nome });
+  register: async (username, password, nome, email) => {
+    const response = await api.post('/auth/register', { username, password, nome, email });
     return response.data; // Retorna o AuthResponse que contém o token JWT após o cadastro
   }
 };

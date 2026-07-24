@@ -1,102 +1,134 @@
-# 🎓 PROBEND (nome provisório)
+<div align="center">
 
-**PROBEND** é um sistema (em desenvolvimento) moderno de gerenciamento e preparação de questões de matérias exatas e de algoritmos. Projetado com uma arquitetura desacoplada, o projeto utiliza um Backend robusto em Java com Spring Boot e um Frontend dinâmico e interativo em React com Tailwind.
+# 🎓 PROBEND (Nome Provisório)
 
-Este repositório foi estruturado, com a inclusão de: conteinerização com **Docker**, segurança com **JWT (JSON Web Tokens)**, e documentação automatizada de APIs com **Swagger (OpenAPI)**.
+![Java](https://img.shields.io/badge/Java%2021-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot%203-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![React](https://img.shields.io/badge/React%2018-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![MySQL](https://img.shields.io/badge/MySQL%208.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+</div>
+
+### 📌 Sobre o Projeto + Stack Completa
+<div align="center">
+É uma plataforma voltada para a criação, compartilhamento e renderização de questões  de matemática e de algoritmos de diferentes linguagens de programação. É um projeto pessoal que uso para aprender tecnologias e conceitos que podem ser aplicados em uma Stack com Java Spring Boot e React. Por conta disso, existem vários comentários pelos arquivos do projeto. 
+</div>
+
+### **♠️Backend (Tecnologias Estruturais) & APIs**
+ ![Java](https://img.shields.io/badge/-Java%2021-007396?style=flat-square&logo=openjdk&logoColor=white) **Java 21 & Spring Boot 3** — Núcleo e lógica da aplicação REST API\
+ ![Spring Security](https://img.shields.io/badge/-Spring%20Security-6DB33F?style=flat-square&logo=springsecurity&logoColor=white) **Spring Security & JWT** — Autenticação *stateless* e controle de acesso granular\
+ ![Hibernate](https://img.shields.io/badge/-Spring%20Data%20JPA-59666C?style=flat-square&logo=hibernate&logoColor=white) **Spring Data JPA & Hibernate** — Mapeamento objeto-relacional (ORM)\
+ ![MySQL](https://img.shields.io/badge/-MySQL%208.0-4479A1?style=flat-square&logo=mysql&logoColor=white) **MySQL 8.0** — Banco de dados relacional oficial\
+ ![Flyway](https://img.shields.io/badge/-Flyway-CC0200?style=flat-square&logo=flyway&logoColor=white) **Flyway** — Versionamento e migração automatizada de schemas\
+ ![Swagger](https://img.shields.io/badge/-OpenAPI%20%2F%20Swagger-85EA2D?style=flat-square&logo=swagger&logoColor=black) **Springdoc OpenAPI** — Documentação interativa e testável das rotas
+
+### **🔧Mensageria, Storage & Serviços Integrados**
+ ![RabbitMQ](https://img.shields.io/badge/-RabbitMQ-FF6600?style=flat-square&logo=rabbitmq&logoColor=white) **RabbitMQ & Spring AMQP** — Fila de mensagens para tarefas assíncronas (ex: envio de e-mails)\
+ ![MinIO](https://img.shields.io/badge/-MinIO%20%2F%20S3-C42C23?style=flat-square&logo=minio&logoColor=white) **MinIO SDK** — Armazenamento local compatível com AWS S3 para mídias/anexos\
+ ![Mailpit](https://img.shields.io/badge/-Spring%20Mail%20%2B%20Mailpit-00828A?style=flat-square&logo=mail.ru&logoColor=white) **Mailpit** — Servidor local para captura e visualização de e-mails de teste
+
+### **📚Frontend & Interface**
+ ![React](https://img.shields.io/badge/-React%2018-61DAFB?style=flat-square&logo=react&logoColor=black) **React 18 & Vite** — Interface reativa com compilação e HMR\
+ ![Axios](https://img.shields.io/badge/-Axios-5A29E4?style=flat-square&logo=axios&logoColor=white) **Axios** — Cliente HTTP para integração com as APIs\
+ ![KaTeX](https://img.shields.io/badge/-KaTeX%20%2F%20MathJax-000000?style=flat-square&logo=latex&logoColor=white) **KaTeX / MathJax** — Engine para renderização de fórmulas matemáticas em LaTeX\
+ ![CSS](https://img.shields.io/badge/-CSS3%20Customizado-1572B6?style=flat-square&logo=css3&logoColor=white) **CSS Customizado** — Layout responsivo e estilização modular
+
+### 🚀 Painéis e Serviços Locais;
+
+Após subir via docker compose, utilize os links abaixo para acessar as interfaces administrativas e serviços dev:
+
+| Serviço | Porta | URL de Acesso | Credenciais Padrão |
+| :--- | :---: | :--- | :--- |
+| **Frontend App** | `5173` | [localhost:5173](http://localhost:5173) | *N/A* |
+| **Backend API & Swagger UI** | `8080` | [localhost:8080/api/swagger-ui/index.html](http://localhost:8080/api/swagger-ui/index.html) | *Acesso público* |
+| **MinIO Console** | `9001` | [localhost:9001](http://localhost:9001) | `minioadmin` / `minioadminpassword` |
+| **MinIO API (S3 Endpoint)** | `9000` | [localhost:9000](http://localhost:9000) | *Definidas via SDK / .env* |
+| **RabbitMQ Management** | `15672` | [localhost:15672](http://localhost:15672) | `guest` / `guest` |
+| **Mailpit Web UI** | `8025` | [localhost:8025](http://localhost:8025) | *Sem autenticação* |
 
 ---
 
-## 🛠️ Stack
-### **Backend**
-*   **Java 21** & **Spring Boot**
-*   **Spring Security & JWT** (Autenticação e Autorização)
-*   **Spring Data JPA & Hibernate** (Persistência de dados)
-*   **MySQL 8.0** (Banco de dados relacional oficial)
-*   **Springdoc OpenAPI (Swagger)** (Documentação interativa da API)
-*   **Maven** (Gerenciador de dependências)
+### 🔧 Passos para Executar (pré-requisitos: Docker e **Docker Compose** instalados);
 
-### **Frontend**
-*   **React 18** com **Vite** (Build rápido e hot reload)
-*   **Axios** (Integração e consumo da API REST)
-*   **CSS Customizado / Tailwind** (Interface responsiva, moderna e otimizada)
+### 
+```bash
+# 1. Clone o repositório
+git clone [https://github.com/joaomu/probend.git](https://github.com/joaomu/probend.git)
 
-### **Infraestrutura**
-*   **Docker & Docker Compose** (Ambiente padronizado)
+# 2. Acesse o diretório do projeto
+cd probend
 
----
+# 3. Suba o ecossistema completo de containers
+docker compose up -d
 
-## 📁 Estrutura de Diretórios
-
+```
+### 📁 Estrutura de Diretórios
 ```text
 PROBEND/
-├── backend/              # Código fonte Java (Spring Boot)
-│   ├── src/              # Pacotes e recursos Java
-│   ├── Dockerfile        # Dockerfile do backend
-│   └── docker-compose.yml# Orquestração do Banco de Dados e App
-├── frontend/             # Código fonte JavaScript/React (Vite)
-│   ├── src/              # Componentes, Serviços e Hooks React
-│   └── package.json      # Dependências frontend
-└── README.md             # Instruções gerais do projeto (esta página)
+├── backend/                   ### Código fonte Java (Spring Boot)
+│   ├── src/
+│   │   └── main/
+│   │       ├── java/br/com/joaomu/
+│   │       │   ├── config/                  # Configurações de serviços (MinIO, Mail; etc)
+│   │       │   ├── controller/              # Endpoints REST (Auth, Usuários, Questões, etc)
+│   │       │   ├── dto/                     # Data Transfer Objects
+│   │       │   ├── listener/                # Listeners de mensageria (RabbitMQ)
+│   │       │   ├── model/                   # Entidades JPA
+│   │       │   ├── repo/                    # Repositórios JPA
+│   │       │   ├── security/                # Filtros e configurações de segurança JWT
+│   │       │   └── service/                 # Regras de negócio e integração
+│   │       └── resources/
+│   │           ├── db/migration/            # Migrações SQL do Flyway (V1__, V2__, etc.)
+│   │           └── application.properties   # Propriedades da aplicação
+│   ├── Dockerfile            # Dockerfile do backend Spring Boot
+│   ├── docker-compose.yml    # Orquestração (MySQL, MinIO, RabbitMQ, Mailpit, Backend)
+│   └── pom.xml               # Arquivo de dependências Maven
+│
+├── frontend/                 ### Código fonte React (Vite)
+│   ├── src/
+│   │   ├── assets/           # Arquivos estáticos (imagens, ícones, etc)
+│   │   ├── components/       # Componentes reutilizáveis
+│   │   ├── contexts/         # Contextos globais (ex: AuthContext)
+│   │   ├── hooks/            # Hooks customizados (ex: useUser)
+│   │   ├── pages/            # Telas da aplicação (Login, Perfil, Configurações)
+│   │   ├── services/         # Serviços de integração com a API REST (api.js)
+│   │   └── utils/            # Utilitários (ex: renderizadores LaTeX)
+│   ├── package.json          # Dependências frontend
+│   └── vite.config.js        # Configuração do Vite
+│
+└── README.md                 # Instruções e documentação geral do projeto
 ```
 
----
+### 🔎 Diagrama Sequencial em Mermaid (Criação de Questão)
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Cliente as Frontend (React + Tailwind)
+    participant API as Backend (Spring Boot + JWT)
+    participant Gemini as Gemini AI API
+    participant MinIO as MinIO (Imagens)
+    participant DB as MySQL (Flyway)
+    participant Queue as RabbitMQ
+    participant Mail as Mailpit / Mailtrap
 
-## 📖 Documentação da API com Swagger
+    Cliente->>API: POST /api/questoes/(Header: JWT)
+    Note over API: Filtro de Autenticação valida o Token JWT
+    
+    opt
+        API->>Gemini: Envia prompt com os dados/contexto
+        Gemini-->>API: Retorna JSON com formulário estruturado
+    end
+    opt Se houver upload de imagem
+        API->>MinIO: Upload da imagem
+        MinIO-->>API: Retorna URL / Identificador do Objeto
+    end
 
-Para facilitar a avaliação e o teste dos endpoints do sistema, a API foi totalmente documentada com **Swagger / OpenAPI 3**.
-A configuração foi planejada considerando as seguintes definições do `application.properties`:
+    API->>DB: Salva registro da transação
+    API->>Queue: Publica mensagem na fila "email_notifications"
+    API-->>Cliente: HTTP 201 Created (Dados do Formulário)
 
-*   A porta padrão do servidor é `8080`.
-*   O caminho de contexto raiz (context-path) é `/api`.
-
-Portanto, quando a aplicação está em execução (localmente ou via Docker), as URLs de acesso são:
-
-*   🌐 **Interface Gráfica (Swagger UI):** [http://localhost:8080/api/swagger-ui/index.html](http://localhost:8080/api/swagger-ui/index.html)
-*   📄 **Especificação OpenAPI (JSON):** [http://localhost:8080/api/v3/api-docs](http://localhost:8080/api/v3/api-docs)
-
-No arquivo de configuração de segurança [SecurityConfig.java](file:///backend/src/main/java/br/com/joaomu/security/SecurityConfig.java), os caminhos do Swagger estão marcados como `.permitAll()`. Isso garante que qualquer um consiga abrir a documentação e ler a estrutura dos endpoints sem precisar de autenticação prévia. Esse acesso está sendo mantido momentaneamente enquanto o projeto está em desenvolvimento.
-
----
-
-## 🚀 Como Executar o Projeto Rapidamente
-
-A forma mais rápida e recomendada para rodar e testar o projeto completo é utilizando o **Docker**.
-
-### **Pré-requisitos**
-*   [Docker](https://www.docker.com/) instalado em sua máquina.
-
-### **Passo 1: Subir o Backend e Banco de Dados**
-Navegue até a pasta do backend e execute o docker-compose:
-```bash
-cd backend
-docker compose up --build
+    par Processamento Assíncrono
+        Queue->>API: Consumidor processa mensagem da fila
+        API->>Mail: Envia e-mail de notificação/confirmação
+    end
 ```
-*Este comando irá baixar a imagem do MySQL, compilar o código Java e subir o servidor do backend na porta `8080` de forma totalmente automatizada.*
-
-### **Passo 2: Iniciar o Frontend (Ainda não "dockerizado")**
-Em outro terminal, navegue até a pasta do frontend, instale as dependências e inicie o servidor de desenvolvimento:
-```bash
-cd frontend
-npm install
-npm run dev
-```
-*O frontend estará disponível em [http://localhost:5173](http://localhost:5173).*
-
----
-
-## 🔒 Testando Rotas Protegidas no Swagger
-A API possui rotas públicas e rotas protegidas por autenticação JWT (Bearer Token). Para testar requisições protegidas diretamente pelo Swagger UI:
-
-1.  Acesse o **Swagger UI** em [http://localhost:8080/api/swagger-ui/index.html](http://localhost:8080/api/swagger-ui/index.html).
-2.  Crie um novo usuário no endpoint **`POST /api/auth/register`** ou faça login com **`POST /api/auth/login`**.
-    *   Exemplo de JSON de envio:
-        ```json
-        {
-          "username": "recrutador",
-          "password": "senha_segura_123",
-          "nome": "Recrutador Exemplo"
-        }
-        ```
-3.  Copie o token gerado na propriedade `token` da resposta.
-4.  Clique no botão **"Authorize"** no topo da página do Swagger, digite `Bearer ` seguido do token copiado (ex: `Bearer eyJhbGci...`) e clique em Authorize.
-5.  Suas requisições nos endpoints protegidos serão enviadas com o cabeçalho de autenticação correto.

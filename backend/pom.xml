@@ -117,6 +117,36 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- Dependência do SDK da AWS para S3 -->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<version>2.26.25</version>
+		</dependency>
+
+		<!-- Flyway para migrações de banco de dados -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-flyway</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-mysql</artifactId>
+		</dependency>
+
+		<!-- Dependência do RabbitMQ -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
+		</dependency>
+
+		<!-- Dependência do e-mail, Spring Boot Starter Mail -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
 		<!-- Dependência do Swagger (Springdoc OpenAPI) -->
 		<!-- Testar sem postman -->
 		<dependency>
@@ -133,8 +163,8 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-                	<mainClass>br.com.joaomu.Application</mainClass>
-            	</configuration>
+					<mainClass>br.com.joaomu.Application</mainClass>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
