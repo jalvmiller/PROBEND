@@ -140,33 +140,33 @@ sequenceDiagram
 
 ---
 
-### 🏛️ Decisões de Arquitetura & Stack
+## 🏛️ Decisões de Arquitetura & Stack
 
 <details>
-<summary><b>🔍 Clique aqui para ver as justificativas das tecnologias escolhidas</b></summary>
+<summary><b> Clique para ver as minhas justificativas em relação a escolha das tecnologias</b></summary>
 
 <br>
 
-#### ☕ Java 21 & Spring Boot 3
-- **Motivação:** Recursos modernos da linguagem (como Virtual Threads, Pattern Matching e Records) combinados com o ecossistema robusto e produtivo do Spring Boot 3 para criação de APIs REST escaláveis.
+#### ☕ Java & Spring Boot
+- **Motivação:** Todo meu contato com POO foi feito através do Java na faculdade. Sendo assim, foi a linguagem que me deixou mais confortável para desenvolver o projeto, e o Spring Boot é o framework mais utilizado para criação de APIs REST escaláveis em Java.
 
 #### 🔐 Spring Security + JWT
-- **Motivação:** Autenticação *stateless* baseada em tokens. Elimina a necessidade de manter sessões no servidor, permitindo escalabilidade horizontal do backend.
+- **Motivação:** Autenticação *stateless* baseada em tokens.
+Achei interessante implementar uma camada de segurança, já que o objetivo é desenvolver algo próximo de uma aplicação web completa. Sinto que implementar JWT me acrescentou conhecimento em autenticação no geral; além disso, essa é a mais indicada para APIs consumidas por SPA como o React.
 
 #### 🗄️ MySQL 8.0 + Flyway
-- **Motivação:** O MySQL fornece um banco relacional maduro e confiável. O **Flyway** garante o versionamento controlado e automatizado do schema do banco via scripts SQL (`V1__...`), prevenindo inconsistências entre os ambientes de desenvolvimento e produção.
+- **Motivação:** O MySQL é o banco de dados relacional que eu tinha mais familiaridade em utilizar. E é amplamente usado no mercado;. O **Flyway** garante o versionamento controlado do schema. O Hibernate estava responsável pela criação das tabelas no banco, mas ele não é um serviço dedicado para isso, ele não oferece o mesmo controle.
 
 #### 🐰 RabbitMQ & Spring AMQP
-- **Motivação:** Processamento assíncrono e desacoplado. Tarefas secundárias ou demoradas (como envio de e-mails de notificação) são enviadas para a fila sem bloquear o tempo de resposta HTTP da API para o usuário.
+- **Motivação:** Queria implementar mensageria; RabbitMQ é mais fácil em comparação ao Kafka; e eu ainda não havia tido contato. Por enquanto, só implementei o envio de e-mails de notificação/confirmação de forma local com o (mailpit/mailtrap). 
 
 #### 🪣 MinIO SDK (S3 Compatible)
-- **Motivação:** Armazenamento de objetos (imagens e mídias de questões) em ambiente local usando a API padrão do AWS S3. Isso permite que a aplicação utilize a mesma interface de código que seria usada em produção na nuvem.
+- **Motivação:** Armazenar imagens e mídias de questões em ambiente local usando a API padrão do AWS S3. É usado amplamente por aplicações web em produção, e foi uma oportunidade para estudar sobre armazenamento de mídia e contato com o S3.
 
 #### ✉️ Mailpit
-- **Motivação:** Captura e inspeção visual de e-mails em ambiente de desenvolvimento sem perigo de disparar e-mails para endereços reais ou necessitar de credenciais SMTP externas.
+- **Motivação:** Captura de e-mails em ambiente de desenvolvimento sem necessitar de credenciais SMTP externas (envio para endereço real de email). Enfrentei alguns obstáculos quando tentei usar SMTP externamente, então optei usar o Mailpit, por enquanto.
 
-#### ⚛️ React 18 + Vite + KaTeX
-- **Motivação:** O Vite oferece compilação ultrarrápida e Hot Module Replacement (HMR) em desenvolvimento. O **KaTeX** foi integrado para renderizar fórmulas matemáticas em LaTeX no navegador de forma performática e com baixo footprint.
+#### ⚛️ React + Vite + KaTeX
+- **Motivação:** O Vite é bem leve, oferece compilação ultrarrápida e Hot Module Replacement (HMR); quesitos necessários para lidar com o React. O **KaTeX** foi integrado para renderizar fórmulas matemáticas em LaTeX e cumprir com a proposição do projeto de ter uma boa experiência visual.
 
 </details>
-
