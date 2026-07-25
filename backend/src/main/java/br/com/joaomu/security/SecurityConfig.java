@@ -39,6 +39,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> {
+                }) // Habilita o CORS usando as configurações do WebMvcConfigurer
                 .csrf(csrf -> csrf.disable()) // csrf = cross-site request forgery
                                               // É um tipo de fraude q permite ataques contra sessões em cookies
                                               // Já que é uma API stateless (sem estado), com token JWT enviado
@@ -97,18 +99,15 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173") // URL padrão do Vite, mudar quando for dar deploy já
-                                                                 // que
-                                                                 // o Vercel vai usar outro.
-                        .allowedMethods("GET", "POST", "PUT", "DELETE"); // CORS = Cross-Origin-Sharing
-                                                                         // Uma política de segurança usada por
-                                                                         // navegadores que
-                                                                         // vai impedir um site carregado de um domínio
-                                                                         // de fazer requisições de outro domínio.. a
-                                                                         // menos que o backend permita. Nesse trecho,
-                                                                         // ele permite que o React que usa
-                                                                         // a porta 5173 faça requisições para o Spring
-                                                                         // Boot que usa porta 8080.
+                        .allowedOriginPatterns("*") // Permite chamadas de qualquer origem (DuckDNS, Localhost, etc)
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD")
+                        .allowedHeaders("*")
+                        .allowCredentials(true); // CORS = Cross-Origin-Sharing
+                                                 // Uma política de segurança usada por
+                                                 // navegadores que
+                                                 // vai impedir um site carregado de um domínio
+                                                 // de fazer requisições de outro domínio.. a
+                                                 // menos que o backend permita.
             }
         };
     }
