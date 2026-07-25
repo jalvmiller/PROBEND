@@ -16,6 +16,7 @@
 Está sendo um projeto pessoal que uso para aprender tecnologias e conceitos que podem ser aplicados em uma Stack com Java Spring Boot e React. Por conta disso, existem vários comentários pelos arquivos do projeto.<br><br>
 
 [![Kanban & Backlog](https://img.shields.io/badge/GitHub_Projects-Kanban_%26_Backlog-238636?style=for-the-badge&logo=github&logoColor=white)](https://github.com/users/jalvmiller/projects/3/views/1)
+[![Decisões de Arquitetura](https://img.shields.io/badge/Arquitetura-Decis%C3%B5es_%26_Stack-0052CC?style=for-the-badge&logo=architecture&logoColor=white)](#-decisões-de-arquitetura--stack)
 </div>
 
 ### **♠️Backend (Tecnologias Estruturais) & APIs**
@@ -136,3 +137,36 @@ sequenceDiagram
         API->>Mail: Envia e-mail de notificação/confirmação
     end
 ```
+
+---
+
+### 🏛️ Decisões de Arquitetura & Stack
+
+<details>
+<summary><b>🔍 Clique aqui para ver as justificativas das tecnologias escolhidas</b></summary>
+
+<br>
+
+#### ☕ Java 21 & Spring Boot 3
+- **Motivação:** Recursos modernos da linguagem (como Virtual Threads, Pattern Matching e Records) combinados com o ecossistema robusto e produtivo do Spring Boot 3 para criação de APIs REST escaláveis.
+
+#### 🔐 Spring Security + JWT
+- **Motivação:** Autenticação *stateless* baseada em tokens. Elimina a necessidade de manter sessões no servidor, permitindo escalabilidade horizontal do backend.
+
+#### 🗄️ MySQL 8.0 + Flyway
+- **Motivação:** O MySQL fornece um banco relacional maduro e confiável. O **Flyway** garante o versionamento controlado e automatizado do schema do banco via scripts SQL (`V1__...`), prevenindo inconsistências entre os ambientes de desenvolvimento e produção.
+
+#### 🐰 RabbitMQ & Spring AMQP
+- **Motivação:** Processamento assíncrono e desacoplado. Tarefas secundárias ou demoradas (como envio de e-mails de notificação) são enviadas para a fila sem bloquear o tempo de resposta HTTP da API para o usuário.
+
+#### 🪣 MinIO SDK (S3 Compatible)
+- **Motivação:** Armazenamento de objetos (imagens e mídias de questões) em ambiente local usando a API padrão do AWS S3. Isso permite que a aplicação utilize a mesma interface de código que seria usada em produção na nuvem.
+
+#### ✉️ Mailpit
+- **Motivação:** Captura e inspeção visual de e-mails em ambiente de desenvolvimento sem perigo de disparar e-mails para endereços reais ou necessitar de credenciais SMTP externas.
+
+#### ⚛️ React 18 + Vite + KaTeX
+- **Motivação:** O Vite oferece compilação ultrarrápida e Hot Module Replacement (HMR) em desenvolvimento. O **KaTeX** foi integrado para renderizar fórmulas matemáticas em LaTeX no navegador de forma performática e com baixo footprint.
+
+</details>
+
