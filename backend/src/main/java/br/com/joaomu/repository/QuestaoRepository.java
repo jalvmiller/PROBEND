@@ -3,8 +3,6 @@ package br.com.joaomu.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
-
 import br.com.joaomu.entity.Questao;
 
 import java.util.List;
@@ -18,7 +16,6 @@ import java.util.List;
     Spring Data JPA através de proxies do Hibernate
 */
 
-@Repository
 public interface QuestaoRepository extends JpaRepository<Questao, Long> {
 
     // O Spring Data analisa a assinatura desses métodos

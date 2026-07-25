@@ -1,6 +1,5 @@
 package br.com.joaomu.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +13,11 @@ public class ResolucaoService {
 
     // O backend não bloqueia a requisição do usuário esperando o email
     // ser enviado. Outro microserviço cuida da fila no próprio tempo
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
+
+    public ResolucaoService(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
     // Classe utilitária do Spring AMQP usada para enviar
     // mensagens em filas, exchanges do RabbitMQ
 

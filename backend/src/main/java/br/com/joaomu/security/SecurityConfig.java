@@ -1,6 +1,5 @@
 package br.com.joaomu.security;
 
-import br.com.joaomu.Application;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,13 +25,11 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @SuppressWarnings("unused")
-
     private final JwtAuthenticationFilter jwtFilter;
 
     // Injeção do JwtAuthenticationFilter, é um filtro que foi customizado na classe
     // JwtAuthenticationFilter
-    public SecurityConfig(JwtAuthenticationFilter jwtFilter, Application application) {
+    public SecurityConfig(JwtAuthenticationFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
     }
 

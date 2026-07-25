@@ -1,6 +1,5 @@
 package br.com.joaomu.controller;
 
-import br.com.joaomu.repository.UserRepository;
 import org.springframework.web.bind.annotation.*;
 import br.com.joaomu.entity.User;
 import br.com.joaomu.service.UserService;
@@ -13,15 +12,13 @@ import org.springframework.http.ResponseEntity;
 @RequestMapping("/usuarios")
 public class UserRestController extends BaseRestController<User, Long> {
 
-    private final UserRepository userRepository;
     private final UploadService uploadService;
     private final UserService userService;
 
-    public UserRestController(UserService userService, UploadService uploadService, UserRepository userRepository) {
+    public UserRestController(UserService userService, UploadService uploadService) {
         super(userService);
         this.userService = userService;
         this.uploadService = uploadService;
-        this.userRepository = userRepository;
     }
 
     // O POST de imagem de perfil fica aqui e não no MidiaController,

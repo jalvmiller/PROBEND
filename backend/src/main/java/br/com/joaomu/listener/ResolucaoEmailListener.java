@@ -2,7 +2,6 @@ package br.com.joaomu.listener;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import br.com.joaomu.config.RabbitMQConfig;
 import br.com.joaomu.dto.ResolucaoEmailEvent;
@@ -11,8 +10,11 @@ import br.com.joaomu.service.NotificacaoService;
 @Component
 public class ResolucaoEmailListener {
 
-    @Autowired
-    private NotificacaoService notificacaoService; 
+    private final NotificacaoService notificacaoService;
+
+    public ResolucaoEmailListener(NotificacaoService notificacaoService) {
+        this.notificacaoService = notificacaoService;
+    }
     // Serviço que cuida de email
     // AWS SES; Spring Mail
 
