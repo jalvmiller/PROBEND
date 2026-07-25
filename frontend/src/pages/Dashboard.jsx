@@ -1,4 +1,3 @@
-import { Plus, X } from 'lucide-react';
 import { useState } from 'react';
 import QuestaoForm from './QuestaoForm';
 import QuestaoList from '../components/questao/QuestaoList';

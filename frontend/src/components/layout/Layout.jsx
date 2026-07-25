@@ -23,12 +23,15 @@ function Layout({ children }) {
   // que a tela
   
   return (
-    <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+    <div className="relative flex flex-col h-screen bg-blue-900 dark:bg-slate-950 transition-colors duration-300">
+      {/* Máscara de textura de pontos via CSS sutil */}
+      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
+
       {/* Navbar no topo */}
       <Navbar onMenuClick={() => setSidebarOpen(true)} />
 
       {/* Container com sidebar + conteúdo principal */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="relative z-10 flex flex-1 overflow-hidden">
         {/* Sidebar na lateral */}
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
