@@ -137,36 +137,47 @@ sequenceDiagram
         API->>Mail: Envia e-mail de notificação/confirmação
     end
 ```
+<br>
 
 ---
 
-## 🏛️ Decisões de Arquitetura & Stack
+### Decisões de Arquitetura & Stack
+```bash
+☕ Java & Spring Boot
+- Todo meu contato com POO foi feito através do Java na faculdade. 
+Sendo assim, foi a linguagem que me deixou mais confortável para desenvolver o projeto,
+e o Spring Boot é o framework mais utilizado para criação de APIs REST escaláveis em Java.
 
-<details>
-<summary><b> Clique para ver as minhas justificativas em relação a escolha das tecnologias</b></summary>
+🔐 Spring Security + JWT
+- Autenticação *stateless* baseada em tokens.
+Achei interessante implementar uma camada de segurança,
+já que o objetivo é desenvolver algo próximo de uma aplicação web completa. 
+Sinto que implementar JWT me acrescentou conhecimento em autenticação no geral;
+além disso, essa é a mais indicada para APIs consumidas por SPA como o React.
 
-<br>
+🗄️ MySQL 8.0 + Flyway
+- O MySQL é o banco de dados relacional que eu tinha mais familiaridade em utilizar.
+E é amplamente usado no mercado;. O Flyway garante o versionamento controlado do schema.
+O Hibernate estava responsável pela criação das tabelas no banco,
+mas ele não é um serviço dedicado para isso, ele não oferece o mesmo controle.
 
-#### ☕ Java & Spring Boot
-- **Motivação:** Todo meu contato com POO foi feito através do Java na faculdade. Sendo assim, foi a linguagem que me deixou mais confortável para desenvolver o projeto, e o Spring Boot é o framework mais utilizado para criação de APIs REST escaláveis em Java.
+🐰 RabbitMQ & Spring AMQP
+- Queria implementar mensageria; RabbitMQ é mais fácil em comparação ao Kafka;
+e eu ainda não havia tido contato. Por enquanto, só implementei o envio de e-mails
+de notificação/confirmação de forma local com o (mailpit/mailtrap). 
 
-#### 🔐 Spring Security + JWT
-- **Motivação:** Autenticação *stateless* baseada em tokens.
-Achei interessante implementar uma camada de segurança, já que o objetivo é desenvolver algo próximo de uma aplicação web completa. Sinto que implementar JWT me acrescentou conhecimento em autenticação no geral; além disso, essa é a mais indicada para APIs consumidas por SPA como o React.
+🪣 MinIO SDK (S3 Compatible)
+- Armazenar imagens e mídias de questões em ambiente local usando a API padrão do AWS S3.
+É usado amplamente por aplicações web em produção, e foi uma oportunidade para estudar
+sobre armazenamento de mídia e contato com o S3.
 
-#### 🗄️ MySQL 8.0 + Flyway
-- **Motivação:** O MySQL é o banco de dados relacional que eu tinha mais familiaridade em utilizar. E é amplamente usado no mercado;. O **Flyway** garante o versionamento controlado do schema. O Hibernate estava responsável pela criação das tabelas no banco, mas ele não é um serviço dedicado para isso, ele não oferece o mesmo controle.
+✉️ Mailpit
+- Captura de e-mails em ambiente de desenvolvimento sem necessitar de credenciais SMTP externas
+(envio para endereço real de email). Enfrentei alguns obstáculos quando tentei usar SMTP externamente,
+então optei usar o Mailpit, por enquanto.
 
-#### 🐰 RabbitMQ & Spring AMQP
-- **Motivação:** Queria implementar mensageria; RabbitMQ é mais fácil em comparação ao Kafka; e eu ainda não havia tido contato. Por enquanto, só implementei o envio de e-mails de notificação/confirmação de forma local com o (mailpit/mailtrap). 
-
-#### 🪣 MinIO SDK (S3 Compatible)
-- **Motivação:** Armazenar imagens e mídias de questões em ambiente local usando a API padrão do AWS S3. É usado amplamente por aplicações web em produção, e foi uma oportunidade para estudar sobre armazenamento de mídia e contato com o S3.
-
-#### ✉️ Mailpit
-- **Motivação:** Captura de e-mails em ambiente de desenvolvimento sem necessitar de credenciais SMTP externas (envio para endereço real de email). Enfrentei alguns obstáculos quando tentei usar SMTP externamente, então optei usar o Mailpit, por enquanto.
-
-#### ⚛️ React + Vite + KaTeX
-- **Motivação:** O Vite é bem leve, oferece compilação ultrarrápida e Hot Module Replacement (HMR); quesitos necessários para lidar com o React. O **KaTeX** foi integrado para renderizar fórmulas matemáticas em LaTeX e cumprir com a proposição do projeto de ter uma boa experiência visual.
-
-</details>
+⚛️ React + Vite + KaTeX
+- O Vite é bem leve, oferece compilação ultrarrápida e Hot Module Replacement (HMR);
+quesitos necessários para lidar com o React. O KaTeX foi integrado para renderizar fórmulas matemáticas
+em LaTeX e cumprir com a proposição do projeto de ter uma boa experiência visual.
+```
