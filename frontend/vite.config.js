@@ -10,6 +10,14 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      }
+    }
+  },
   resolve: {
     alias: {
       // fileURLToPath para que o vite saiba onde está a pasta src
