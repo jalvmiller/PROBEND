@@ -16,7 +16,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/midia")
-@CrossOrigin("*")
 public class MidiaRestController {
 
     private final UploadService uploadService;

@@ -20,7 +20,6 @@ import java.util.Map;
 @RestController
 // Define a rota base do Controller
 @RequestMapping("/questoes")
-@CrossOrigin("*")
 public class QuestaoRestController extends BaseRestController<Questao, Long> {
 
     // Injeção de dependências

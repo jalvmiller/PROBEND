@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/usuarios")
-@CrossOrigin("*")
 public class UserRestController extends BaseRestController<User, Long> {
 
     private final UserRepository userRepository;
