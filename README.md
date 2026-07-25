@@ -16,7 +16,7 @@
 Está sendo um projeto pessoal que uso para aprender tecnologias e conceitos que podem ser aplicados em uma Stack com Java Spring Boot e React. Por conta disso, existem vários comentários pelos arquivos do projeto.<br><br>
 
 [![Kanban & Backlog](https://img.shields.io/badge/GitHub_Projects-Kanban_%26_Backlog-238636?style=for-the-badge&logo=github&logoColor=white)](https://github.com/users/jalvmiller/projects/3/views/1)
-[![Decisões de Arquitetura](https://img.shields.io/badge/Arquitetura-Decis%C3%B5es_%26_Stack-0052CC?style=for-the-badge&logo=architecture&logoColor=white)](#decisoes-de-arquitetura)
+[![Decisões de Arquitetura](https://img.shields.io/badge/Arquitetura-Decis%C3%B5es-0052CC?style=for-the-badge&logo=architecture&logoColor=white)](#decisoes-de-arquitetura)
 </div>
 
 ### **♠️Backend (Tecnologias Estruturais) & APIs**
@@ -142,7 +142,7 @@ sequenceDiagram
 ---
 
 <a id="decisoes-de-arquitetura"></a>
-### Decisões de Arquitetura & Stack
+### Decisões de Arquitetura
 ```bash
 ☕ Java & Spring Boot
 - Todo meu contato com POO foi feito através do Java na faculdade. 
