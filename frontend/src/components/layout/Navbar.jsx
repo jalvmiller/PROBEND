@@ -57,7 +57,7 @@ function Navbar({ onMenuClick }) {
 				{/* Botão de login/logout */}
 				{user ? (
 					<div className="flex items-center gap-4">
-						<div className="flex items-center justify-between min-w-[8.5rem] bg-blue-700/50 dark:bg-slate-800/80 pl-1.5 
+						<div className="flex items-center justify-between min-w-[12rem] bg-blue-700/50 dark:bg-slate-800/80 pl-1.5 
 							pr-4 py-1 rounded-full border border-blue-400/20 dark:border-slate-700 shadow-inner">
 							<div className="w-10 h-10 rounded-full overflow-hidden bg-blue-500/30 dark:bg-slate-700 flex items-center
 							justify-center text-white ring-2 ring-white/20 flex-shrink-0">
@@ -72,9 +72,11 @@ function Navbar({ onMenuClick }) {
 								)}
 							</div>
 
-							<span className="text-sm font-medium hidden sm:inline">
-								Olá, {user.nome}
-							</span>
+							<div>
+								<span className="text-sm font-medium hidden sm:inline max-w-[8.5rem] truncate">
+									Olá, {user.nome}
+								</span>
+							</div>
 						</div>
 
 						<button
