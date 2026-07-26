@@ -31,6 +31,16 @@ public class Resolucao {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario autor;
 
+    @Column(name = "data_criacao")
+    private java.time.LocalDateTime dataCriacao;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.dataCriacao == null) {
+            this.dataCriacao = java.time.LocalDateTime.now();
+        }
+    }
+
     public Resolucao() {
 
     }
@@ -108,6 +118,14 @@ public class Resolucao {
 
     public void setAutor(Usuario autor) {
         this.autor = autor;
+    }
+
+    public java.time.LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(java.time.LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 
 }

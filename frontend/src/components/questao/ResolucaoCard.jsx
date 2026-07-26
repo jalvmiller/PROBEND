@@ -4,6 +4,9 @@ import { useAuth } from '../../hooks/useAuth';
 import { questaoService } from '../../services/questaoService';
 import { renderizarTextoMath } from '../../utils/mathRenderer';
 import CodeBlock from '../../utils/CodeBlock';
+import Role from '../ui/Role';
+import UsuarioAvatar from '../ui/UsuarioAvatar';
+import DataFormatada from '../ui/DataFormatada';
 
 function ResolucaoCard({ resolucao, meusUpvotes }) {
     const { user } = useAuth();
@@ -41,9 +44,21 @@ function ResolucaoCard({ resolucao, meusUpvotes }) {
         <div className='bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 p-6 space-y-4 transition hover:shadow-xl transition-colors duration-300'>
             <div className='flex justify-between items-center border-b border-slate-50 dark:border-slate-800 pb-2'>
                 {/* Informações sobre quem postou a resolução */}
-                <span className='text-sm font-semibold text-slate-600 dark:text-slate-400'>
-                    Respondido por: <span className='text-slate-800 dark:text-slate-200'>{resolucao.autor?.nome || resolucao.autor?.username}</span>
-                </span>
+                <div className='flex items-center space-x-3'>
+                    <UsuarioAvatar usuario={resolucao.autor} size="md" />
+
+                    <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                            <span className='text-sm font-semibold text-slate-600 dark:text-slate-400'>
+                                Respondido por: <span className='text-slate-800 dark:text-slate-200'>{resolucao.autor?.nome || resolucao.autor?.username}</span>
+                            </span>
+                            <Role usuario={resolucao.autor} />
+                        </div>
+                        {resolucao.dataCriacao && (
+                            <DataFormatada data={resolucao.dataCriacao} />
+                        )}
+                    </div>
+                </div>
 
                 {/* Botão de Upvote */}
                 <button
@@ -72,18 +87,13 @@ function ResolucaoCard({ resolucao, meusUpvotes }) {
 
             {/* Renderização do trecho de código (se houver) */}
             {resolucao.trechoCodigo && (
-
-
                 <CodeBlock
                     code={resolucao.trechoCodigo}
                     language={resolucao.linguagemCodigo}
                 />
-            )
-            }
-        </div >
+            )}
+        </div>
     );
-
-
 }
 
 export default ResolucaoCard;
