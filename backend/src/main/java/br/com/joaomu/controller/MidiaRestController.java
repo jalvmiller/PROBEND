@@ -78,7 +78,10 @@ public class MidiaRestController {
     // pelo mesmo.. isso faz com que o navegador saiba que deve renderizar a imagem
     // e não baixar um arquivo binário genérico
     // ResponseBytes<GetObjectResponse> = wrapper que contém os bytes e a response
-    @GetMapping("/imagens/{fileName}")
+
+    // Preservar a extensão com {fileName:.+}
+    // {fileName:.+} evita que o ponto seja removido na URL
+    @GetMapping("/imagens/{fileName:.+}")
     public ResponseEntity<byte[]> obterImagem(@PathVariable String fileName) {
         try {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
