@@ -1,11 +1,16 @@
-# BUILD da aplicação, Maven + JDK25
-# WORKDIR vai definir o diretório de trabalho (/app) dentro do container
+# BUILD da aplicação, Maven + JDK21
 FROM maven:3.9.8-eclipse-temurin-21 AS build
 WORKDIR /app
-COPY . /app
-# Executar a build Maven dentro do container
-# -B = modo batch
-RUN mvn -B -DskipTests package
+
+# Copiar arquivo de dependências pom.xml primeiro
+COPY pom.xml ./
+
+# Baixar dependências em modo offline e salvar no cache do Docker
+RUN --mount=type=cache,target=/root/.m2 mvn dependency:go-offline -B
+
+# Copiar os fontes e compilar
+COPY src ./src
+RUN --mount=type=cache,target=/root/.m2 mvn -B -DskipTests package
 
 # Rodar com uma imagem JDK para permitir compilação local no desenvolvimento
 # COPY puxa todos os arquivos da pasta backend pra /app
