@@ -62,10 +62,15 @@ public class UploadService {
         String extension = getFileExtension(file.getOriginalFilename());
         String fileName = UUID.randomUUID().toString() + (extension.isEmpty() ? "" : "." + extension);
         try {
+            String contentType = file.getContentType();
+            if (contentType == null || contentType.isBlank()) {
+                contentType = "image/jpeg";
+            }
+
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(fileName)
-                    .contentType(file.getContentType())
+                    .contentType(contentType)
                     .build();
             s3Client.putObject(putObjectRequest,
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize()));

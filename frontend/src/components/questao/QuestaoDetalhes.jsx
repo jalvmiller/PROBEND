@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import api from '../../services/api';
 import { renderizarTextoMath } from '../../utils/mathRenderer';
+import { getMediaUrl } from '../../utils/urlUtils';
 import CodeBlock from '../../utils/CodeBlock';
 import { ArrowLeft, CheckCircle, Clock, ThumbsUp } from 'lucide-react';
 import ResolucaoCard from './ResolucaoCard';
@@ -199,7 +200,7 @@ function QuestaoDetalhes() {
                     {questao.imagemUrl && (
                         <div className="my-4 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm bg-slate-50 dark:bg-slate-950/20 p-2">
                             <img
-                                src={questao.imagemUrl.startsWith("http") ? questao.imagemUrl : `http://localhost:8080${questao.imagemUrl}`}
+                                src={getMediaUrl(questao.imagemUrl)}
                                 alt="Imagem da questão"
                                 className="max-h-80 mx-auto object-contain rounded"
                             />
