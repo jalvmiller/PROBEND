@@ -91,14 +91,7 @@ public class MidiaRestController {
             ResponseBytes<GetObjectResponse> objectBytes = s3Client.getObjectAsBytes(getObjectRequest);
 
             String rawContentType = objectBytes.response().contentType();
-            MediaType mediaType;
-            try {
-                mediaType = (rawContentType != null && !rawContentType.isBlank())
-                        ? MediaType.parseMediaType(rawContentType)
-                        : MediaType.IMAGE_JPEG;
-            } catch (Exception ex) {
-                mediaType = MediaType.IMAGE_JPEG;
-            }
+            MediaType mediaType = resolveMediaType(fileName, rawContentType);
 
             return ResponseEntity.ok()
                     .contentType(mediaType)
@@ -107,5 +100,25 @@ public class MidiaRestController {
             System.err.println("Erro ao buscar imagem '" + fileName + "' no MinIO: " + e.getMessage());
             return ResponseEntity.notFound().build();
         }
+    }
+
+    private MediaType resolveMediaType(String fileName, String rawContentType) {
+        if (rawContentType != null && !rawContentType.isBlank()
+                && !rawContentType.equalsIgnoreCase("application/octet-stream")) {
+            try {
+                return MediaType.parseMediaType(rawContentType);
+            } catch (Exception ignored) {
+            }
+        }
+        String lower = fileName.toLowerCase();
+        if (lower.endsWith(".png"))
+            return MediaType.IMAGE_PNG;
+        if (lower.endsWith(".gif"))
+            return MediaType.IMAGE_GIF;
+        if (lower.endsWith(".webp"))
+            return MediaType.parseMediaType("image/webp");
+        if (lower.endsWith(".svg"))
+            return MediaType.parseMediaType("image/svg+xml");
+        return MediaType.IMAGE_JPEG;
     }
 }
