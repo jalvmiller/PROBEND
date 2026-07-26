@@ -161,4 +161,13 @@ public class QuestaoRestController extends BaseRestController<Questao, Long> {
         }
     }
 
+    @GetMapping("/resolucoes/meus-upvotes")
+    public ResponseEntity<?> meusUpvotesResolucoes() {
+        try {
+            return ResponseEntity.ok(upvoteService.getResolucaoUpvotedIdsDoUsuario());
+        } catch (Exception e) {
+            return ResponseEntity.ok(java.util.List.of());
+        }
+    }
+
 }

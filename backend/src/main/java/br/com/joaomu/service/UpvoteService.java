@@ -166,4 +166,13 @@ public class UpvoteService {
                 .map(u -> u.getQuestao().getId())
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<Long> getResolucaoUpvotedIdsDoUsuario() {
+        Usuario usuario = getUsuarioLogado();
+        return upvoteRepository.findByUsuario(usuario).stream()
+                .filter(u -> u.getResolucao() != null)
+                .map(u -> u.getResolucao().getId())
+                .collect(Collectors.toList());
+    }
 }

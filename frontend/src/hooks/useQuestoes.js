@@ -7,6 +7,7 @@ export function useQuestoes() {
 	const [listaQuestoes, setListaQuestoes] = useState([]);
 	const [carregando, setCarregando] = useState(true);
 	const [erro, setErro] = useState(null); // Estado p/ erros
+	const [meusUpvotes, setMeusUpvotes] = useState([]); // Estado para as questões curtidas
 
 	useEffect(() => {
 		const carregarDadosBanco = async () => {
@@ -15,8 +16,13 @@ export function useQuestoes() {
 				setErro(null); // Resetar antes de buscar
 
 				const dados = await questaoService.listarTodas();
-
 				setListaQuestoes(dados);
+
+				const token = localStorage.getItem('token');
+				if (token) {
+					const upvotes = await questaoService.getMeusUpvotes();
+					setMeusUpvotes(upvotes);
+				}
 			} catch (err) {
 				console.error("Erro ao conectar no Spring", err);
 				setErro("O servidor não está ligado");
@@ -65,5 +71,5 @@ export function useQuestoes() {
 	};
 
 	// Retornamos tudo que a tela precisa para funcionar
-	return { listaQuestoes, carregando, erro, removerDaLista, atualizarLista, pesquisar, editarNaLista };
+	return { listaQuestoes, carregando, erro, removerDaLista, atualizarLista, pesquisar, editarNaLista, meusUpvotes, setMeusUpvotes };
 }

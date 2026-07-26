@@ -9,7 +9,6 @@ import br.com.joaomu.entity.Resolucao;
 import br.com.joaomu.entity.Upvote;
 import br.com.joaomu.entity.Usuario;
 
-import java.util.Optional;
 import java.util.List;
 
 public interface UpvoteRepository extends JpaRepository<Upvote, Long> {
