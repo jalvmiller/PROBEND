@@ -87,10 +87,21 @@ public class MidiaRestController {
                     .build();
             ResponseBytes<GetObjectResponse> objectBytes = s3Client.getObjectAsBytes(getObjectRequest);
 
+            String rawContentType = objectBytes.response().contentType();
+            MediaType mediaType;
+            try {
+                mediaType = (rawContentType != null && !rawContentType.isBlank())
+                        ? MediaType.parseMediaType(rawContentType)
+                        : MediaType.IMAGE_JPEG;
+            } catch (Exception ex) {
+                mediaType = MediaType.IMAGE_JPEG;
+            }
+
             return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(objectBytes.response().contentType()))
+                    .contentType(mediaType)
                     .body(objectBytes.asByteArray());
         } catch (Exception e) {
+            System.err.println("Erro ao buscar imagem '" + fileName + "' no MinIO: " + e.getMessage());
             return ResponseEntity.notFound().build();
         }
     }
