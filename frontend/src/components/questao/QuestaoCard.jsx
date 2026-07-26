@@ -1,15 +1,44 @@
 import { Link } from 'react-router-dom';
 import BotaoExcluir from "../ui/BotaoExcluir";
-import { CheckCircle, Clock, Edit2, User, Calendar, MessageSquare } from 'lucide-react';
+import { ThumbsUp, CheckCircle, Clock, Edit2, User, Calendar, MessageSquare } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import QuestaoEditModal from './QuestaoEditModal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { renderizarTextoMath } from '../../utils/mathRenderer';
+import { questaoService } from '../../services/questaoService';
 
-function QuestaoCard({ questao, onExcluir, onEditarSucesso }) {
+function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
     const { user } = useAuth();
     const [modalEditOpen, setModalEditOpen] = useState(false);
     const [expandido, setExpandido] = useState(false);
+    const [upvotesCount, setUpvotesCount] = useState(questao.upvotes || 0);
+    const [isUpvoted, setIsUpvoted] = useState(false);
+
+    useEffect(() => {
+        if (meusUpvotes && meusUpvotes.includes(questao.id)) {
+            setIsUpvoted(true);
+        } else {
+            setIsUpvoted(false);
+        }
+    }, [meusUpvotes, questao.id]);
+
+    const handleUpvote = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!user) {
+            alert("Você precisa estar logado para dar upvote!");
+            return;
+        }
+
+        try {
+            const resultado = await questaoService.upvoteQuestao(questao.id);
+            setUpvotesCount(resultado.upvotes);
+            setIsUpvoted(resultado.upvoted);
+        } catch (err) {
+            console.error("Erro ao dar upvote:", err);
+        }
+    };
 
     const glowDificuldade =
         questao.dificuldade === 2 ? 'bg-red-500/10 dark:bg-red-500/20' :
@@ -108,6 +137,20 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso }) {
             {/* Ações */}
             <div className="mt-4 flex justify-between items-center border-t border-slate-50 dark:border-slate-800 pt-4">
                 <div className="flex gap-2">
+                    {/* Botão de Upvote */}
+                    <button
+                        onClick={handleUpvote}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer border ${
+                            isUpvoted
+                                ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/50 hover:bg-blue-100'
+                                : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-800'
+                        }`}
+                        title={isUpvoted ? "Remover Upvote" : "Dar Upvote"}
+                    >
+                        <ThumbsUp size={14} className={isUpvoted ? "fill-current text-blue-600 dark:text-blue-400" : ""} />
+                        <span>{upvotesCount}</span>
+                    </button>
+
                     {isAutor && (
                         <>
                             <button

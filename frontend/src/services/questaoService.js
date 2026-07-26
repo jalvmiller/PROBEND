@@ -62,5 +62,25 @@ export const questaoService = {
       }
     });
     return response.data;
+  },
+
+  upvoteQuestao: async (id) => {
+    const response = await api.post(`/questoes/${id}/upvote`);
+    return response.data;
+  },
+
+  getMeusUpvotes: async () => {
+    const response = await api.get("/questoes/meus-upvotes");
+    return response.data;
+  },
+
+  upvoteResolucao: async (id) => {
+    const response = await api.post(`/questoes/resolucoes/${id}/upvote`);
+    return response.data;
+  },
+
+  getMeusUpvotesResolucoes: async () => {
+    const response = await api.get("/questoes/resolucoes/meus-upvotes");
+    return response.data;
   }
 };

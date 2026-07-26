@@ -3,9 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import api from '../../services/api';
 import { renderizarTextoMath } from '../../utils/mathRenderer';
-import { ArrowLeft, CheckCircle, Clock } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Clock, ThumbsUp } from 'lucide-react';
 import ResolucaoCard from './ResolucaoCard';
 import ResolucaoForm from './ResolucaoForm';
+import { questaoService } from '../../services/questaoService';
 
 function QuestaoDetalhes() {
 
@@ -19,6 +20,9 @@ function QuestaoDetalhes() {
     const [enviando, setEnviando] = useState(false);
 
     const [resolucoes, setResolucoes] = useState([]); // estado para armazenar as resoluções
+    const [upvotesCount, setUpvotesCount] = useState(0);
+    const [isUpvoted, setIsUpvoted] = useState(false);
+    const [meusUpvotesResolucoes, setMeusUpvotesResolucoes] = useState([]);
 
     useEffect(() => {
         const carregarDados = async () => {
@@ -29,10 +33,21 @@ function QuestaoDetalhes() {
                 // Busca a questão pelo ID da questão
                 const responseQuestao = await api.get(`/questoes/${id}`);
                 setQuestao(responseQuestao.data);
+                setUpvotesCount(responseQuestao.data.upvotes || 0);
 
                 // Busca as resoluções pelo ID da questão
                 const responseResolucoes = await api.get(`/questoes/${id}/resolucoes`);
                 setResolucoes(responseResolucoes.data);
+
+                // Se houver usuário logado, busca os upvotes dele
+                const token = localStorage.getItem('token');
+                if (token) {
+                    const upvotesQ = await questaoService.getMeusUpvotes();
+                    setIsUpvoted(upvotesQ.includes(Number(id)));
+
+                    const upvotesR = await questaoService.getMeusUpvotesResolucoes();
+                    setMeusUpvotesResolucoes(upvotesR);
+                }
             } catch (err) {
                 console.error("Erro ao carregar detalhes", err);
                 setError("Não foi possível carregar os detalhes");
@@ -57,6 +72,21 @@ function QuestaoDetalhes() {
         } catch (err) {
             console.error("Erro ao alternar status:", err);
             alert("Erro alterar ao alterar o status. Só o autor pode fazer isso");
+        }
+    };
+
+    const handleUpvoteQuestao = async () => {
+        if (!user) {
+            alert("Você precisa estar logado para dar upvote!");
+            return;
+        }
+
+        try {
+            const resultado = await questaoService.upvoteQuestao(id);
+            setUpvotesCount(resultado.upvotes);
+            setIsUpvoted(resultado.upvoted);
+        } catch (err) {
+            console.error("Erro ao dar upvote na questão:", err);
         }
     };
 
@@ -194,9 +224,22 @@ function QuestaoDetalhes() {
                         <p className='text-xs text-slate-400 dark:text-slate-500 italic'>Fonte: {questao.fonte}</p>
                     )}
 
-                    {/* Botão de alternar solução condicionada ao autor */}
-                    {user && questao.autor && questao.autor.username === user.username && (
-                        <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex gap-4">
+                    {/* Ações da Questão (Upvote para todos logados, Solucionada para o autor) */}
+                    <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-4 items-center">
+                        {/* Botão de Upvote */}
+                        <button
+                            onClick={handleUpvoteQuestao}
+                            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 cursor-pointer border ${isUpvoted
+                                ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/50 hover:bg-blue-100'
+                                : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-800'
+                                }`}
+                        >
+                            <ThumbsUp size={20} className={isUpvoted ? "fill-current text-blue-600 dark:text-blue-400" : ""} />
+                            <span>{upvotesCount} {upvotesCount === 1 ? 'Upvote' : 'Upvotes'}</span>
+                        </button>
+
+                        {/* Botão de alternar solução condicionada ao autor */}
+                        {user && questao.autor && questao.autor.username === user.username && (
                             <button
                                 onClick={handleAlternarSolucionada}
                                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition cursor-pointer ${questao.solucionada
@@ -207,8 +250,8 @@ function QuestaoDetalhes() {
                                 <CheckCircle size={16} />
                                 {questao.solucionada ? 'Desmarcar como solucionada' : 'Marcar como solucionada'}
                             </button>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -228,7 +271,9 @@ function QuestaoDetalhes() {
                         resolucoes.map(resolucao => (
                             <ResolucaoCard
                                 key={resolucao.id}
-                                resolucao={resolucao} />
+                                resolucao={resolucao}
+                                meusUpvotes={meusUpvotesResolucoes}
+                            />
                         ))
                     )}
                 </div>

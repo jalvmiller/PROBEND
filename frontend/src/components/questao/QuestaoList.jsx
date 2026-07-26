@@ -9,7 +9,8 @@ function QuestaoList({
 	carregando,
 	erro,
 	onExcluir,
-	onEditarSucesso
+	onEditarSucesso,
+	meusUpvotes
 }) {
 	const [paginaAtual, setPaginaAtual] = useState(1);
 	// prevLengthRef faz uso do conceito de useRef 
@@ -136,6 +137,7 @@ function QuestaoList({
 								questao={questao}
 								onExcluir={() => onExcluir(questao.id)}
 								onEditarSucesso={onEditarSucesso}
+								meusUpvotes={meusUpvotes}
 							/>
 						))
 					)}
