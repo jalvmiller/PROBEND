@@ -17,6 +17,6 @@ import java.util.Optional;
     Spring Data JPA através de proxies do Hibernate
 */
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUsername(String username);
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+    Optional<Usuario> findByUsername(String username);
 }

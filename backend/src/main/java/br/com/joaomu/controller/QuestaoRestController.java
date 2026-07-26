@@ -1,5 +1,6 @@
 package br.com.joaomu.controller;
 
+import br.com.joaomu.service.UpvoteService;
 import br.com.joaomu.service.QuestaoService;
 import br.com.joaomu.entity.Questao;
 import br.com.joaomu.entity.Resolucao;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 // RestController = Controller + ResponseBody
 // Diz pro Spring que a classe lidará com requisições web e que o retorno
@@ -25,14 +28,18 @@ public class QuestaoRestController extends BaseRestController<Questao, Long> {
     // Injeção de dependências
     private final QuestaoService questaoService;
     private final GeminiService geminiService;
+    private final UpvoteService upvoteService;
 
     // Construtor
     // Responsabilidade do service é atuar como cérebro, controller só serve como
     // I/O
-    public QuestaoRestController(QuestaoService questaoService, GeminiService geminiService) {
+    public QuestaoRestController(QuestaoService questaoService,
+            GeminiService geminiService,
+            UpvoteService upvoteService) {
         super(questaoService);
         this.questaoService = questaoService;
         this.geminiService = geminiService;
+        this.upvoteService = upvoteService;
     }
 
     // Listagem trabalha com a busca (herdado do BaseRestController)
@@ -100,4 +107,58 @@ public class QuestaoRestController extends BaseRestController<Questao, Long> {
                     .body(Map.of("erro", "Erro ao processar e salvar a questão gerada pela IA: " + e.getMessage()));
         }
     }
+
+    // ======================================
+    // ========= Métodos de Upvote ==========
+    // ======================================
+
+    // =============================================
+    // ======== Upvote de Questão ==================
+    // =============================================
+
+    @PostMapping("/{id}/upvote")
+    public ResponseEntity<?> upvoteQuestao(@PathVariable Long id) {
+        try {
+            Map<String, Object> resultado = upvoteService.toggleUpvoteQuestao(id);
+            return ResponseEntity.ok(resultado);
+
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("erro", e.getMessage()));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("erro", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/meus-upvotes")
+    public ResponseEntity<?> meusUpvotes() {
+        try {
+            return ResponseEntity.ok(upvoteService.getQuestaoUpvotedIdsDoUsuario());
+        } catch (Exception e) {
+            return ResponseEntity.ok(java.util.List.of());
+        }
+    }
+
+    // ======================================================
+    // ======== Upvote de Resolução =========================
+    // ======================================================
+
+    @PostMapping("/resolucoes/{id}/upvote")
+    public ResponseEntity<?> upvoteResolucao(@PathVariable Long id) {
+        try {
+            Map<String, Object> resultado = upvoteService.toggleUpvoteResolucao(id);
+            return ResponseEntity.ok(resultado);
+
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("erro", e.getMessage()));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("erro", e.getMessage()));
+        }
+    }
+
 }

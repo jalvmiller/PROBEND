@@ -2,10 +2,10 @@ package br.com.joaomu.config;
 
 import br.com.joaomu.entity.Questao;
 import br.com.joaomu.entity.Resolucao;
-import br.com.joaomu.entity.User;
+import br.com.joaomu.entity.Usuario;
 import br.com.joaomu.repository.QuestaoRepository;
 import br.com.joaomu.repository.ResolucaoRepository;
-import br.com.joaomu.repository.UserRepository;
+import br.com.joaomu.repository.UsuarioRepository;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,16 +16,16 @@ import java.util.Arrays;
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
 
-	private final UserRepository userRepository;
+	private final UsuarioRepository usuarioRepository;
 	private final QuestaoRepository questaoRepository;
 	private final ResolucaoRepository resolucaoRepository;
 	private final PasswordEncoder passwordEncoder;
 
-	public DatabaseSeeder(UserRepository userRepository,
+	public DatabaseSeeder(UsuarioRepository usuarioRepository,
 			QuestaoRepository questaoRepository,
 			ResolucaoRepository resolucaoRepository,
 			PasswordEncoder passwordEncoder) {
-		this.userRepository = userRepository;
+		this.usuarioRepository = usuarioRepository;
 		this.questaoRepository = questaoRepository;
 		this.resolucaoRepository = resolucaoRepository;
 		this.passwordEncoder = passwordEncoder;
@@ -34,11 +34,11 @@ public class DatabaseSeeder implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		// Roda o seed apenas se não existirem usuários no banco de dados
-		if (userRepository.count() == 0) {
+		if (usuarioRepository.count() == 0) {
 			System.out.println("=== Banco de dados vazio. Iniciando inserção dos dados seed... ===");
 
 			// 1. Criar Usuários
-			User admin = new User();
+			Usuario admin = new Usuario();
 			admin.setUsername("admin");
 			admin.setPassword(passwordEncoder.encode("admin123"));
 			admin.setNome("Admin Probend");
@@ -47,7 +47,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 			admin.setEspecialista(true);
 			admin.setAdministrador(true);
 
-			User especialista = new User();
+			Usuario especialista = new Usuario();
 			especialista.setUsername("especialista");
 			especialista.setPassword(passwordEncoder.encode("especialista123"));
 			especialista.setNome("Maria Especialista");
@@ -56,7 +56,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 			especialista.setEspecialista(true);
 			especialista.setAdministrador(false);
 
-			User user = new User();
+			Usuario user = new Usuario();
 			user.setUsername("user");
 			user.setPassword(passwordEncoder.encode("user123"));
 			user.setNome("João Aluno");
@@ -65,7 +65,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 			user.setEspecialista(false);
 			user.setAdministrador(false);
 
-			userRepository.saveAll(Arrays.asList(admin, especialista, user));
+			usuarioRepository.saveAll(Arrays.asList(admin, especialista, user));
 			System.out.println("Usuários de teste cadastrados!");
 
 			// 2. Criar Questões de Teste

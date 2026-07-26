@@ -28,15 +28,15 @@ public class Resolucao {
     private Questao questao;
 
     @ManyToOne
-    @JoinColumn(name = "autor_id", nullable = false)
-    private User autor;
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario autor;
 
     public Resolucao() {
 
     }
 
     public Resolucao(String conteudo, String trechoCodigo, String linguagemCodigo, Integer upvotes,
-            Boolean verificadoPorEspecialista, Questao questao, User autor) {
+            Boolean verificadoPorEspecialista, Questao questao, Usuario autor) {
         this.conteudo = conteudo;
         this.trechoCodigo = trechoCodigo;
         this.linguagemCodigo = linguagemCodigo;
@@ -102,11 +102,11 @@ public class Resolucao {
         this.questao = questao;
     }
 
-    public User getAutor() {
+    public Usuario getAutor() {
         return autor;
     }
 
-    public void setAutor(User autor) {
+    public void setAutor(Usuario autor) {
         this.autor = autor;
     }
 

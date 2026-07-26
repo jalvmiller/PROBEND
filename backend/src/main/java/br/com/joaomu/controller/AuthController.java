@@ -3,8 +3,8 @@ package br.com.joaomu.controller;
 import br.com.joaomu.dto.AuthResponse;
 import br.com.joaomu.dto.LoginRequest;
 import br.com.joaomu.dto.RegisterRequest;
-import br.com.joaomu.entity.User;
-import br.com.joaomu.repository.UserRepository;
+import br.com.joaomu.entity.Usuario;
+import br.com.joaomu.repository.UsuarioRepository;
 import br.com.joaomu.security.JwtUtil;
 import br.com.joaomu.security.TokenBlacklistService;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +20,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
+    private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final TokenBlacklistService blacklistService;
 
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository,
+    public AuthController(AuthenticationManager authenticationManager, UsuarioRepository usuarioRepository,
             PasswordEncoder passwordEncoder, JwtUtil jwtUtil, TokenBlacklistService blacklistService) {
         this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
+        this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.blacklistService = blacklistService;
@@ -36,13 +36,13 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
-        User user = new User();
+        Usuario user = new Usuario();
         user.setUsername(request.username());
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setNome(request.nome());
         user.setEmail(request.email());
 
-        userRepository.save(user);
+        usuarioRepository.save(user);
 
         String token = jwtUtil.generateToken(user.getUsername());
 
@@ -86,9 +86,9 @@ public class AuthController {
 
     // Retorna os dados do usuário logado
     @GetMapping("/me")
-    public ResponseEntity<User> me() {
+    public ResponseEntity<Usuario> me() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
+        Usuario user = usuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
         return ResponseEntity.ok(user);
