@@ -1,8 +1,41 @@
+import { useState, useEffect } from 'react';
+import { ThumbsUp } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
+import { questaoService } from '../../services/questaoService';
 import { renderizarTextoMath } from '../../utils/mathRenderer';
 
-function ResolucaoCard({ resolucao }) {
-    return (
+function ResolucaoCard({ resolucao, meusUpvotes }) {
+    const { user } = useAuth();
+    const [upvotesCount, setUpvotesCount] = useState(resolucao.upvotes || 0);
+    const [isUpvoted, setIsUpvoted] = useState(false);
 
+    useEffect(() => {
+        if (meusUpvotes && meusUpvotes.includes(resolucao.id)) {
+            setIsUpvoted(true);
+        } else {
+            setIsUpvoted(false);
+        }
+    }, [meusUpvotes, resolucao.id]);
+
+    const handleUpvote = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!user) {
+            alert("Você precisa estar logado para dar upvote!");
+            return;
+        }
+
+        try {
+            const resultado = await questaoService.upvoteResolucao(resolucao.id);
+            setUpvotesCount(resultado.upvotes);
+            setIsUpvoted(resultado.upvoted);
+        } catch (err) {
+            console.error("Erro ao dar upvote na resolução:", err);
+        }
+    };
+
+    return (
         // Janela do Card de Resolução
         <div className='bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 p-6 space-y-4 transition hover:shadow-xl transition-colors duration-300'>
             <div className='flex justify-between items-center border-b border-slate-50 dark:border-slate-800 pb-2'>
@@ -10,6 +43,19 @@ function ResolucaoCard({ resolucao }) {
                 <span className='text-sm font-semibold text-slate-600 dark:text-slate-400'>
                     Respondido por: <span className='text-slate-800 dark:text-slate-200'>{resolucao.autor?.nome || resolucao.autor?.username}</span>
                 </span>
+
+                {/* Botão de Upvote */}
+                <button
+                    onClick={handleUpvote}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer border ${isUpvoted
+                        ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/50 hover:bg-blue-100'
+                        : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-800'
+                        }`}
+                    title={isUpvoted ? "Remover Upvote" : "Dar Upvote"}
+                >
+                    <ThumbsUp size={20} className={isUpvoted ? "fill-current text-blue-600 dark:text-blue-400" : ""} />
+                    <span className="text-sm font-bold">{upvotesCount}</span>
+                </button>
             </div>
 
             {/* Renderização do conteúdo da resolução
