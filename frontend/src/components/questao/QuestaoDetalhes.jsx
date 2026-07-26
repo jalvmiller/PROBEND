@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import api from '../../services/api';
 import { renderizarTextoMath } from '../../utils/mathRenderer';
+import CodeBlock from '../../utils/CodeBlock';
 import { ArrowLeft, CheckCircle, Clock, ThumbsUp } from 'lucide-react';
 import ResolucaoCard from './ResolucaoCard';
 import ResolucaoForm from './ResolucaoForm';
@@ -207,17 +208,10 @@ function QuestaoDetalhes() {
 
                     {/* Bloco de Código - condicionada ao trechoCodigo existir*/}
                     {questao.trechoCodigo && (
-                        <div className='rounded-xl overflow-hidden border border-slate-800 dark:border-slate-700 shadow-md'>
-                            <div className='bg-slate-800 dark:bg-slate-800 text-slate-400 dark:text-slate-300 px-4 py-2 text-xs font-mono flex justify-between items-center'>
-                                <span>Código {(questao.linguagemCodigo || 'Texto')}</span>
-                            </div>
-
-                            {/* ====== Trecho de Código ====== */}
-                            <pre className='bg-slate-900 dark:bg-slate-950 text-slate-300 dark:text-slate-200 p-4 text-sm overflow-x-auto'>
-                                <code>{questao.trechoCodigo}</code>
-                            </pre>
-                            {/* ====== Trecho de Código ======*/}
-                        </div>
+                        <CodeBlock
+                            code={questao.trechoCodigo}
+                            language={questao.linguagemCodigo}
+                        />
                     )}
 
                     {questao.fonte && (

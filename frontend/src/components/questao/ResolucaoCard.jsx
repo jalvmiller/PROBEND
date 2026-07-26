@@ -3,6 +3,7 @@ import { ThumbsUp } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { questaoService } from '../../services/questaoService';
 import { renderizarTextoMath } from '../../utils/mathRenderer';
+import CodeBlock from '../../utils/CodeBlock';
 
 function ResolucaoCard({ resolucao, meusUpvotes }) {
     const { user } = useAuth();
@@ -71,21 +72,15 @@ function ResolucaoCard({ resolucao, meusUpvotes }) {
 
             {/* Renderização do trecho de código (se houver) */}
             {resolucao.trechoCodigo && (
-                // Janela do trecho de código
-                <div className='rounded-xl overflow-hidden border border-slate-800 dark:border-slate-700 shadow-md'>
-                    {/* Cabeçalho do trecho de código */}
-                    <div className='bg-slate-800 dark:bg-slate-800 text-slate-400 dark:text-slate-300 px-4 py-1.5 text-xs font-mono'>
-                        {resolucao.linguagemCodigo || "Código"}
-                    </div>
-                    {/* Corpo do trecho de código */}
-                    <pre className='bg-slate-900 dark:bg-slate-950 text-slate-100 dark:text-slate-200 p-4 overflow-x-auto font-mono text-sm leading-relaxed'>
-                        <code>
-                            {resolucao.trechoCodigo}
-                        </code>
-                    </pre>
-                </div>
-            )}
-        </div>
+
+
+                <CodeBlock
+                    code={resolucao.trechoCodigo}
+                    language={resolucao.linguagemCodigo}
+                />
+            )
+            }
+        </div >
     );
 
 
