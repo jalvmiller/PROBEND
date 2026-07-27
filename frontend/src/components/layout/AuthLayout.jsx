@@ -2,7 +2,7 @@ import React from 'react';
 
 export function AuthLayout({ children }) {
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-blue-900 dark:bg-slate-950 p-4 transition-colors duration-300">
+    <div className="relative min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950 p-4 transition-colors duration-300">
       {/* Máscara de textura de pontos via CSS sutil */}
       <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
 

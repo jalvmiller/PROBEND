@@ -23,7 +23,9 @@ function Layout({ children }) {
   // que a tela
 
   return (
-    <div className="relative flex flex-col h-screen bg-blue-900 dark:bg-slate-950 transition-colors duration-300">
+    <div className="relative flex flex-col h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+      {/* Fundo sutil com gradiente ambiente */}
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-100 via-blue-50/40 to-slate-200 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 pointer-events-none -z-10" />
 
       {/* Navbar no topo */}
       <Navbar onMenuClick={() => setSidebarOpen(true)} />
