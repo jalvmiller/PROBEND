@@ -82,6 +82,7 @@ function Sidebar({ isOpen, onClose }) {
                 <nav className="p-4 space-y-2">
                     <Link
                         to="/"
+                        onClick={onClose}
                         className="flex items-center gap-3 px-4 py-3 rounded hover:bg-blue-600 dark:hover:bg-slate-800 transition"
                     >
                         <Home size={20} />
@@ -89,6 +90,7 @@ function Sidebar({ isOpen, onClose }) {
                     </Link>
                     <Link
                         to="/"
+                        onClick={onClose}
                         className="flex items-center gap-3 px-4 py-3 rounded hover:bg-blue-600 dark:hover:bg-slate-800 transition"
                     >
                         <BookOpen size={20} />
@@ -96,16 +98,20 @@ function Sidebar({ isOpen, onClose }) {
                     </Link>
                     <Link
                         to="/configuracoes"
+                        onClick={onClose}
                         className="flex items-center gap-3 px-4 py-3 rounded hover:bg-blue-600 dark:hover:bg-slate-800 transition"
                     >
                         <Settings size={20} />
                         <span>Configurações</span>
                     </Link>
                     <button
-                        onClick={logout}
+                        onClick={() => {
+                            onClose();
+                            logout();
+                        }}
                         className="flex items-center w-full gap-3 px-4 py-3 rounded
                         hover:bg-red-600/20 hover:text-red-400 text-slate-400 transition
-                        text-left mt-auto font-medium"
+                        text-left mt-auto font-medium cursor-pointer"
                     >
                         <LogOut size={20} />
                         <span>Sair</span>

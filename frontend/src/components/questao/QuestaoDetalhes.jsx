@@ -129,15 +129,12 @@ function QuestaoDetalhes() {
             questao?.dificuldade === 1 ? 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950/20 dark:text-amber-400 dark:border-amber-900/40' : 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/20 dark:text-green-400 dark:border-green-900/40';
 
     // == Renderização do componente de detalhes da questão ==
-    // == Renderização do componente de detalhes da questão ==
-    // == Renderização do componente de detalhes da questão ==
-    // == Renderização do componente de detalhes da questão ==
     return (
-        <div className="max-w-4xl mx-auto p-4 space-y-6">
+        <div className="max-w-4xl mx-auto space-y-6">
             {/* Botão de Voltar*/}
             <button
                 onClick={() => navigate(`/`)}
-                className="flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 transition font-semibold"
+                className="flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 transition font-semibold cursor-pointer"
             >
                 <ArrowLeft size={20} />
                 Voltar
@@ -151,7 +148,7 @@ function QuestaoDetalhes() {
 
             {/* Janela */}
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 overflow-hidden transition-colors duration-300">
-                <div className='p-6 bg-slate-50 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors duration-300'>
+                <div className='p-4 sm:p-6 bg-slate-50 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors duration-300'>
                     {/* Informações da Questão (Matéria, Assunto, Dificuldade e Autor) */}
                     <div>
                         <div className="flex flex-wrap items-center gap-2">
@@ -203,7 +200,7 @@ function QuestaoDetalhes() {
                 </div>
 
 
-                <div className='p-6 md:p-8 space-y-6'>
+                <div className='p-4 sm:p-6 md:p-8 space-y-6'>
                     <div className='text-slate-800 dark:text-slate-100 leading-relaxed text-lg whitespace-pre-wrap transition-colors duration-300'>
                         {renderizarTextoMath(questao.enunciado)}
                     </div>

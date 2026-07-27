@@ -7,7 +7,7 @@ export function AuthLayout({ children }) {
       <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
 
       {/* Container principal */}
-      <div className="relative z-10 w-full max-w-md p-8 bg-white dark:bg-slate-900 shadow-xl border border-slate-200 dark:border-slate-800 transition-colors duration-300">
+      <div className="relative z-10 w-full max-w-md p-5 sm:p-8 bg-white dark:bg-slate-900 shadow-xl rounded-2xl border border-slate-200 dark:border-slate-800 transition-colors duration-300 overflow-hidden">
 
         {/* Faixa gradiente superior */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400" />

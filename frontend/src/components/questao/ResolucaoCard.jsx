@@ -41,8 +41,8 @@ function ResolucaoCard({ resolucao, meusUpvotes }) {
 
     return (
         // Janela do Card de Resolução
-        <div className='bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 p-6 space-y-4 transition hover:shadow-xl transition-colors duration-300'>
-            <div className='flex justify-between items-center border-b border-slate-50 dark:border-slate-800 pb-2'>
+        <div className='bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 p-4 sm:p-6 space-y-4 transition hover:shadow-xl transition-colors duration-300'>
+            <div className='flex flex-wrap sm:flex-nowrap justify-between items-center gap-2 border-b border-slate-50 dark:border-slate-800 pb-2'>
                 {/* Informações sobre quem postou a resolução */}
                 <div className='flex items-center space-x-3'>
                     <UsuarioAvatar usuario={resolucao.autor} size="md" />

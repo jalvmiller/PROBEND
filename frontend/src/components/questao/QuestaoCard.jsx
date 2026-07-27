@@ -75,7 +75,7 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
     };
 
     return (
-        <div className={`group relative overflow-hidden bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-md border border-slate-100 dark:border-slate-800/80 ${hoverBorderDificuldade} mb-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.01]`}>
+        <div className={`group relative overflow-hidden bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-md border border-slate-100 dark:border-slate-800/80 ${hoverBorderDificuldade} mb-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.01]`}>
             {/* Spotlight Gradient de Dificuldade */}
             <div className={`absolute -top-16 -right-16 w-36 h-36 rounded-full ${glowDificuldade} blur-2xl pointer-events-none transition-all duration-500 group-hover:scale-125`} />
 
@@ -137,8 +137,8 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
             </div>
 
             {/* Ações */}
-            <div className="mt-4 flex justify-between items-center border-t border-slate-50 dark:border-slate-800 pt-4">
-                <div className="flex gap-2">
+            <div className="mt-4 flex flex-wrap sm:flex-nowrap justify-between items-center gap-2 border-t border-slate-50 dark:border-slate-800 pt-4">
+                <div className="flex flex-wrap gap-2">
                     {/* Botão de Upvote */}
                     <button
                         onClick={handleUpvote}

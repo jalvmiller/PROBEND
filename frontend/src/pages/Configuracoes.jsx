@@ -38,15 +38,15 @@ function Configuracoes() {
     const avatarUrl = getMediaUrl(user?.avatar);
 
     return (
-        <div className="max-w-4xl mx-auto p-4 space-y-6">
+        <div className="max-w-4xl mx-auto space-y-6">
             <h2 className="text-3xl font-bold text-slate-900 dark:text-slate-100 transition-colors">
                 Configurações
             </h2>
 
             {/* CARD: Dados do Perfil */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 p-6 space-y-6 transition-colors duration-300">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 p-4 sm:p-6 space-y-6 transition-colors duration-300">
                 {/* Avatar + Opção para Editar */}
-                <div className="flex items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <div className="flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
                     <div
                         onClick={abrirSeletorDeArquivo}
                         className="relative group w-20 h-20 rounded-full cursor-pointer flex-shrink-0 overflow-hidden shadow-md ring-2 ring-blue-500/20 dark:ring-blue-400/20"
