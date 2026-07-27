@@ -11,7 +11,7 @@ function Dashboard() {
 	const [termoBusca, setTermoBusca] = useState('');
 
 	// Pega os métodos relacionados ao objeto questões pelo hook
-	const { listaQuestoes, carregando, erro, removerDaLista, atualizarLista, pesquisar, editarNaLista } = useQuestoes();
+	const { listaQuestoes, carregando, erro, removerDaLista, atualizarLista, pesquisar, editarNaLista, meusUpvotes } = useQuestoes();
 
 	// Quando uma questão é salva com sucesso, fecha o formulário
 	const handleSalvarQuestao = (questao) => {
@@ -63,6 +63,7 @@ function Dashboard() {
 				erro={erro}
 				onExcluir={removerDaLista}
 				onEditarSucesso={editarNaLista}
+				meusUpvotes={meusUpvotes}
 			/>
 		</div>
 	);

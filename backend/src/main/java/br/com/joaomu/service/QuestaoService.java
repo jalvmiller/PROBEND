@@ -2,10 +2,10 @@ package br.com.joaomu.service;
 
 import br.com.joaomu.entity.Questao;
 import br.com.joaomu.entity.Resolucao;
-import br.com.joaomu.entity.User;
+import br.com.joaomu.entity.Usuario;
 import br.com.joaomu.repository.QuestaoRepository;
 import br.com.joaomu.repository.ResolucaoRepository;
-import br.com.joaomu.repository.UserRepository;
+import br.com.joaomu.repository.UsuarioRepository;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
@@ -23,15 +23,15 @@ public class QuestaoService implements CrudService<Questao, Long> {
     // Interage com o banco de dados via repository
     // Retorna os dados para o Controller
     private final QuestaoRepository repository;
-    private final UserRepository userRepository;
+    private final UsuarioRepository usuarioRepository;
     private final ResolucaoRepository resolucaoRepository;
 
     private final ResolucaoService resolucaoService;
 
-    public QuestaoService(QuestaoRepository repository, UserRepository userRepository,
+    public QuestaoService(QuestaoRepository repository, UsuarioRepository usuarioRepository,
             ResolucaoRepository resolucaoRepository, ResolucaoService resolucaoService) {
         this.repository = repository;
-        this.userRepository = userRepository;
+        this.usuarioRepository = usuarioRepository;
         this.resolucaoRepository = resolucaoRepository;
         this.resolucaoService = resolucaoService;
     }
@@ -71,7 +71,7 @@ public class QuestaoService implements CrudService<Questao, Long> {
             // pega-se o autor por username
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
-                User loggedInUser = userRepository.findByUsername(auth.getName()).orElse(null);
+                Usuario loggedInUser = usuarioRepository.findByUsername(auth.getName()).orElse(null);
                 questao.setAutor(loggedInUser);
             }
         }
@@ -216,7 +216,7 @@ public class QuestaoService implements CrudService<Questao, Long> {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
-            User loggedInUser = userRepository.findByUsername(auth.getName()).orElse(null);
+            Usuario loggedInUser = usuarioRepository.findByUsername(auth.getName()).orElse(null);
 
             resolucao.setAutor(loggedInUser);
         }

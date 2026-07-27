@@ -56,10 +56,9 @@ function Navbar({ onMenuClick }) {
 
 				{/* Botão de login/logout */}
 				{user ? (
-					<div className="flex items-center gap-4">
-						<div className="flex items-center justify-between min-w-[8.5rem] bg-blue-700/50 dark:bg-slate-800/80 pl-1.5 
-							pr-4 py-1 rounded-full border border-blue-400/20 dark:border-slate-700 shadow-inner">
-							<div className="w-10 h-10 rounded-full overflow-hidden bg-blue-500/30 dark:bg-slate-700 flex items-center
+					<div className="flex items-center gap-2 sm:gap-4">
+						<div className="flex items-center justify-between sm:min-w-[12rem] bg-blue-700/50 dark:bg-slate-800/80 p-1 sm:pl-1.5 sm:pr-4 sm:py-1 rounded-full border border-blue-400/20 dark:border-slate-700 shadow-inner">
+							<div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden bg-blue-500/30 dark:bg-slate-700 flex items-center
 							justify-center text-white ring-2 ring-white/20 flex-shrink-0">
 								{avatarUrl ? (
 									<img
@@ -72,19 +71,21 @@ function Navbar({ onMenuClick }) {
 								)}
 							</div>
 
-							<span className="text-sm font-medium hidden sm:inline">
-								Olá, {user.nome}
-							</span>
+							<div className="hidden sm:block">
+								<span className="text-sm font-medium max-w-[8.5rem] truncate block">
+									Olá, {user.nome}
+								</span>
+							</div>
 						</div>
 
 						<button
 							onClick={logout}
 							className="flex items-center gap-1.5 
-							text-sm bg-blue-700 hover:bg-blue-800 dark:bg-slate-800 dark:hover:bg-slate-700
-							px-3 py-2 rounded-lg transition font-semibold shadow-sm"
+							text-xs sm:text-sm bg-blue-700 hover:bg-blue-800 dark:bg-slate-800 dark:hover:bg-slate-700
+							px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg transition font-semibold shadow-sm"
 						>
 							<LogOut size={16} />
-							<span>
+							<span className="hidden xs:inline">
 								Sair
 							</span>
 						</button>

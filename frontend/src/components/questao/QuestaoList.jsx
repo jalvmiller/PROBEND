@@ -9,7 +9,8 @@ function QuestaoList({
 	carregando,
 	erro,
 	onExcluir,
-	onEditarSucesso
+	onEditarSucesso,
+	meusUpvotes
 }) {
 	const [paginaAtual, setPaginaAtual] = useState(1);
 	// prevLengthRef faz uso do conceito de useRef 
@@ -102,7 +103,7 @@ function QuestaoList({
 	return (
 		<div className="space-y-6">
 			{/* Bloco contendo a lista de questões */}
-			<div className="bg-white dark:bg-slate-900 rounded-lg shadow-md p-6 border border-transparent dark:border-slate-800 transition-colors">
+			<div className="bg-white dark:bg-slate-900 rounded-lg shadow-md p-4 sm:p-6 border border-transparent dark:border-slate-800 transition-colors">
 				{/* Cabeçalho do bloco */}
 				<div className="mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
 					<h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
@@ -136,6 +137,7 @@ function QuestaoList({
 								questao={questao}
 								onExcluir={() => onExcluir(questao.id)}
 								onEditarSucesso={onEditarSucesso}
+								meusUpvotes={meusUpvotes}
 							/>
 						))
 					)}
@@ -143,7 +145,7 @@ function QuestaoList({
 
 				{/* Controles de Paginação */}
 				{totalPages > 1 && (
-					<div className="flex items-center justify-center gap-2 mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
+					<div className="flex flex-wrap items-center justify-center gap-2 mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
 						{/* Botão Anterior */}
 						<button
 							onClick={() => setPaginaAtual(prev => Math.max(prev - 1, 1))}
@@ -158,7 +160,7 @@ function QuestaoList({
 						</button>
 
 						{/* Números das Páginas */}
-						<div className="flex items-center gap-1.5">
+						<div className="flex flex-wrap items-center gap-1 sm:gap-1.5 justify-center">
 							{getPageNumbers().map((page, index) => {
 								if (page === '...') {
 									return (

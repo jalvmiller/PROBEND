@@ -10,7 +10,7 @@ function Layout({ children }) {
   // Lembrar que o useState lida com o sidebarOpen como "atributo"
   // e que o setSidebarOpen fica atrelado a esse atributo como SETTER
   // False inicialmente
-  
+
   // flex flex-col        -> flex em coluna, elementos filhos na vertical
   // h-screen             -> altura total da tela
   // bg-slate-50          -> cor de fundo da página
@@ -21,11 +21,11 @@ function Layout({ children }) {
   // flex-1 overflow-y-auto p-6   -> flex-1 ocupa todo o espaço,
   // o overflow-y-auto deixa rolar verticalmente quando o conteúdo for maior
   // que a tela
-  
+
   return (
-    <div className="relative flex flex-col h-screen bg-blue-900 dark:bg-slate-950 transition-colors duration-300">
-      {/* Máscara de textura de pontos via CSS sutil */}
-      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1px,transparent_1px)] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
+    <div className="relative flex flex-col h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+      {/* Fundo sutil com gradiente ambiente */}
+      <div className="fixed inset-0 bg-gradient-to-br from-slate-100 via-blue-50/40 to-slate-200 dark:from-slate-950 dark:via-slate-900/80 dark:to-slate-950 pointer-events-none -z-10" />
 
       {/* Navbar no topo */}
       <Navbar onMenuClick={() => setSidebarOpen(true)} />
@@ -36,7 +36,7 @@ function Layout({ children }) {
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
         {/* Conteúdo principal (children) */}
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-3 sm:p-6">
           {children}
         </main>
       </div>

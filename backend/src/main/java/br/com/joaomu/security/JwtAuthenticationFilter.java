@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import br.com.joaomu.security.TokenBlacklistService;
 
 // Vai interceptar todas as requisições que chegam na API. Herda de OncePerRequestFilter, ou seja,
 // é executada por requisição HTTP

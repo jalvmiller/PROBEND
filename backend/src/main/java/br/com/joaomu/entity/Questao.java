@@ -31,8 +31,8 @@ public class Questao {
     private String fonte;
 
     @ManyToOne
-    @JoinColumn(name = "autor_id")
-    private User autor;
+    @JoinColumn(name = "usuario_id")
+    private Usuario autor;
 
     private Integer upvotes = 0;
 
@@ -47,6 +47,9 @@ public class Questao {
     @Column(name = "data_insercao")
     private java.time.LocalDateTime dataInsercao;
 
+    // Cascade = todas as ações que acontecerem na
+    // questão vão acontecer nas resoluções
+    // orphanRemoval = true = se deletar uma questão, deleta as resoluções
     @OneToMany(mappedBy = "questao", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Resolucao> resolucoes = new ArrayList<>();
@@ -114,11 +117,11 @@ public class Questao {
         this.fonte = fonte;
     }
 
-    public User getAutor() {
+    public Usuario getAutor() {
         return autor;
     }
 
-    public void setAutor(User autor) {
+    public void setAutor(Usuario autor) {
         this.autor = autor;
     }
 

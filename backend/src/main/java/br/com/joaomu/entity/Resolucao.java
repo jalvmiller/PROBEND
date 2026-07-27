@@ -28,15 +28,25 @@ public class Resolucao {
     private Questao questao;
 
     @ManyToOne
-    @JoinColumn(name = "autor_id", nullable = false)
-    private User autor;
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario autor;
+
+    @Column(name = "data_criacao")
+    private java.time.LocalDateTime dataCriacao;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.dataCriacao == null) {
+            this.dataCriacao = java.time.LocalDateTime.now();
+        }
+    }
 
     public Resolucao() {
 
     }
 
     public Resolucao(String conteudo, String trechoCodigo, String linguagemCodigo, Integer upvotes,
-            Boolean verificadoPorEspecialista, Questao questao, User autor) {
+            Boolean verificadoPorEspecialista, Questao questao, Usuario autor) {
         this.conteudo = conteudo;
         this.trechoCodigo = trechoCodigo;
         this.linguagemCodigo = linguagemCodigo;
@@ -102,12 +112,20 @@ public class Resolucao {
         this.questao = questao;
     }
 
-    public User getAutor() {
+    public Usuario getAutor() {
         return autor;
     }
 
-    public void setAutor(User autor) {
+    public void setAutor(Usuario autor) {
         this.autor = autor;
+    }
+
+    public java.time.LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(java.time.LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 
 }

@@ -16,7 +16,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/midia")
-@CrossOrigin("*")
 public class MidiaRestController {
 
     private final UploadService uploadService;
@@ -79,7 +78,10 @@ public class MidiaRestController {
     // pelo mesmo.. isso faz com que o navegador saiba que deve renderizar a imagem
     // e não baixar um arquivo binário genérico
     // ResponseBytes<GetObjectResponse> = wrapper que contém os bytes e a response
-    @GetMapping("/imagens/{fileName}")
+
+    // Preservar a extensão com {fileName:.+}
+    // {fileName:.+} evita que o ponto seja removido na URL
+    @GetMapping("/imagens/{fileName:.+}")
     public ResponseEntity<byte[]> obterImagem(@PathVariable String fileName) {
         try {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
@@ -88,11 +90,35 @@ public class MidiaRestController {
                     .build();
             ResponseBytes<GetObjectResponse> objectBytes = s3Client.getObjectAsBytes(getObjectRequest);
 
+            String rawContentType = objectBytes.response().contentType();
+            MediaType mediaType = resolveMediaType(fileName, rawContentType);
+
             return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(objectBytes.response().contentType()))
+                    .contentType(mediaType)
                     .body(objectBytes.asByteArray());
         } catch (Exception e) {
+            System.err.println("Erro ao buscar imagem '" + fileName + "' no MinIO: " + e.getMessage());
             return ResponseEntity.notFound().build();
         }
+    }
+
+    private MediaType resolveMediaType(String fileName, String rawContentType) {
+        if (rawContentType != null && !rawContentType.isBlank()
+                && !rawContentType.equalsIgnoreCase("application/octet-stream")) {
+            try {
+                return MediaType.parseMediaType(rawContentType);
+            } catch (Exception ignored) {
+            }
+        }
+        String lower = fileName.toLowerCase();
+        if (lower.endsWith(".png"))
+            return MediaType.IMAGE_PNG;
+        if (lower.endsWith(".gif"))
+            return MediaType.IMAGE_GIF;
+        if (lower.endsWith(".webp"))
+            return MediaType.parseMediaType("image/webp");
+        if (lower.endsWith(".svg"))
+            return MediaType.parseMediaType("image/svg+xml");
+        return MediaType.IMAGE_JPEG;
     }
 }

@@ -62,10 +62,15 @@ public class UploadService {
         String extension = getFileExtension(file.getOriginalFilename());
         String fileName = UUID.randomUUID().toString() + (extension.isEmpty() ? "" : "." + extension);
         try {
+            String contentType = file.getContentType();
+            if (contentType == null || contentType.isBlank() || contentType.equalsIgnoreCase("application/octet-stream")) {
+                contentType = resolveContentTypeFromExtension(extension);
+            }
+
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(fileName)
-                    .contentType(file.getContentType())
+                    .contentType(contentType)
                     .build();
             s3Client.putObject(putObjectRequest,
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
@@ -85,5 +90,24 @@ public class UploadService {
             return "";
         }
         return fileName.substring(fileName.lastIndexOf(".") + 1);
+    }
+
+    private String resolveContentTypeFromExtension(String extension) {
+        if (extension == null) return "image/jpeg";
+        switch (extension.toLowerCase()) {
+            case "png":
+                return "image/png";
+            case "webp":
+                return "image/webp";
+            case "gif":
+                return "image/gif";
+            case "svg":
+                return "image/svg+xml";
+            case "jfif":
+            case "jpg":
+            case "jpeg":
+            default:
+                return "image/jpeg";
+        }
     }
 }

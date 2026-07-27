@@ -1,9 +1,8 @@
 package br.com.joaomu.controller;
 
-import br.com.joaomu.repository.UserRepository;
 import org.springframework.web.bind.annotation.*;
-import br.com.joaomu.entity.User;
-import br.com.joaomu.service.UserService;
+import br.com.joaomu.entity.Usuario;
+import br.com.joaomu.service.UsuarioService;
 import br.com.joaomu.service.UploadService;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.core.Authentication;
@@ -11,18 +10,15 @@ import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/usuarios")
-@CrossOrigin("*")
-public class UserRestController extends BaseRestController<User, Long> {
+public class UsuarioRestController extends BaseRestController<Usuario, Long> {
 
-    private final UserRepository userRepository;
     private final UploadService uploadService;
-    private final UserService userService;
+    private final UsuarioService usuarioService;
 
-    public UserRestController(UserService userService, UploadService uploadService, UserRepository userRepository) {
-        super(userService);
-        this.userService = userService;
+    public UsuarioRestController(UsuarioService usuarioService, UploadService uploadService) {
+        super(usuarioService);
+        this.usuarioService = usuarioService;
         this.uploadService = uploadService;
-        this.userRepository = userRepository;
     }
 
     // O POST de imagem de perfil fica aqui e não no MidiaController,
@@ -31,16 +27,16 @@ public class UserRestController extends BaseRestController<User, Long> {
     // para o User.
 
     @PostMapping("/me/avatar")
-    public ResponseEntity<User> uploadAvatar(
+    public ResponseEntity<Usuario> uploadAvatar(
             @RequestParam("file") MultipartFile file,
             Authentication authentication) {
         String username = authentication.getName();
         String caminhoAvatar = uploadService.uploadImage(file);
 
-        User user = userService.buscarPorUsername(username);
-        user.setAvatar(caminhoAvatar);
-        User userAtualizado = service.salvar(user);
+        Usuario usuario = usuarioService.buscarPorUsername(username);
+        usuario.setAvatar(caminhoAvatar);
+        Usuario usuarioAtualizado = service.salvar(usuario);
 
-        return ResponseEntity.ok(userAtualizado);
+        return ResponseEntity.ok(usuarioAtualizado);
     }
 }

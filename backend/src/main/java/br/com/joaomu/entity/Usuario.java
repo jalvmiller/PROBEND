@@ -16,7 +16,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
-public class User implements UserDetails {
+public class Usuario implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,11 +44,16 @@ public class User implements UserDetails {
     private boolean administrador = false;
 
     // Construtor Padrão (NoArgsConstructor)
-    public User() {
+    public Usuario() {
     }
 
     // Construtor Completo (AllArgsConstructor)
-    public User(Long id, String username, String password, String nome, String email, String avatar, Integer pontos,
+    public Usuario(Long id, String username,
+            String password,
+            String nome,
+            String email,
+            String avatar,
+            Integer pontos,
             boolean especialista,
             boolean administrador) {
         this.id = id;

@@ -1,6 +1,5 @@
 package br.com.joaomu.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -8,8 +7,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 @Service
 public class NotificacaoService {
 
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
+
+    public NotificacaoService(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
     public void enviarEmailResolucao(String email, String assunto, String mensagem) {
         SimpleMailMessage emailMessage = new SimpleMailMessage();

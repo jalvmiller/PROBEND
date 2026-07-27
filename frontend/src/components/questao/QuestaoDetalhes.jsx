@@ -3,9 +3,15 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import api from '../../services/api';
 import { renderizarTextoMath } from '../../utils/mathRenderer';
-import { ArrowLeft, CheckCircle, Clock } from 'lucide-react';
+import { getMediaUrl } from '../../utils/urlUtils';
+import CodeBlock from '../../utils/CodeBlock';
+import { ArrowLeft, CheckCircle, Clock, ThumbsUp } from 'lucide-react';
 import ResolucaoCard from './ResolucaoCard';
 import ResolucaoForm from './ResolucaoForm';
+import { questaoService } from '../../services/questaoService';
+import Role from '../ui/Role';
+import UsuarioAvatar from '../ui/UsuarioAvatar';
+import DataFormatada from '../ui/DataFormatada';
 
 function QuestaoDetalhes() {
 
@@ -19,6 +25,9 @@ function QuestaoDetalhes() {
     const [enviando, setEnviando] = useState(false);
 
     const [resolucoes, setResolucoes] = useState([]); // estado para armazenar as resoluções
+    const [upvotesCount, setUpvotesCount] = useState(0);
+    const [isUpvoted, setIsUpvoted] = useState(false);
+    const [meusUpvotesResolucoes, setMeusUpvotesResolucoes] = useState([]);
 
     useEffect(() => {
         const carregarDados = async () => {
@@ -29,10 +38,21 @@ function QuestaoDetalhes() {
                 // Busca a questão pelo ID da questão
                 const responseQuestao = await api.get(`/questoes/${id}`);
                 setQuestao(responseQuestao.data);
+                setUpvotesCount(responseQuestao.data.upvotes || 0);
 
                 // Busca as resoluções pelo ID da questão
                 const responseResolucoes = await api.get(`/questoes/${id}/resolucoes`);
                 setResolucoes(responseResolucoes.data);
+
+                // Se houver usuário logado, busca os upvotes dele
+                const token = localStorage.getItem('token');
+                if (token) {
+                    const upvotesQ = await questaoService.getMeusUpvotes();
+                    setIsUpvoted(upvotesQ.includes(Number(id)));
+
+                    const upvotesR = await questaoService.getMeusUpvotesResolucoes();
+                    setMeusUpvotesResolucoes(upvotesR);
+                }
             } catch (err) {
                 console.error("Erro ao carregar detalhes", err);
                 setError("Não foi possível carregar os detalhes");
@@ -57,6 +77,21 @@ function QuestaoDetalhes() {
         } catch (err) {
             console.error("Erro ao alternar status:", err);
             alert("Erro alterar ao alterar o status. Só o autor pode fazer isso");
+        }
+    };
+
+    const handleUpvoteQuestao = async () => {
+        if (!user) {
+            alert("Você precisa estar logado para dar upvote!");
+            return;
+        }
+
+        try {
+            const resultado = await questaoService.upvoteQuestao(id);
+            setUpvotesCount(resultado.upvotes);
+            setIsUpvoted(resultado.upvoted);
+        } catch (err) {
+            console.error("Erro ao dar upvote na questão:", err);
         }
     };
 
@@ -94,15 +129,12 @@ function QuestaoDetalhes() {
             questao?.dificuldade === 1 ? 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950/20 dark:text-amber-400 dark:border-amber-900/40' : 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/20 dark:text-green-400 dark:border-green-900/40';
 
     // == Renderização do componente de detalhes da questão ==
-    // == Renderização do componente de detalhes da questão ==
-    // == Renderização do componente de detalhes da questão ==
-    // == Renderização do componente de detalhes da questão ==
     return (
-        <div className="max-w-4xl mx-auto p-4 space-y-6">
+        <div className="max-w-4xl mx-auto space-y-6">
             {/* Botão de Voltar*/}
             <button
                 onClick={() => navigate(`/`)}
-                className="flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 transition font-semibold"
+                className="flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 transition font-semibold cursor-pointer"
             >
                 <ArrowLeft size={20} />
                 Voltar
@@ -116,7 +148,7 @@ function QuestaoDetalhes() {
 
             {/* Janela */}
             <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 overflow-hidden transition-colors duration-300">
-                <div className='p-6 bg-slate-50 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors duration-300'>
+                <div className='p-4 sm:p-6 bg-slate-50 dark:bg-slate-800/40 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors duration-300'>
                     {/* Informações da Questão (Matéria, Assunto, Dificuldade e Autor) */}
                     <div>
                         <div className="flex flex-wrap items-center gap-2">
@@ -133,12 +165,21 @@ function QuestaoDetalhes() {
                             </span>
                         </div>
 
-                        {/* Autor da Questão - obrigatório*/}
-                        <h2 className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-                            Criado por <span className='font-semibold text-slate-700 dark:text-slate-300'>
-                                {questao.autor?.nome || questao.autor?.username}
-                            </span>
-                        </h2>
+                        {/* Autor e Data da Questão */}
+                        <div className='flex items-center space-x-3 mt-3'>
+                            <UsuarioAvatar usuario={questao.autor} size="md" />
+                            <div className="flex flex-col">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <span className='text-sm font-semibold text-slate-600 dark:text-slate-400'>
+                                        Criado por: <span className='text-slate-800 dark:text-slate-200'>{questao.autor?.nome || questao.autor?.username || 'Anônimo'}</span>
+                                    </span>
+                                    <Role usuario={questao.autor} />
+                                </div>
+                                {questao.dataInsercao && (
+                                    <DataFormatada data={questao.dataInsercao} />
+                                )}
+                            </div>
+                        </div>
                     </div>
 
 
@@ -159,7 +200,7 @@ function QuestaoDetalhes() {
                 </div>
 
 
-                <div className='p-6 md:p-8 space-y-6'>
+                <div className='p-4 sm:p-6 md:p-8 space-y-6'>
                     <div className='text-slate-800 dark:text-slate-100 leading-relaxed text-lg whitespace-pre-wrap transition-colors duration-300'>
                         {renderizarTextoMath(questao.enunciado)}
                     </div>
@@ -168,7 +209,7 @@ function QuestaoDetalhes() {
                     {questao.imagemUrl && (
                         <div className="my-4 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm bg-slate-50 dark:bg-slate-950/20 p-2">
                             <img
-                                src={questao.imagemUrl.startsWith("http") ? questao.imagemUrl : `http://localhost:8080${questao.imagemUrl}`}
+                                src={getMediaUrl(questao.imagemUrl)}
                                 alt="Imagem da questão"
                                 className="max-h-80 mx-auto object-contain rounded"
                             />
@@ -177,26 +218,32 @@ function QuestaoDetalhes() {
 
                     {/* Bloco de Código - condicionada ao trechoCodigo existir*/}
                     {questao.trechoCodigo && (
-                        <div className='rounded-xl overflow-hidden border border-slate-800 dark:border-slate-700 shadow-md'>
-                            <div className='bg-slate-800 dark:bg-slate-800 text-slate-400 dark:text-slate-300 px-4 py-2 text-xs font-mono flex justify-between items-center'>
-                                <span>Código {(questao.linguagemCodigo || 'Texto')}</span>
-                            </div>
-
-                            {/* ====== Trecho de Código ====== */}
-                            <pre className='bg-slate-900 dark:bg-slate-950 text-slate-300 dark:text-slate-200 p-4 text-sm overflow-x-auto'>
-                                <code>{questao.trechoCodigo}</code>
-                            </pre>
-                            {/* ====== Trecho de Código ======*/}
-                        </div>
+                        <CodeBlock
+                            code={questao.trechoCodigo}
+                            language={questao.linguagemCodigo}
+                        />
                     )}
 
                     {questao.fonte && (
                         <p className='text-xs text-slate-400 dark:text-slate-500 italic'>Fonte: {questao.fonte}</p>
                     )}
 
-                    {/* Botão de alternar solução condicionada ao autor */}
-                    {user && questao.autor && questao.autor.username === user.username && (
-                        <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex gap-4">
+                    {/* Ações da Questão (Upvote para todos logados, Solucionada para o autor) */}
+                    <div className="pt-6 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-4 items-center">
+                        {/* Botão de Upvote */}
+                        <button
+                            onClick={handleUpvoteQuestao}
+                            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition-all duration-200 cursor-pointer border ${isUpvoted
+                                ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/50 hover:bg-blue-100'
+                                : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-800'
+                                }`}
+                        >
+                            <ThumbsUp size={20} className={isUpvoted ? "fill-current text-blue-600 dark:text-blue-400" : ""} />
+                            <span>{upvotesCount} {upvotesCount === 1 ? 'Upvote' : 'Upvotes'}</span>
+                        </button>
+
+                        {/* Botão de alternar solução condicionada ao autor */}
+                        {user && questao.autor && questao.autor.username === user.username && (
                             <button
                                 onClick={handleAlternarSolucionada}
                                 className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition cursor-pointer ${questao.solucionada
@@ -207,8 +254,8 @@ function QuestaoDetalhes() {
                                 <CheckCircle size={16} />
                                 {questao.solucionada ? 'Desmarcar como solucionada' : 'Marcar como solucionada'}
                             </button>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
 
@@ -228,7 +275,9 @@ function QuestaoDetalhes() {
                         resolucoes.map(resolucao => (
                             <ResolucaoCard
                                 key={resolucao.id}
-                                resolucao={resolucao} />
+                                resolucao={resolucao}
+                                meusUpvotes={meusUpvotesResolucoes}
+                            />
                         ))
                     )}
                 </div>

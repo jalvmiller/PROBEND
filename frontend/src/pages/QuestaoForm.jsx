@@ -125,7 +125,7 @@ function QuestaoForm({ SalvarSucesso }) {
                     rows="2"
                     disabled={gerandoIA}
                 />
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                     <button
                         type="button"
                         onClick={handleGerarEsbocoIA}
@@ -153,7 +153,7 @@ function QuestaoForm({ SalvarSucesso }) {
                 required
             />
 
-            <div className="flex gap-4 mb-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4">
                 <input
                     className="flex-1 p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
                     placeholder="Matéria (ex: Java)"
