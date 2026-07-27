@@ -9,6 +9,9 @@ import { ArrowLeft, CheckCircle, Clock, ThumbsUp } from 'lucide-react';
 import ResolucaoCard from './ResolucaoCard';
 import ResolucaoForm from './ResolucaoForm';
 import { questaoService } from '../../services/questaoService';
+import Role from '../ui/Role';
+import UsuarioAvatar from '../ui/UsuarioAvatar';
+import DataFormatada from '../ui/DataFormatada';
 
 function QuestaoDetalhes() {
 
@@ -165,12 +168,21 @@ function QuestaoDetalhes() {
                             </span>
                         </div>
 
-                        {/* Autor da Questão - obrigatório*/}
-                        <h2 className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-                            Criado por <span className='font-semibold text-slate-700 dark:text-slate-300'>
-                                {questao.autor?.nome || questao.autor?.username}
-                            </span>
-                        </h2>
+                        {/* Autor e Data da Questão */}
+                        <div className='flex items-center space-x-3 mt-3'>
+                            <UsuarioAvatar usuario={questao.autor} size="md" />
+                            <div className="flex flex-col">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <span className='text-sm font-semibold text-slate-600 dark:text-slate-400'>
+                                        Criado por: <span className='text-slate-800 dark:text-slate-200'>{questao.autor?.nome || questao.autor?.username || 'Anônimo'}</span>
+                                    </span>
+                                    <Role usuario={questao.autor} />
+                                </div>
+                                {questao.dataInsercao && (
+                                    <DataFormatada data={questao.dataInsercao} />
+                                )}
+                            </div>
+                        </div>
                     </div>
 
 

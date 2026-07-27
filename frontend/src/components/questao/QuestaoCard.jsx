@@ -6,6 +6,7 @@ import QuestaoEditModal from './QuestaoEditModal';
 import { useState, useEffect } from 'react';
 import { renderizarTextoMath } from '../../utils/mathRenderer';
 import { questaoService } from '../../services/questaoService';
+import Role from '../ui/Role';
 
 function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
     const { user } = useAuth();
@@ -118,11 +119,12 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
                 {renderizarTextoMath(questao.enunciado)}
             </h2>
 
-            {/* Metadados: Autor, Resoluções, Data de inserção */}
+            {/* Metadados: Autor, Role, Resoluções, Data de inserção */}
             <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-500 dark:text-slate-400">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 flex-wrap">
                     <User size={14} className="text-slate-400" />
                     <span>Autor: <span className="font-semibold text-slate-700 dark:text-slate-300">{questao.autor?.nome || questao.autor?.username || 'Anônimo'}</span></span>
+                    <Role usuario={questao.autor} />
                 </div>
                 <div className="flex items-center gap-1.5">
                     <MessageSquare size={14} className="text-slate-400" />
