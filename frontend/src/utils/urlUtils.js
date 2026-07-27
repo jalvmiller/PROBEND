@@ -13,7 +13,7 @@ export function getMediaUrl(path) {
         return path;
     }
 
-    const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+    const apiBase = import.meta.env.VITE_API_URL || '/api';
 
     // Se path começar com /api, remove o /api para evitar duplicação
     const cleanPath = path.startsWith('/api') ? path.replace('/api', '') : path;
