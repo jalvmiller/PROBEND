@@ -19,6 +19,13 @@ function Register() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    // Validação client-side antes de enviar
+    if (password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
+
     try {
       setLoading(true);
       setError('');
@@ -30,7 +37,9 @@ function Register() {
       navigate('/');
     } catch (error) {
       console.error(error);
-      setError('Erro ao realizar o cadastro. Tente outro username.');
+      // Lê a mensagem de erro real retornada pelo backend
+      const mensagem = error?.response?.data?.erro;
+      setError(mensagem || 'Erro ao realizar o cadastro. Tente novamente.');
     } finally {
       setLoading(false);
     }
