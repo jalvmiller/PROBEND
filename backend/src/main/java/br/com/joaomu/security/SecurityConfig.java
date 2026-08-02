@@ -51,15 +51,34 @@ public class SecurityConfig {
                 // Desabilitar sessões HTTP, o Spring Security não cria sessão, ou seja,
                 // cada requisição é independente e tem que trazer o token
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/midia/**").permitAll()
-                        .requestMatchers("/questoes/**").permitAll() // authenticated desligado
-                        .requestMatchers("/usuarios/**").permitAll()
-                        .requestMatchers("/swagger-ui/**").permitAll() // swagger
-                        .requestMatchers("/swagger-ui.html").permitAll() // swagger
-                        .requestMatchers("/v3/api-docs/**").permitAll() // swagger
-                        .anyRequest().permitAll()) // só para testes
-                                                   // ativar o .anyRequest().authenticated() = proteger todas as rotas
+                        // ── Autenticação ────────────────────────────────────────
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/auth/register").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/auth/logout").permitAll()
+
+                        // ── Swagger (portfólio: acesso público) ─────────────────
+                        .requestMatchers("/swagger-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers("/v3/api-docs/**").permitAll()
+
+                        // ── Mídia: GET público, POST exige autenticação ──────────
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/midia/imagens/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/midia/upload").authenticated()
+
+                        // ── Questões: leitura pública (portfólio), escrita autenticada ──
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/questoes/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/questoes/ia-sugerir").authenticated()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/questoes/ia-criar-total").authenticated()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/questoes/**").authenticated()
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/questoes/**").authenticated()
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/questoes/**").authenticated()
+
+                        // ── Usuários: tudo exige autenticação ────────────────────
+                        .requestMatchers("/usuarios/**").authenticated()
+                        .requestMatchers("/auth/me").authenticated()
+
+                        // ── Qualquer outra rota: exige autenticação ───────────────
+                        .anyRequest().authenticated())
                 // O quê poderia ser adicionado: RBAC(Role Based Access Control)
                 // Criar roles, ou seja, determinar quem acessa qual rota.
                 // poderia ter uma rota restrita a especialistas

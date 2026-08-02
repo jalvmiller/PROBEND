@@ -3,10 +3,12 @@ package br.com.joaomu.controller;
 import br.com.joaomu.dto.AuthResponse;
 import br.com.joaomu.dto.LoginRequest;
 import br.com.joaomu.dto.RegisterRequest;
+import br.com.joaomu.dto.UsuarioResponse;
 import br.com.joaomu.entity.Usuario;
 import br.com.joaomu.repository.UsuarioRepository;
 import br.com.joaomu.security.JwtUtil;
 import br.com.joaomu.security.TokenBlacklistService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -35,21 +38,43 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        // Validação de campos obrigatórios
+        if (request.username() == null || request.username().isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("erro", "O campo 'username' é obrigatório."));
+        }
+        if (request.password() == null || request.password().length() < 6) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("erro", "A senha deve ter pelo menos 6 caracteres."));
+        }
+        if (request.email() == null || request.email().isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("erro", "O campo 'email' é obrigatório."));
+        }
+
+        // Verifica duplicidade de username e email
+        if (usuarioRepository.findByUsername(request.username()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("erro", "Username já está em uso."));
+        }
+        if (usuarioRepository.findByEmail(request.email()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("erro", "E-mail já está em uso."));
+        }
+
         Usuario user = new Usuario();
-        user.setUsername(request.username());
+        user.setUsername(request.username().trim());
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setNome(request.nome());
-        user.setEmail(request.email());
+        user.setEmail(request.email().trim().toLowerCase());
 
         usuarioRepository.save(user);
 
         String token = jwtUtil.generateToken(user.getUsername());
 
-        return ResponseEntity.ok(new AuthResponse(token));
-        // No cadastro, o usuário é criado e já recebe um token de autenticação
-        // o token é devolvido pelo corpo da resposta AuthResponse
-        // Retorna HTTP 201 Created caso o cadastro seja realizado normalmente
+        // Retorna HTTP 201 Created com o token de autenticação
+        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(token));
     }
 
     @PostMapping("/login")
@@ -86,12 +111,23 @@ public class AuthController {
 
     // Retorna os dados do usuário logado
     @GetMapping("/me")
-    public ResponseEntity<Usuario> me() {
+    public ResponseEntity<UsuarioResponse> me() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario user = usuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
-        return ResponseEntity.ok(user);
-        // Retorna HTTP 200 OK caso o usuário seja encontrado
+        UsuarioResponse response = new UsuarioResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getNome(),
+                user.getEmail(),
+                user.getAvatar(),
+                user.getPontos(),
+                user.isEspecialista(),
+                user.isAdministrador()
+        );
+
+        // Retorna HTTP 200 OK sem o campo password
+        return ResponseEntity.ok(response);
     }
 }
