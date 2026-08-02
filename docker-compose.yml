@@ -106,10 +106,7 @@ services:
     container_name: probend-frontend
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - "127.0.0.1:8081:80"
     depends_on:
       - backend
 
