@@ -1,5 +1,6 @@
 package br.com.joaomu.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -163,6 +164,8 @@ public class Usuario implements UserDetails {
         return this.username;
     }
 
+    // Sem exposição em JSON, nível de entity
+    @JsonIgnore
     @Override
     public String getPassword() {
         return this.password;

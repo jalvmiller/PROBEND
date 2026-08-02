@@ -3,6 +3,7 @@ package br.com.joaomu.service;
 import br.com.joaomu.entity.Usuario;
 import br.com.joaomu.repository.UsuarioRepository;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,7 +35,14 @@ public class UsuarioService implements CrudService<Usuario, Long> {
 
     @Override
     public Usuario atualizar(Long id, Usuario entity) {
+        // Verifica se o usuário autenticado é o dono do recurso
+        String usernameAutenticado = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario existente = buscarPorId(id);
+
+        if (!existente.getUsername().equals(usernameAutenticado)) {
+            throw new SecurityException("Você não tem permissão para editar este usuário.");
+        }
+
         if (entity.getNome() != null) {
             existente.setNome(entity.getNome());
         }
@@ -49,9 +57,14 @@ public class UsuarioService implements CrudService<Usuario, Long> {
 
     @Override
     public void remover(Long id) {
-        if (!usuarioRepository.existsById(id)) {
-            throw new IllegalArgumentException("Usuário não encontrado para remoção: " + id);
+        // Verifica se o usuário autenticado é o dono do recurso
+        String usernameAutenticado = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario existente = buscarPorId(id);
+
+        if (!existente.getUsername().equals(usernameAutenticado)) {
+            throw new SecurityException("Você não tem permissão para remover este usuário.");
         }
+
         usuarioRepository.deleteById(id);
     }
 
