@@ -1,8 +1,6 @@
 package br.com.joaomu.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import br.com.joaomu.entity.Questao;
 
 import java.util.List;
@@ -26,13 +24,9 @@ public interface QuestaoRepository extends JpaRepository<Questao, Long> {
 
     List<Questao> findByAssuntoIgnoreCase(String assunto);
 
-    // @Query é usado para escrever consultas personalizadas em JPQL
-    // Em outro momento, usar Criteria para melhorar a eficiência e registrar
-    // métrica
-    @Query("SELECT q FROM Questao q WHERE " +
-            "LOWER(q.enunciado) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(q.materia) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(q.assunto) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(q.fonte) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    List<Questao> search(@Param("keyword") String keyword);
+    List<Questao> findTop200ByEnunciadoContainingIgnoreCaseOrMateriaContainingIgnoreCaseOrAssuntoContainingIgnoreCaseOrFonteContainingIgnoreCase(
+            String enunciado,
+            String materia,
+            String assunto,
+            String fonte);
 }
