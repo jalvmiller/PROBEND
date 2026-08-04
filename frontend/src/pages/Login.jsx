@@ -20,10 +20,10 @@ function Login() {
     try {
       setLoading(true);
       setError('');
-      const res = await authService.login(username, password);
+      await authService.login(username, password);
 
       // Salva as credenciais no estado global (AuthContext)
-      login(res.token, username);
+      await login();
       // Redireciona o usuário para o Dashboard (raiz)
       navigate('/');
     } catch (error) {

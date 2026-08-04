@@ -22,10 +22,10 @@ function Register() {
     try {
       setLoading(true);
       setError('');
-      const res = await authService.register(username, password, nome, email);
+      await authService.register(username, password, nome, email);
 
       // Salva as credenciais recebidas no cadastro no estado global
-      login(res.token, username);
+      await login();
       // Redireciona o usuário para o Dashboard (raiz)
       navigate('/');
     } catch (error) {
