@@ -22,6 +22,33 @@ function Login() {
       setError('');
       await authService.login(username, password);
 
+      /*
+        O Spring Boot valida a senha e email e responde a
+        requisição de login com um cookie HttpOnly e JWT..
+        O cookie HttpOnly é um cookie que só pode ser acessado pelo servidor,
+        e vem contido no header Set-Cookie da resposta.
+        O cookie vem como 
+        "HttpOnly; Path=/;
+        SameSite=Lax; Secure;
+        Max-Age=600;
+        Expires=Wed, DD MM YYYY HH:MM:SS GMT;
+        Domain=localhost"
+
+        O useAuth(), hook de autenticação, que fica conectado ao AuthContext, 
+        é responsável por gerenciar o estado de autenticação do usuário..
+        que é compartilhado por toda aplicação, através do App.jsx
+
+        Quando é chamado o login() sem parâmetro e no contexto global,
+        o login faz uma chamada assíncrona para o fetchCurrentUser
+        que executa a chamada api.get('/auth/me').. como ela é feita
+        via Axios com o withCredentials setado como true, o navegador
+        vai anexar o cookie HttpOnly automaticamente no header da requisição
+        enviada para a API do backend e, quando ela validar, vai retornar
+        com os dados do usuário
+
+        O AuthContext atualiza o estado global com setUser(response.data) e
+        setIsAuthneticated(true)
+      */
       // Salva as credenciais no estado global (AuthContext)
       await login();
       // Redireciona o usuário para o Dashboard (raiz)
