@@ -72,8 +72,7 @@ public class GeminiService {
 		String promptCompleto = instrucoesPrompt + entradaUsuario;
 
 		try {
-			String url = "https://generativelanguage.googleapis.com/v1beta/models/" + apiModel + ":generateContent?key="
-					+ apiKey;
+			String url = "https://generativelanguage.googleapis.com/v1beta/models/" + apiModel + ":generateContent";
 			// Monta a URL que será enviada para a API do Gemini
 			// utiliza o endpoint oficial da Google API Studio para o modelo 1.5 do gemini,
 			// passando a key via variável apiKey
@@ -117,6 +116,7 @@ public class GeminiService {
 			HttpRequest request = HttpRequest.newBuilder()
 					.uri(URI.create(url))
 					.header("Content-Type", "application/json")
+					.header("x-goog-api-key", apiKey)
 					.POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
 					.timeout(Duration.ofSeconds(30))
 					.build();
@@ -135,8 +135,7 @@ public class GeminiService {
 				String rawText = extrairTextoDaResposta(responseBody);
 				return limparMarkdownJson(rawText);
 			} else {
-				throw new RuntimeException("Falha na chamada da API do Gemini. Status HTTP: " + response.statusCode()
-						+ " - Resposta: " + response.body());
+				throw new RuntimeException("Falha na chamada da API do Gemini. Status HTTP: " + response.statusCode());
 			}
 
 		} catch (Exception e) {
