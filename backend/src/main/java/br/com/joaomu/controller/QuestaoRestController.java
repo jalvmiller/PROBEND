@@ -1,7 +1,9 @@
 package br.com.joaomu.controller;
 
+import br.com.joaomu.service.ComentarioService;
 import br.com.joaomu.service.UpvoteService;
 import br.com.joaomu.service.QuestaoService;
+import br.com.joaomu.entity.Comentario;
 import br.com.joaomu.entity.Questao;
 import br.com.joaomu.entity.Resolucao;
 import br.com.joaomu.service.GeminiService;
@@ -29,17 +31,20 @@ public class QuestaoRestController extends BaseRestController<Questao, Long> {
     private final QuestaoService questaoService;
     private final GeminiService geminiService;
     private final UpvoteService upvoteService;
+    private final ComentarioService comentarioService;
 
     // Construtor
     // Responsabilidade do service é atuar como cérebro, controller só serve como
     // I/O
     public QuestaoRestController(QuestaoService questaoService,
             GeminiService geminiService,
-            UpvoteService upvoteService) {
+            UpvoteService upvoteService,
+            ComentarioService comentarioService) {
         super(questaoService);
         this.questaoService = questaoService;
         this.geminiService = geminiService;
         this.upvoteService = upvoteService;
+        this.comentarioService = comentarioService;
     }
 
     // Listagem trabalha com a busca (herdado do BaseRestController)
@@ -167,6 +172,30 @@ public class QuestaoRestController extends BaseRestController<Questao, Long> {
             return ResponseEntity.ok(upvoteService.getResolucaoUpvotedIdsDoUsuario());
         } catch (Exception e) {
             return ResponseEntity.ok(java.util.List.of());
+        }
+    }
+
+    // ======================================================
+    // ======== Comentários em Resoluções ===================
+    // ======================================================
+
+    // GET público — qualquer pessoa pode ler os comentários
+    @GetMapping("/resolucoes/{resolucaoId}/comentarios")
+    public ResponseEntity<List<Comentario>> listarComentarios(@PathVariable Long resolucaoId) {
+        return ResponseEntity.ok(comentarioService.listarPorResolucao(resolucaoId));
+    }
+
+    // POST autenticado — apenas usuários logados podem comentar
+    @PostMapping("/resolucoes/{resolucaoId}/comentarios")
+    public ResponseEntity<?> criarComentario(@PathVariable Long resolucaoId,
+                                             @RequestBody Comentario comentario) {
+        try {
+            Comentario salvo = comentarioService.salvarComentario(resolucaoId, comentario);
+            return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("erro", e.getMessage()));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("erro", e.getMessage()));
         }
     }
 
