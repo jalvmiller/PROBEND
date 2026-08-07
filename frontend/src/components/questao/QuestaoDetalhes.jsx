@@ -45,8 +45,7 @@ function QuestaoDetalhes() {
                 setResolucoes(responseResolucoes.data);
 
                 // Se houver usuário logado, busca os upvotes dele
-                const token = localStorage.getItem('token');
-                if (token) {
+                if (user) {
                     const upvotesQ = await questaoService.getMeusUpvotes();
                     setIsUpvoted(upvotesQ.includes(Number(id)));
 
@@ -66,7 +65,7 @@ function QuestaoDetalhes() {
         // [] determina que o useEffect só executa uma vez (na montagem)
         // se não tiver nada, executa na montagem e na atualização
         carregarDados();
-    }, [id]);
+    }, [id, user]);
 
     const handleAlternarSolucionada = async () => {
         try {

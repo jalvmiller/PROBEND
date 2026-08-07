@@ -4,9 +4,13 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Value;
+import jakarta.annotation.PostConstruct;
 
 //import java.security.Key;
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Date;
 
 // JWT é basicamente: 
@@ -26,8 +30,20 @@ public class JwtUtil {
     private String SECRET_KEY;
     private final long EXPIRATION_TIME = 86400000; // 24 horas em ms
 
+    @PostConstruct
+    public void validateSecretConfiguration() {
+        if (SECRET_KEY == null || SECRET_KEY.isBlank()) {
+            byte[] randomKey = new byte[32];
+            new SecureRandom().nextBytes(randomKey);
+            SECRET_KEY = Base64.getEncoder().encodeToString(randomKey);
+        }
+        if (SECRET_KEY.length() < 32) {
+            throw new IllegalStateException("JWT_SECRET deve ter no mínimo 32 caracteres");
+        }
+    }
+
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes()); // CONVERSÃO HMAC-SHA, padrão do JWT.. geração de chave segura
+        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8)); // CONVERSÃO HMAC-SHA, padrão do JWT.. geração de chave segura
                                                           // aqui a String vira uma chave segura de fato pronta pra ser
                                                           // usada na assinatura
     }

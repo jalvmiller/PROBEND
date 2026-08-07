@@ -9,57 +9,42 @@ export const AuthContext = createContext(null);
 // Provider, é o componente que gerencia os estados
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const fetchCurrentUser = async (jwtToken) => {
+  const fetchCurrentUser = async () => {
     try {
       const response = await api.get('/auth/me');
       setUser(response.data);
+      setIsAuthenticated(true);
       // Guarda o objeto usuário completo
     } catch (err) {
       console.error("Erro ao buscar os dados do usuário logado", err);
-      logout();
+      setUser(null);
+      setIsAuthenticated(false);
     }
   };
 
   // O useEffect roda uma única vez quando a aplicação inicia no navegador
   useEffect(() => {
-    // Busca se existe um token salvo no localStorage do navegador
-    const savedToken = localStorage.getItem('token');
-
-    if (savedToken) {
-      setToken(savedToken);
-      fetchCurrentUser(savedToken).finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
+    fetchCurrentUser().finally(() => setLoading(false));
   }, []);
 
   // Função disparada no login bem-sucedido
-  const login = async (jwtToken, username) => {
-    localStorage.setItem('token', jwtToken);
-    setToken(jwtToken);
-
+  const login = async () => {
     // Busca pós-login para retornar dados do usuário
-    await fetchCurrentUser(jwtToken);
+    await fetchCurrentUser();
   };
 
   // Função disparada no logout
   const logout = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (token) {
-        // Chama o endpoint de logout enviando o JWT no header
-        await api.post('/auth/logout', {}, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-      }
+      await api.post('/auth/logout');
     } catch (error) {
       console.error("Erro ao fazer logout", error);
     } finally {
-      // Apaga do armazenamento local do navegador
-      localStorage.removeItem('token');
+      setUser(null);
+      setIsAuthenticated(false);
       window.location.href = '/login';
     }
   };
@@ -75,10 +60,8 @@ export function AuthProvider({ children }) {
   }
 
   // Retornar o Provider passando os dados e funções que qualquer componente filho poderá usar
-  // o !!token é uma forma de converter o token em boolean, ou seja, se o token existir
-  // ele será true, se não existir ele será false
   return (
-    <AuthContext.Provider value={{ user, setUser, token, isAuthenticated: !!token, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, token: null, isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

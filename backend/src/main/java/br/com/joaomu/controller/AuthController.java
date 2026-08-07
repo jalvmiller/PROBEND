@@ -8,6 +8,8 @@ import br.com.joaomu.entity.Usuario;
 import br.com.joaomu.repository.UsuarioRepository;
 import br.com.joaomu.security.JwtUtil;
 import br.com.joaomu.security.TokenBlacklistService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -73,8 +75,20 @@ public class AuthController {
 
         String token = jwtUtil.generateToken(user.getUsername());
 
-        // Retorna HTTP 201 Created com o token de autenticação
-        return ResponseEntity.status(HttpStatus.CREATED).body(new AuthResponse(token));
+        // Geração de Cookie - ResponseCookie
+        // Geração de Cookie - ResponseCookie
+        ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", token)
+                .httpOnly(true)
+                .secure(false) // Mudar para true em produção com HTTPS
+                .path("/")
+                .maxAge(3600)
+                .sameSite("Lax")
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(new AuthResponse(token));
+
     }
 
     @PostMapping("/login")
@@ -82,9 +96,22 @@ public class AuthController {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password()));
 
+        // Geração de Cookie - ResponseCookie
+        // Geração de Cookie - ResponseCookie
         String token = jwtUtil.generateToken(request.username());
+        // Monta o Cookie HttpOnly com SameSite configurado
+        ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", token)
+                .httpOnly(true)
+                .secure(false) // Mudar para true em ambiente de produção com HTTPS
+                .path("/")
+                .maxAge(3600) // Expira em 1 hora (3600 segundos)
+                .sameSite("Lax") // Anti-CSRF Define explicitamente SameSite=Lax ou Strict
+                .build();
+        // Retorna a resposta HTTP com o cabeçalho Set-Cookie
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(new AuthResponse(token));
 
-        return ResponseEntity.ok(new AuthResponse(token));
         // No login, o usuário é autenticado e recebe um token de autenticação
         // o token é devolvido pelo corpo da resposta AuthResponse
         // Retorna HTTP 200 OK caso o login seja realizado normalmente
@@ -106,7 +133,18 @@ public class AuthController {
             }
         }
 
-        return ResponseEntity.ok("Logout realizado com sucesso.");
+        // Cria um cookie zerado (maxAge 0) para o navegador apagar a sessão
+        // imediatamente
+        ResponseCookie deleteCookie = ResponseCookie.from("AUTH_TOKEN", "")
+                .httpOnly(true)
+                .secure(false) // Mudar para true em produção com HTTPS
+                .path("/")
+                .maxAge(0) // 0 segundos obriga o navegador a deletar o cookie
+                .sameSite("Lax")
+                .build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
+                .body(Map.of("mensagem", "Logout realizado com sucesso."));
     }
 
     // Retorna os dados do usuário logado
@@ -124,8 +162,7 @@ public class AuthController {
                 user.getAvatar(),
                 user.getPontos(),
                 user.isEspecialista(),
-                user.isAdministrador()
-        );
+                user.isAdministrador());
 
         // Retorna HTTP 200 OK sem o campo password
         return ResponseEntity.ok(response);

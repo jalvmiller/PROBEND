@@ -201,11 +201,31 @@ public class QuestaoService implements CrudService<Questao, Long> {
         if (termo == null || termo.isBlank()) {
             return repository.findAll();
         }
-        return repository.search(termo);
+        String termoNormalizado = normalizarTermoBusca(termo);
+        if (termoNormalizado.isBlank()) {
+            return repository.findAll();
+        }
+
+        return repository
+                .findTop200ByEnunciadoContainingIgnoreCaseOrMateriaContainingIgnoreCaseOrAssuntoContainingIgnoreCaseOrFonteContainingIgnoreCase(
+                        termoNormalizado,
+                        termoNormalizado,
+                        termoNormalizado,
+                        termoNormalizado);
     }
 
     public List<Resolucao> listarResolucoes(Long questaoId) {
         return resolucaoRepository.findByQuestaoId(questaoId);
+    }
+
+    private String normalizarTermoBusca(String termo) {
+        String termoLimpo = termo.trim().replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "");
+
+        if (termoLimpo.length() > 80) {
+            throw new IllegalArgumentException("Termo de busca excede o limite de 80 caracteres");
+        }
+
+        return termoLimpo;
     }
 
     @Transactional
