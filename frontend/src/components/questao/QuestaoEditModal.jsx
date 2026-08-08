@@ -2,8 +2,10 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { questaoService } from "../../services/questaoService";
+import { useToastContext } from "../../contexts/ToastContext";
 
 function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
+    const { showToast } = useToastContext();
     const [dados, setDados] = useState({
         enunciado: questao.enunciado || "",
         imagemUrl: questao.imagemUrl || "",
@@ -26,10 +28,10 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
         try {
             const data = await questaoService.uploadImagem(file);
             setDados(prev => ({ ...prev, imagemUrl: data.imageUrl }));
-            alert("Imagem enviada com sucesso!");
+            showToast('Imagem enviada com sucesso!', 'success');
         } catch (err) {
             console.error("Erro ao enviar imagem:", err);
-            alert("Erro ao enviar imagem.");
+            showToast('Erro ao enviar imagem.', 'error');
         } finally {
             setEnviandoImagem(false);
         }
@@ -39,7 +41,7 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
 
     const handleMelhorarEnunciadoIA = async () => {
         if (!dados.enunciado.trim()) {
-            alert("Por favor, digite alguma coisa no enunciado para que a IA possa aprimorar.");
+            showToast('Digite alguma coisa no enunciado para que a IA possa aprimorar.', 'error');
             return;
         }
         setMelhorandoIA(true);
@@ -58,11 +60,11 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                     trechoCodigo: dadosSugeridos.trechoCodigo || prev.trechoCodigo,
                     linguagemCodigo: dadosSugeridos.linguagemCodigo || prev.linguagemCodigo
                 }));
-                alert("Enunciado aprimorado com sucesso pela IA!");
+                showToast('Enunciado aprimorado com sucesso pela IA!', 'success');
             }
         } catch (err) {
             console.error("Erro ao aprimorar com IA:", err);
-            alert("Erro ao aprimorar enunciado com a IA. Certifique-se de que a API Key do Gemini está configurada.");
+            showToast('Erro ao aprimorar com a IA. Verifique a API Key do Gemini.', 'error');
         } finally {
             setMelhorandoIA(false);
         }
@@ -80,7 +82,7 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
             onClose();
         } catch (err) {
             console.error("Erro ao atualizar questão:", err);
-            alert("Erro ao atualizar questão. Verifique se você é o autor ou se a conexão está ativa.");
+            showToast('Erro ao atualizar questão. Verifique se você é o autor ou se a conexão está ativa.', 'error');
         } finally {
             setSalvando(false);
         }

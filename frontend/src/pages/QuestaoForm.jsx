@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { questaoService } from "../services/questaoService";
+import { useToastContext } from "../contexts/ToastContext";
 
 function QuestaoForm({ SalvarSucesso }) {
 
+    const { showToast } = useToastContext();
     const [novaQuestao, setNovaQuestao] = useState({
         enunciado: "",
         imagemUrl: "",
@@ -26,10 +28,10 @@ function QuestaoForm({ SalvarSucesso }) {
         try {
             const data = await questaoService.uploadImagem(file);
             setNovaQuestao(prev => ({ ...prev, imagemUrl: data.imageUrl }));
-            alert("Imagem enviada com sucesso!");
+            showToast('Imagem enviada com sucesso!', 'success');
         } catch (err) {
             console.error("Erro ao enviar imagem:", err);
-            alert("Erro ao enviar imagem.");
+            showToast('Erro ao enviar imagem.', 'error');
         } finally {
             setEnviandoImagem(false);
         }
@@ -37,7 +39,7 @@ function QuestaoForm({ SalvarSucesso }) {
 
     const handleGerarEsbocoIA = async () => {
         if (!promptIA.trim()) {
-            alert("Por favor, digite uma ideia para a IA no campo do Copiloto.");
+            showToast('Digite uma ideia para a IA no campo do Copiloto.', 'error');
             return;
         }
         setGerandoIA(true);
@@ -52,10 +54,10 @@ function QuestaoForm({ SalvarSucesso }) {
                 trechoCodigo: dadosSugeridos.trechoCodigo || "",
                 linguagemCodigo: dadosSugeridos.linguagemCodigo || ""
             });
-            alert("Esboço gerado com sucesso! Você pode revisar os campos abaixo.");
+            showToast('Esboço gerado com sucesso! Revise os campos abaixo.', 'success');
         } catch (err) {
             console.error("Erro ao gerar esboço com IA:", err);
-            alert("Erro ao obter sugestão da IA. Certifique-se de que a API Key do Gemini está configurada.");
+            showToast('Erro ao obter sugestão da IA. Verifique a API Key do Gemini.', 'error');
         } finally {
             setGerandoIA(false);
         }
@@ -63,7 +65,7 @@ function QuestaoForm({ SalvarSucesso }) {
 
     const handleCriarTotalIA = async () => {
         if (!promptIA.trim()) {
-            alert("Por favor, digite uma ideia para a IA no campo do Copiloto.");
+            showToast('Digite uma ideia para a IA no campo do Copiloto.', 'error');
             return;
         }
         setGerandoIA(true);
@@ -71,10 +73,10 @@ function QuestaoForm({ SalvarSucesso }) {
             const questaoSalva = await questaoService.iaCriarTotal(promptIA);
             SalvarSucesso(questaoSalva);
             setPromptIA("");
-            alert("Questão gerada e cadastrada no banco de dados com sucesso!");
+            showToast('Questão gerada e publicada com sucesso!', 'success');
         } catch (err) {
             console.error("Erro ao publicar com IA:", err);
-            alert("Erro ao publicar questão direta com a IA. Certifique-se de que a API Key do Gemini está configurada.");
+            showToast('Erro ao publicar com IA. Verifique a API Key do Gemini.', 'error');
         } finally {
             setGerandoIA(false);
         }
@@ -98,11 +100,10 @@ function QuestaoForm({ SalvarSucesso }) {
                 trechoCodigo: "",
                 linguagemCodigo: ""
             });
-
-            alert("Questão salva com sucesso!");
+            showToast('Questão salva com sucesso!', 'success');
         } catch (err) {
             console.error("Erro ao salvar:", err);
-            alert("Erro ao conectar com o Spring. Verifique o console.");
+            showToast('Erro ao conectar com o servidor. Verifique o console.', 'error');
         }
     };
 

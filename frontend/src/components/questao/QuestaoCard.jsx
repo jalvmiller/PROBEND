@@ -7,9 +7,12 @@ import { useState, useEffect } from 'react';
 import { renderizarTextoMath } from '../../utils/mathRenderer';
 import { questaoService } from '../../services/questaoService';
 import Role from '../ui/Role';
+import { useToastContext } from '../../contexts/ToastContext';
+import { useDificuldade } from '../../hooks/useDificuldade';
 
 function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
     const { user } = useAuth();
+    const { showToast } = useToastContext();
     const [modalEditOpen, setModalEditOpen] = useState(false);
     const [expandido, setExpandido] = useState(false);
     const [upvotesCount, setUpvotesCount] = useState(questao.upvotes || 0);
@@ -28,7 +31,7 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
         e.stopPropagation();
 
         if (!user) {
-            alert("Você precisa estar logado para dar upvote!");
+            showToast('Você precisa estar logado para dar upvote!', 'info');
             return;
         }
 
@@ -41,21 +44,7 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
         }
     };
 
-    const glowDificuldade =
-        questao.dificuldade === 2 ? 'bg-red-500/10 dark:bg-red-500/20' :
-            questao.dificuldade === 1 ? 'bg-amber-500/10 dark:bg-amber-500/20' : 'bg-green-500/10 dark:bg-green-500/20';
-
-    const hoverBorderDificuldade =
-        questao.dificuldade === 2 ? 'hover:border-red-300 dark:hover:border-red-900/60' :
-            questao.dificuldade === 1 ? 'hover:border-amber-300 dark:hover:border-amber-900/60' : 'hover:border-green-300 dark:hover:border-green-900/60';
-
-    const textoDificuldade =
-        questao.dificuldade === 2 ? 'Difícil' :
-            questao.dificuldade === 1 ? 'Médio' : 'Fácil';
-
-    const badgesDificuldade =
-        questao.dificuldade === 2 ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/20 dark:text-red-400 dark:border-red-900/40' :
-            questao.dificuldade === 1 ? 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950/20 dark:text-amber-400 dark:border-amber-900/40' : 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/20 dark:text-green-400 dark:border-green-900/40';
+    const { textoDificuldade, badgesDificuldade, glowDificuldade, hoverBorderDificuldade } = useDificuldade(questao.dificuldade);
 
     const isAutor = user && questao.autor && questao.autor.username === user.username;
 
@@ -75,7 +64,11 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
     };
 
     return (
-        <div className={`group relative overflow-hidden bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-md border border-slate-100 dark:border-slate-800/80 ${hoverBorderDificuldade} mb-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.01]`}>
+        <div
+            className={`group relative overflow-hidden bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-md border border-slate-100 dark:border-slate-800/80 ${hoverBorderDificuldade} mb-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.01]`}
+            role="article"
+            aria-label={`Questão de ${questao.materia}${questao.assunto ? `, ${questao.assunto}` : ''}, dificuldade ${textoDificuldade}, ${questao.solucionada ? 'solucionada' : 'pendente'}`}
+        >
             {/* Spotlight Gradient de Dificuldade */}
             <div className={`absolute -top-16 -right-16 w-36 h-36 rounded-full ${glowDificuldade} blur-2xl pointer-events-none transition-all duration-500 group-hover:scale-125`} />
 
@@ -148,6 +141,8 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
                                 : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-800'
                         }`}
                         title={isUpvoted ? "Remover Upvote" : "Dar Upvote"}
+                        aria-pressed={isUpvoted}
+                        aria-label={`${upvotesCount} upvotes. ${isUpvoted ? 'Clique para remover seu upvote' : 'Clique para dar upvote'}`}
                     >
                         <ThumbsUp size={14} className={isUpvoted ? "fill-current text-blue-600 dark:text-blue-400" : ""} />
                         <span>{upvotesCount}</span>
