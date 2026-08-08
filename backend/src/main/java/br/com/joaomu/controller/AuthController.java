@@ -167,4 +167,10 @@ public class AuthController {
         // Retorna HTTP 200 OK sem o campo password
         return ResponseEntity.ok(response);
     }
+
+    // Endpoint leve para disparar o filtro CSRF do Spring e gravar o cookie XSRF-TOKEN no navegador
+    @GetMapping("/csrf")
+    public ResponseEntity<Void> csrf() {
+        return ResponseEntity.ok().build();
+    }
 }
