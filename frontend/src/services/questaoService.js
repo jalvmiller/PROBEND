@@ -82,5 +82,16 @@ export const questaoService = {
   getMeusUpvotesResolucoes: async () => {
     const response = await api.get("/questoes/resolucoes/meus-upvotes");
     return response.data;
+  },
+
+  // ── Comentários ──────────────────────────────────────────────
+  listarComentarios: async (resolucaoId) => {
+    const response = await api.get(`/questoes/resolucoes/${resolucaoId}/comentarios`);
+    return response.data;
+  },
+
+  postarComentario: async (resolucaoId, conteudo) => {
+    const response = await api.post(`/questoes/resolucoes/${resolucaoId}/comentarios`, { conteudo });
+    return response.data;
   }
 };
