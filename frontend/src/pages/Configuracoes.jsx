@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useUser } from '../hooks/useUser';
 import { getMediaUrl } from '../utils/urlUtils';
-import { Moon, Sun, User, Award, Shield, Pencil } from 'lucide-react';
+import { Moon, Sun, User, Award, Shield, Pencil, Keyboard } from 'lucide-react';
+import { useAccessibility } from '../contexts/AccessibilityContext';
 
 function Configuracoes() {
     const { user } = useAuth();
     const [escuro, setEscuro] = useState(() => document.documentElement.classList.contains('dark'));
     const { fileInputRef, abrirSeletorDeArquivo, handleFileChange } = useUser();
+    const { vimAtivo, setVimAtivo } = useAccessibility();
 
     // O toggle funciona baseado no localStorage e na classe dark no elemento raiz
     // do documento html para que o tailwind faça as alterações automáticas
@@ -184,7 +186,55 @@ function Configuracoes() {
                     </button>
                 </div>
             </div>
-        </div >
+
+            {/* CARD 3: Acessibilidade e Teclado */}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 p-6 space-y-6 transition-colors duration-300">
+                <div className="flex items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+                    <div className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 p-3 rounded-full">
+                        <Keyboard size={28} />
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Acessibilidade e Teclado</h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">Atalhos de navegação avançada</p>
+                    </div>
+                </div>
+
+                {/* Switch: Navegação estilo Vim */}
+                <div className="flex items-center justify-between py-2">
+                    <div>
+                        <h4 className="font-semibold text-slate-800 dark:text-slate-200">Navegação estilo Vim</h4>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 max-w-sm">
+                            Use <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[11px] border border-slate-200 dark:border-slate-700">J</kbd> e <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[11px] border border-slate-200 dark:border-slate-700">K</kbd> para navegar entre questões,
+                            e <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[11px] border border-slate-200 dark:border-slate-700">Enter</kbd> para abrir. <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[11px] border border-slate-200 dark:border-slate-700">T</kbd> exibe a lista completa de atalhos.
+                        </p>
+                    </div>
+
+                    <button
+                        onClick={() => setVimAtivo(!vimAtivo)}
+                        className={`w-14 h-8 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${
+                            vimAtivo ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-800'
+                        }`}
+                        aria-label={vimAtivo ? 'Desativar navegação Vim' : 'Ativar navegação Vim'}
+                        aria-pressed={vimAtivo}
+                    >
+                        <div
+                            className={`bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 flex items-center justify-center ${
+                                vimAtivo ? 'translate-x-6' : 'translate-x-0'
+                            }`}
+                        >
+                            <Keyboard size={12} className={vimAtivo ? 'text-indigo-600' : 'text-slate-400'} />
+                        </div>
+                    </button>
+                </div>
+
+                {/* Aviso contextual quando Vim está ativo */}
+                {vimAtivo && (
+                    <p className="text-xs text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-900/40 rounded-lg px-3 py-2">
+                        Vim ativo — pressione <strong>Esc</strong> para entrar em modo de inserção e digitar normalmente.
+                    </p>
+                )}
+            </div>
+        </div>
     );
 }
 
