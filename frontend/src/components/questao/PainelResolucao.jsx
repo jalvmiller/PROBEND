@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useToastContext } from '../../contexts/ToastContext';
 import { useAccessibility } from '../../contexts/AccessibilityContext';
 import { renderizarTextoMath as previewMath } from '../../utils/mathRenderer';
+import { SCROLLBAR_CLASSES } from '../../utils/scrollbarUtils';
 
 /**
  * PainelResolucao — Formulário de Resolução com Live Preview
@@ -49,7 +50,7 @@ export default function PainelResolucao({ questaoId, onResolucaoEnviada }) {
 
     return (
         <div
-            className="flex flex-col h-full overflow-y-auto bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800"
+            className={`flex flex-col h-full overflow-y-auto bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 ${SCROLLBAR_CLASSES}`}
             role="complementary"
             aria-label="Formulário de resolução"
         >

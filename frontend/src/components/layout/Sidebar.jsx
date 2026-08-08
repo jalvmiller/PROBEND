@@ -2,10 +2,10 @@
 import { useState } from 'react';
 import { X, LogOut, Home, BookOpen, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { SCROLLBAR_CLASSES } from '../../utils/scrollbarUtils';
 
-// Sidebar fica na lateral esquerda
-// Recebe isOpen para saber se está aberta (em mobile) e onClose para fechar, PROPS
+// Sidebar lateral — fixa em desktop, overlay em mobile
 function Sidebar({ isOpen, onClose }) {
     const { logout } = useAuth();
     const [colapsado, setColapsado] = useState(() => {
@@ -20,22 +20,12 @@ function Sidebar({ isOpen, onClose }) {
         });
     };
 
-    // <> significa que retorna um fragmento, vão ser dois blocos
     return (
         <>
-            {/* isOpen, só renderiza se a sidebar estiver aberta
-                fixed         -> fica fixo na tela, mesmo se usar scrollbar
-                inset-0       -> posiciona top/right/bottom/left em 0, ocupa a tela
-                bg-black      -> fundo preto
-                bg-opacity-50 -> opacidade
-                lg:hidden     -> escondido em tela grande (lg = large)
-                z-30          -> coloca o overlay acima do conteúdo normal,
-                fica abaixo da sidebar (z-40)     
-            */}
-            {/* Overlay (fundo escuro) que aparece em mobile quando sidebar está aberta */}
+            {/* Overlay escuro em mobile */}
             {isOpen && (
                 <div
-                    className="fixed inset-0 bg-black bg-opacity-50 lg:hidden z-30"
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm lg:hidden z-30"
                     onClick={onClose}
                 />
             )}
@@ -64,11 +54,9 @@ function Sidebar({ isOpen, onClose }) {
                 lg:translate-x-0  -> se for tela grande, nunca fica escondida                 
             */}
             <aside
-                className={`fixed lg:static left-0 top-0 h-screen bg-slate-900 text-white shadow-lg transition-all duration-300 z-40 flex flex-col ${
-                    colapsado ? 'lg:w-20' : 'lg:w-64'
-                } w-64 ${
-                    isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-                }`}
+                className={`fixed lg:static left-0 top-0 h-screen bg-slate-900 text-white shadow-lg transition-all duration-300 z-40 flex flex-col ${colapsado ? 'lg:w-20' : 'lg:w-64'
+                    } w-64 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+                    }`}
                 role="navigation"
                 aria-label="Menu de navegação principal"
             >
@@ -84,14 +72,14 @@ function Sidebar({ isOpen, onClose }) {
                     <h2 className={`text-xl font-bold transition-opacity duration-200 ${colapsado ? 'lg:hidden' : 'block'}`}>
                         Menu
                     </h2>
-                    
+
                     {/* Botão fechar em mobile */}
                     <button
                         onClick={onClose}
                         className="p-2 hover:bg-slate-800 rounded lg:hidden"
                         aria-label="Fechar menu"
                     >
-                        <X size={20} />
+                        <X size={18} />
                     </button>
 
                     {/* Botão de retrar/expandir em desktop */}
@@ -113,9 +101,8 @@ function Sidebar({ isOpen, onClose }) {
                 <nav className="p-3 space-y-2 flex-1">
                     <Link
                         to="/"
-                        className={`flex items-center gap-3 px-3 py-3 rounded hover:bg-blue-600 dark:hover:bg-slate-800 transition ${
-                            colapsado ? 'lg:justify-center' : ''
-                        }`}
+                        className={`flex items-center gap-3 px-3 py-3 rounded hover:bg-blue-600 dark:hover:bg-slate-800 transition ${colapsado ? 'lg:justify-center' : ''
+                            }`}
                         title="Dashboard"
                         aria-label="Dashboard"
                     >
@@ -125,9 +112,8 @@ function Sidebar({ isOpen, onClose }) {
 
                     <Link
                         to="/"
-                        className={`flex items-center gap-3 px-3 py-3 rounded hover:bg-blue-600 dark:hover:bg-slate-800 transition ${
-                            colapsado ? 'lg:justify-center' : ''
-                        }`}
+                        className={`flex items-center gap-3 px-3 py-3 rounded hover:bg-blue-600 dark:hover:bg-slate-800 transition ${colapsado ? 'lg:justify-center' : ''
+                            }`}
                         title="Questões"
                         aria-label="Questões"
                     >
@@ -137,9 +123,8 @@ function Sidebar({ isOpen, onClose }) {
 
                     <Link
                         to="/configuracoes"
-                        className={`flex items-center gap-3 px-3 py-3 rounded hover:bg-blue-600 dark:hover:bg-slate-800 transition ${
-                            colapsado ? 'lg:justify-center' : ''
-                        }`}
+                        className={`flex items-center gap-3 px-3 py-3 rounded hover:bg-blue-600 dark:hover:bg-slate-800 transition ${colapsado ? 'lg:justify-center' : ''
+                            }`}
                         title="Configurações"
                         aria-label="Configurações"
                     >

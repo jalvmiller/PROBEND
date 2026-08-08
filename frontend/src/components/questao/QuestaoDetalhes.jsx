@@ -23,6 +23,7 @@ const MIN_LEFT_PCT = 25;
 const MAX_LEFT_PCT = 75;
 
 import { useDificuldade } from '../../hooks/useDificuldade';
+import { SCROLLBAR_CLASSES } from '../../utils/scrollbarUtils';
 
 // ─────────────────────────────────────────────────────────────────
 // Componente principal — QuestaoDetalhes com Split-Pane
@@ -222,7 +223,7 @@ function QuestaoDetalhes() {
 
                 {/* ── PAINEL ESQUERDO ── */}
                 <div
-                    className="flex flex-col overflow-y-auto"
+                    className={`flex flex-col overflow-y-auto ${SCROLLBAR_CLASSES}`}
                     style={{ width: `${leftPct}%` }}
                     role="main"
                     aria-label="Enunciado da questão e resoluções"
