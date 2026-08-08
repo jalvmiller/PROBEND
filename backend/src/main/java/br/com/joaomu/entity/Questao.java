@@ -173,6 +173,7 @@ public class Questao {
         this.dataInsercao = dataInsercao;
     }
 
+    @JsonIgnore
     public int getNumeroResolucoes() {
         return this.resolucoes != null ? this.resolucoes.size() : 0;
     }

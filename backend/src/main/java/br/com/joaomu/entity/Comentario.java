@@ -1,5 +1,7 @@
 package br.com.joaomu.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,6 +18,7 @@ public class Comentario {
     // Comentário pertence a uma resolução (N comentários : 1 resolução)
     @ManyToOne
     @JoinColumn(name = "resolucao_id", nullable = false)
+    @JsonIgnore
     private Resolucao resolucao;
 
     // Comentário foi escrito por um usuário
@@ -47,8 +50,12 @@ public class Comentario {
     public String getConteudo() { return conteudo; }
     public void setConteudo(String conteudo) { this.conteudo = conteudo; }
 
+    @JsonIgnore
     public Resolucao getResolucao() { return resolucao; }
     public void setResolucao(Resolucao resolucao) { this.resolucao = resolucao; }
+
+    @JsonProperty("resolucaoId")
+    public Long getResolucaoId() { return resolucao != null ? resolucao.getId() : null; }
 
     public Usuario getAutor() { return autor; }
     public void setAutor(Usuario autor) { this.autor = autor; }

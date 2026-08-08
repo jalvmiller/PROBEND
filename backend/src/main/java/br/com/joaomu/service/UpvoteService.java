@@ -161,8 +161,9 @@ public class UpvoteService {
 
         // Esse método é utilitário, a implementação
         // em produção vai ser diferente com toda certeza
-        return upvoteRepository.findByUsuario(usuario).stream()
-                .filter(u -> u.getQuestao() != null)
+        // Query dedicada: busca apenas upvotes de questões do usuário,
+        // evitando carregar upvotes de resoluções e filtrar em memória
+        return upvoteRepository.findByUsuarioAndQuestaoIsNotNull(usuario).stream()
                 .map(u -> u.getQuestao().getId())
                 .collect(Collectors.toList());
     }
@@ -170,8 +171,9 @@ public class UpvoteService {
     @Transactional(readOnly = true)
     public List<Long> getResolucaoUpvotedIdsDoUsuario() {
         Usuario usuario = getUsuarioLogado();
-        return upvoteRepository.findByUsuario(usuario).stream()
-                .filter(u -> u.getResolucao() != null)
+        // Query dedicada: busca apenas upvotes de resoluções do usuário,
+        // evitando carregar upvotes de questões e filtrar em memória
+        return upvoteRepository.findByUsuarioAndResolucaoIsNotNull(usuario).stream()
                 .map(u -> u.getResolucao().getId())
                 .collect(Collectors.toList());
     }

@@ -1,5 +1,7 @@
 package br.com.joaomu.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -25,6 +27,7 @@ public class Resolucao {
     // Relações com as outras tabelas
     @ManyToOne
     @JoinColumn(name = "questao_id", nullable = false)
+    @JsonIgnore
     private Questao questao;
 
     @ManyToOne
@@ -104,8 +107,14 @@ public class Resolucao {
         this.verificadoPorEspecialista = verificadoPorEspecialista != null ? verificadoPorEspecialista : false;
     }
 
+    @JsonIgnore
     public Questao getQuestao() {
         return questao;
+    }
+
+    @JsonProperty("questaoId")
+    public Long getQuestaoId() {
+        return questao != null ? questao.getId() : null;
     }
 
     public void setQuestao(Questao questao) {
