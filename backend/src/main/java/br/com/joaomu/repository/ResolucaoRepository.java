@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ResolucaoRepository extends JpaRepository<Resolucao, Long> {
 
-    List<Resolucao> findByQuestaoId(Long questaoId);
+    List<Resolucao> findByQuestao_Id(Long questaoId);
 
 }

@@ -10,5 +10,5 @@ import java.util.List;
 public interface ComentarioRepository extends JpaRepository<Comentario, Long> {
 
     // Busca todos os comentários de uma resolução, ordenados do mais antigo para o mais novo
-    List<Comentario> findByResolucaoIdOrderByDataCriacaoAsc(Long resolucaoId);
+    List<Comentario> findByResolucao_IdOrderByDataCriacaoAsc(Long resolucaoId);
 }
