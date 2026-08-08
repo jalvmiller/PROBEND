@@ -16,7 +16,8 @@ function ResolucaoCard({ resolucao, meusUpvotes }) {
     const [upvotesCount, setUpvotesCount] = useState(resolucao.upvotes || 0);
     const [isUpvoted, setIsUpvoted] = useState(false);
     const [modalComentariosAberto, setModalComentariosAberto] = useState(false);
-    const [qtdComentarios, setQtdComentarios] = useState(null); // null = ainda não carregado
+    // A quantidade de comentários é carregada otimizada diretamente do backend via @Formula
+    const [qtdComentarios, setQtdComentarios] = useState(resolucao.qtdComentarios ?? 0);
 
     useEffect(() => {
         if (meusUpvotes && meusUpvotes.includes(resolucao.id)) {
@@ -25,15 +26,6 @@ function ResolucaoCard({ resolucao, meusUpvotes }) {
             setIsUpvoted(false);
         }
     }, [meusUpvotes, resolucao.id]);
-
-    // Carrega a contagem de comentários de forma lazy (só o GET, sem abrir o modal)
-    useEffect(() => {
-        let cancelado = false;
-        questaoService.listarComentarios(resolucao.id)
-            .then(lista => { if (!cancelado) setQtdComentarios(lista.length); })
-            .catch(() => { if (!cancelado) setQtdComentarios(0); });
-        return () => { cancelado = true; };
-    }, [resolucao.id]);
 
     const handleUpvote = async (e) => {
         e.preventDefault();

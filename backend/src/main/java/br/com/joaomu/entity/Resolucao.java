@@ -24,6 +24,9 @@ public class Resolucao {
 
     private Boolean verificadoPorEspecialista = false; // Apenas User com "especialista=true" pode alterar isso
 
+    @org.hibernate.annotations.Formula("(SELECT COUNT(c.id) FROM comentarios c WHERE c.resolucao_id = id)")
+    private Integer qtdComentarios = 0;
+
     // Relações com as outras tabelas
     @ManyToOne
     @JoinColumn(name = "questao_id", nullable = false)
@@ -135,6 +138,14 @@ public class Resolucao {
 
     public void setDataCriacao(java.time.LocalDateTime dataCriacao) {
         this.dataCriacao = dataCriacao;
+    }
+
+    public Integer getQtdComentarios() {
+        return qtdComentarios != null ? qtdComentarios : 0;
+    }
+
+    public void setQtdComentarios(Integer qtdComentarios) {
+        this.qtdComentarios = qtdComentarios != null ? qtdComentarios : 0;
     }
 
 }
