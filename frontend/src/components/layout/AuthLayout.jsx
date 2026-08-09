@@ -5,12 +5,12 @@ import { BookOpen } from 'lucide-react';
 // Estrutura: painel decorativo esquerdo + card de formulário direito
 export function AuthLayout({ children }) {
   return (
-    <div className="min-h-screen flex bg-zinc-950">
+    <div className="min-h-screen flex bg-[#f4f6f8] dark:bg-slate-900 transition-colors">
 
       {/* ── Painel decorativo — escondido em mobile ── */}
-      <div className="hidden lg:flex lg:w-[45%] relative flex-col justify-between p-12 overflow-hidden bg-zinc-900">
+      <div className="hidden lg:flex lg:w-[45%] relative flex-col justify-between p-12 overflow-hidden bg-slate-100/90 dark:bg-slate-800/90 border-r border-slate-200/80 dark:border-slate-800 transition-colors">
 
-        {/* Grade de pontos decorativa */}
+        {/* Máscara de textura de pontos via CSS sutil */}
         <div
           className="absolute inset-0 opacity-[0.04]"
           style={{
@@ -39,7 +39,7 @@ export function AuthLayout({ children }) {
         {/* Tagline central */}
         <div className="relative space-y-4">
           <h2
-            className="text-4xl font-bold text-zinc-100 leading-tight"
+            className="text-4xl font-bold text-slate-800 dark:text-slate-100 leading-tight"
             style={{ fontFamily: '"Sora", sans-serif' }}
           >
             Organize seus estudos.<br />
@@ -47,7 +47,7 @@ export function AuthLayout({ children }) {
               Domine as provas.
             </span>
           </h2>
-          <p className="text-zinc-400 text-base leading-relaxed max-w-sm">
+          <p className="text-slate-600 dark:text-slate-400 text-base leading-relaxed max-w-sm">
             Gerencie e revise questões de concursos com eficiência. 
             Acompanhe seu progresso e identifique os pontos a melhorar.
           </p>
@@ -57,7 +57,7 @@ export function AuthLayout({ children }) {
             {['Questões filtradas', 'Sistema de upvotes', 'Controle de progresso'].map((feat) => (
               <span
                 key={feat}
-                className="text-xs font-medium px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20"
+                className="text-xs font-medium px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-slate-300 border border-indigo-500/20"
               >
                 {feat}
               </span>
@@ -66,18 +66,18 @@ export function AuthLayout({ children }) {
         </div>
 
         {/* Rodapé do painel */}
-        <p className="relative text-xs text-zinc-600">
+        <p className="relative text-xs text-slate-400 dark:text-slate-400/80">
           © {new Date().getFullYear()} PROBEND — Plataforma de estudos
         </p>
       </div>
 
-      {/* ── Painel do formulário ── */}
-      <div className="flex flex-1 items-center justify-center p-6 lg:p-12 bg-zinc-950">
+      {/* Container principal (painel do formulário) */}
+      <div className="flex flex-1 items-center justify-center p-6 lg:p-12 bg-[#f4f6f8] dark:bg-slate-900 transition-colors">
 
         {/* Card do formulário */}
         <div className="w-full max-w-md">
 
-          {/* Logo visível apenas em mobile */}
+          {/* Posição da logo (visível apenas em mobile) */}
           <div className="flex lg:hidden items-center gap-2.5 justify-center mb-8">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
               <BookOpen size={16} className="text-white" />
@@ -91,9 +91,10 @@ export function AuthLayout({ children }) {
           </div>
 
           {/* Card com glassmorphism suave */}
-          <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 shadow-2xl shadow-black/50">
-            {/* Linha decorativa superior */}
+          <div className="bg-white dark:bg-slate-800/95 border border-slate-200/80 dark:border-slate-700/60 rounded-2xl p-8 shadow-xl dark:shadow-black/40 transition-colors">
+            {/* Faixa gradiente superior / Linha decorativa */}
             <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent rounded-full" />
+            {/* Form */}
             {children}
           </div>
         </div>

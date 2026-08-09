@@ -50,7 +50,7 @@ export default function PainelResolucao({ questaoId, onResolucaoEnviada }) {
 
     return (
         <div
-            className={`flex flex-col h-full overflow-y-auto bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800 ${SCROLLBAR_CLASSES}`}
+            className={`flex flex-col h-full overflow-y-auto bg-white dark:bg-slate-800/90 border-l border-slate-200/80 dark:border-slate-800 ${SCROLLBAR_CLASSES}`}
             role="complementary"
             aria-label="Formulário de resolução"
         >
@@ -78,10 +78,10 @@ export default function PainelResolucao({ questaoId, onResolucaoEnviada }) {
                     {/* Campo de texto principal */}
                     <div className="flex flex-col gap-1.5">
                         <label className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                        Resolução <span className="normal-case font-normal text-slate-400">(suporta LaTeX)</span>
+                        Resolução <span className="normal-case font-normal text-slate-400 dark:text-slate-500">(suporta LaTeX)</span>
                     </label>
                     <textarea
-                        className="w-full min-h-[160px] resize-y rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 p-3 text-sm leading-relaxed placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                        className="w-full min-h-[160px] resize-y rounded-xl border border-slate-200 dark:border-slate-700/60 bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 p-3 text-sm leading-relaxed placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                         value={conteudo}
                         onChange={e => setConteudo(e.target.value)}
                         placeholder={'Explique sua resolução...\nEx: A integral $$\\int_0^\\infty e^{-x^2}dx$$ vale...'}
@@ -96,7 +96,7 @@ export default function PainelResolucao({ questaoId, onResolucaoEnviada }) {
                         <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                             Preview
                         </span>
-                        <div className="rounded-xl border border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/50 dark:bg-indigo-950/10 p-4 text-slate-800 dark:text-slate-100 leading-relaxed whitespace-pre-wrap text-sm overflow-hidden break-words max-w-full">
+                        <div className="rounded-xl border border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/50 dark:bg-indigo-950/20 p-4 text-slate-800 dark:text-slate-100 leading-relaxed whitespace-pre-wrap text-sm overflow-hidden break-words max-w-full">
                             {previewMath(conteudo)}
                         </div>
                     </div>
@@ -107,8 +107,8 @@ export default function PainelResolucao({ questaoId, onResolucaoEnviada }) {
                         type="submit"
                         className={`w-full py-2.5 rounded-xl text-sm font-bold transition-all duration-200 ${
                             enviando
-                                ? 'bg-slate-300 dark:bg-slate-700 text-slate-500 cursor-not-allowed'
-                                : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm hover:shadow-md'
+                                ? 'bg-slate-300 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
+                                : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm hover:shadow-md cursor-pointer'
                         }`}
                         disabled={enviando}
                         aria-label={enviando ? 'Enviando resolução...' : 'Enviar resolução'}

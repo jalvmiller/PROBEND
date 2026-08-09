@@ -175,11 +175,11 @@ function QuestaoDetalhes() {
                 Separar o "Voltar" dos badges evita que a barra fique
                 poluída numa única linha e melhora a hierarquia visual.
             ──────────────────────────────────────────────────────── */}
-            <div className="flex-shrink-0 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 px-5 pt-3 pb-2 space-y-2">
+            <div className="flex-shrink-0 bg-white dark:bg-[#161e2e] border-b border-slate-200 dark:border-slate-800 px-5 pt-3 pb-2 space-y-2 transition-colors">
                 {/* Linha 1: Voltar */}
                 <div>
                     <button
-                        className="flex items-center gap-1.5 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-100 transition-colors"
+                        className="flex items-center gap-1.5 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer"
                         onClick={() => navigate('/')}
                         aria-label="Voltar para o Dashboard"
                     >
@@ -189,11 +189,11 @@ function QuestaoDetalhes() {
 
                 {/* Linha 2: badges (matéria · assunto · dificuldade · status) */}
                 <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md">
+                    <span className="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900/60 px-2.5 py-1 rounded-md">
                         {questao?.materia}
                     </span>
                     {questao?.assunto && (
-                        <span className="text-xs text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-100 dark:border-slate-800">
+                        <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/40 px-2.5 py-1 rounded-md border border-slate-200/80 dark:border-slate-700/60">
                             {questao.assunto}
                         </span>
                     )}
@@ -250,7 +250,7 @@ function QuestaoDetalhes() {
 
                         {/* Imagem */}
                         {questao?.imagemUrl && (
-                            <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm p-2 bg-slate-50 dark:bg-slate-950/20">
+                            <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700/60 shadow-sm p-2 bg-slate-50 dark:bg-slate-900/40">
                                 <img src={getMediaUrl(questao.imagemUrl)} alt="Imagem da questão" className="max-h-72 mx-auto object-contain rounded" />
                             </div>
                         )}
@@ -262,7 +262,7 @@ function QuestaoDetalhes() {
 
                         {/* Fonte */}
                         {questao?.fonte && (
-                            <p className="text-xs text-slate-400 dark:text-slate-500 italic">Fonte: {questao.fonte}</p>
+                            <p className="text-xs text-slate-400 dark:text-slate-400/80 italic">Fonte: {questao.fonte}</p>
                         )}
 
                         {/* Ações */}
@@ -272,7 +272,7 @@ function QuestaoDetalhes() {
                                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold transition-all duration-200 cursor-pointer border ${
                                     isUpvoted
                                         ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/50'
-                                        : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+                                        : 'bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700/60'
                                 }`}
                                 aria-pressed={isUpvoted}
                                 aria-label={`${upvotesCount} upvotes. ${isUpvoted ? 'Clique para remover seu upvote' : 'Clique para dar upvote'}`}
@@ -298,12 +298,12 @@ function QuestaoDetalhes() {
                         </div>
 
                         {/* Divider + Resoluções */}
-                        <div className="border-t border-slate-100 dark:border-slate-800 pt-4">
-                            <h3 className="text-slate-700 dark:text-slate-300 text-base font-bold mb-3" id="resolucoes-titulo">
+                        <div className="border-t border-slate-100 dark:border-slate-700/60 pt-4">
+                            <h3 className="text-slate-700 dark:text-slate-200 text-base font-bold mb-3" id="resolucoes-titulo">
                                 Resoluções ({resolucoes.length})
                             </h3>
                             {resolucoes.length === 0 ? (
-                                <div className="text-slate-400 dark:text-slate-500 text-center py-8 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 text-sm">
+                                <div className="text-slate-400 dark:text-slate-400 text-center py-8 rounded-xl border border-dashed border-slate-200 dark:border-slate-700/60 text-sm">
                                     Nenhuma resolução ainda. Seja o primeiro!
                                 </div>
                             ) : (
@@ -323,7 +323,7 @@ function QuestaoDetalhes() {
 
                 {/* ── RESIZER HANDLE ── */}
                 <div
-                    className="w-1.5 flex-shrink-0 bg-slate-200 dark:bg-slate-800 hover:bg-indigo-400 dark:hover:bg-indigo-600 cursor-col-resize transition-colors duration-150 flex items-center justify-center group"
+                    className="w-1.5 flex-shrink-0 bg-slate-200 dark:bg-slate-700/60 hover:bg-indigo-400 dark:hover:bg-indigo-500 cursor-col-resize transition-colors duration-150 flex items-center justify-center group"
                     onMouseDown={onResizerMouseDown}
                     role="separator"
                     aria-orientation="vertical"

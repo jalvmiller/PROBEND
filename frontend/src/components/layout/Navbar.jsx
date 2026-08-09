@@ -1,20 +1,24 @@
+// import dos ícones
 import { Menu, LogOut, User } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { getMediaUrl } from '../../utils/urlUtils';
 
-// Navbar fixa no topo da aplicação
+// Navbar fica no topo da página
+// Função que recebe prop onMenuClick, quando alguém clica no botão do menu chama essa função
 function Navbar({ onMenuClick }) {
 	const { user, logout } = useAuth();
+	// sem destruct; retorna uma String
 	const avatarUrl = getMediaUrl(user?.avatar);
 
 	return (
-		<nav className="flex-shrink-0 bg-zinc-900 border-b border-zinc-800 shadow-lg shadow-black/30">
+		// shadow-xs dark:shadow-black/40 -> sombra embaixo da barra
+		<nav className="flex-shrink-0 bg-white dark:bg-[#161e2e] border-b border-slate-200/80 dark:border-slate-800 shadow-xs dark:shadow-black/40 transition-colors">
 			<div className="max-w-full px-5 py-3 flex items-center justify-between gap-4">
 
 				{/* Botão hamburger — apenas mobile */}
 				<button
 					onClick={onMenuClick}
-					className="lg:hidden p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800 transition-colors"
+					className="lg:hidden p-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
 					aria-label="Abrir menu"
 				>
 					<Menu size={22} />
@@ -40,7 +44,7 @@ function Navbar({ onMenuClick }) {
 				{user ? (
 					<div className="flex items-center gap-3">
 						{/* Pill com avatar + nome */}
-						<div className="flex items-center gap-2.5 bg-zinc-800/70 border border-zinc-700/50 pl-1.5 pr-4 py-1 rounded-full backdrop-blur-sm">
+						<div className="flex items-center gap-2.5 bg-slate-100/90 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/60 pl-1.5 pr-4 py-1 rounded-full backdrop-blur-sm">
 							{/* Avatar */}
 							<div className="w-8 h-8 rounded-full overflow-hidden bg-indigo-900/60 flex items-center justify-center ring-2 ring-indigo-500/30 flex-shrink-0">
 								{avatarUrl ? (
@@ -50,10 +54,10 @@ function Navbar({ onMenuClick }) {
 										className="w-full h-full object-cover"
 									/>
 								) : (
-									<User size={15} className="text-indigo-300" />
+									<User size={15} className="text-indigo-500 dark:text-indigo-300" />
 								)}
 							</div>
-							<span className="text-sm font-medium text-zinc-200 hidden sm:block truncate max-w-[9rem]">
+							<span className="text-sm font-medium text-slate-700 dark:text-slate-200 hidden sm:block truncate max-w-[9rem]">
 								{user.nome}
 							</span>
 						</div>
@@ -61,7 +65,7 @@ function Navbar({ onMenuClick }) {
 						{/* Botão sair */}
 						<button
 							onClick={logout}
-							className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-red-400 hover:bg-red-500/10 px-3 py-2 rounded-lg border border-transparent hover:border-red-500/20 transition-all duration-200 font-medium"
+							className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-500/10 px-3 py-2 rounded-lg border border-transparent hover:border-red-500/20 transition-all duration-200 font-medium"
 						>
 							<LogOut size={15} />
 							<span className="hidden sm:inline">Sair</span>

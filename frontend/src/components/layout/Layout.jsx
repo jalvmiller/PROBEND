@@ -12,8 +12,9 @@ function Layout({ children, fullHeight = false }) {
   const { vimAtivo } = useAccessibility();
 
   return (
-    <div className={`flex flex-col h-screen bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 transition-colors duration-200 ${SCROLLBAR_CLASSES}`}>
-      {/* Navbar fixa no topo */}
+    // Fundo sutil com gradiente ambiente
+    <div className={`flex flex-col h-screen bg-[#f4f6f8] dark:bg-[#0f172a] text-slate-800 dark:text-slate-100 transition-colors duration-200 ${SCROLLBAR_CLASSES}`}>
+      {/* Navbar no topo */}
       <Navbar onMenuClick={() => setSidebarOpen(true)} />
 
       {/* Container com sidebar + conteúdo principal */}

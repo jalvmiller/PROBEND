@@ -19,15 +19,21 @@ function Register() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    if (password.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
     try {
       setLoading(true);
       setError('');
       await authService.register(username, password, nome, email);
+      // Salva as credenciais recebidas no cadastro no estado global
       await login();
+      // Redireciona o usuário para o Dashboard (raiz)
       navigate('/');
     } catch (error) {
-      console.error(error);
-      setError('Erro ao realizar o cadastro. Tente outro username.');
+      const msg = error.response?.data?.erro;
+      setError(msg || 'Erro ao realizar o cadastro. Verifique se os dados estão corretos.');
     } finally {
       setLoading(false);
     }
@@ -35,12 +41,12 @@ function Register() {
 
   // Classe reutilizável para os inputs
   const inputClass =
-    'w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-100 text-sm ' +
-    'placeholder:text-zinc-700 ' +
-    'focus:outline-none focus:border-indigo-500/70 focus:ring-2 focus:ring-indigo-500/20 ' +
+    'w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 rounded-xl text-slate-900 dark:text-slate-100 text-sm ' +
+    'placeholder:text-slate-400 dark:placeholder:text-slate-500 ' +
+    'focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 ' +
     'transition-all duration-200';
 
-  const labelClass = 'block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-1.5';
+  const labelClass = 'block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1.5';
 
   return (
     <AuthLayout>
@@ -49,18 +55,18 @@ function Register() {
         {/* Título */}
         <div className="mb-6">
           <h2
-            className="text-2xl font-bold text-zinc-100"
+            className="text-2xl font-bold text-slate-900 dark:text-slate-100"
             style={{ fontFamily: '"Sora", sans-serif' }}
           >
             Criar conta
           </h2>
-          <p className="text-sm text-zinc-500 mt-1">Preencha os dados para se cadastrar</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Preencha os dados para se cadastrar</p>
         </div>
 
         {/* Erro */}
         {error && (
-          <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-            <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-red-400" />
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm">
+            <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-red-500" />
             {error}
           </div>
         )}
@@ -118,7 +124,7 @@ function Register() {
             />
             <button
               type="button"
-              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-zinc-600 hover:text-zinc-300 transition-colors"
+              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
               onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
             >
@@ -143,11 +149,11 @@ function Register() {
         </button>
 
         {/* Link para login */}
-        <p className="text-center text-sm text-zinc-500">
+        <p className="text-center text-sm text-slate-500 dark:text-slate-400">
           Já tem uma conta?{' '}
           <Link
             to="/login"
-            className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
+            className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold transition-colors"
           >
             Faça login
           </Link>

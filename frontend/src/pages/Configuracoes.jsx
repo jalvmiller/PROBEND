@@ -46,12 +46,12 @@ function Configuracoes() {
             </h2>
 
             {/* CARD: Dados do Perfil */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 p-6 space-y-6 transition-colors duration-300">
+            <div className="bg-white dark:bg-slate-800/90 rounded-2xl shadow-sm dark:shadow-black/20 border border-slate-200/80 dark:border-slate-700/60 p-6 space-y-6 transition-colors duration-300">
                 {/* Avatar + Opção para Editar */}
-                <div className="flex items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+                <div className="flex items-center gap-4 border-b border-slate-100 dark:border-slate-700/60 pb-4">
                     <div
                         onClick={abrirSeletorDeArquivo}
-                        className="relative group w-20 h-20 rounded-full cursor-pointer flex-shrink-0 overflow-hidden shadow-md ring-2 ring-blue-500/20 dark:ring-blue-400/20"
+                        className="relative group w-20 h-20 rounded-full cursor-pointer flex-shrink-0 overflow-hidden shadow-md ring-2 ring-indigo-500/20 dark:ring-indigo-400/20"
                         title="Clique para alterar a foto de perfil"
                     >
                         {avatarUrl ? (
@@ -61,7 +61,7 @@ function Configuracoes() {
                                 className="w-full h-full object-cover"
                             />
                         ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/20 dark:to-slate-800 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                            <div className="w-full h-full bg-gradient-to-br from-indigo-100 to-indigo-200 dark:from-slate-900 dark:to-slate-800 text-indigo-600 dark:text-slate-300 flex items-center justify-center">
                                 <User size={40} />
                             </div>
                         )}
@@ -136,7 +136,7 @@ function Configuracoes() {
                                 ? 'bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/40'
                                 : user?.especialista
                                     ? 'bg-purple-50 dark:bg-purple-950/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-900/40'
-                                    : 'bg-slate-50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+                                    : 'bg-slate-50 dark:bg-slate-900/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700/60'
                                 }`}>
                                 {obterRoleLabel()}
                             </span>
@@ -147,9 +147,9 @@ function Configuracoes() {
 
 
             {/* CARD 2: Tema Escuro */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 p-6 space-y-6 transition-colors duration-300">
-                <div className="flex items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
-                    <div className="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 p-3 rounded-full">
+            <div className="bg-white dark:bg-slate-800/90 rounded-2xl shadow-sm dark:shadow-black/20 border border-slate-200/80 dark:border-slate-700/60 p-6 space-y-6 transition-colors duration-300">
+                <div className="flex items-center gap-4 border-b border-slate-100 dark:border-slate-700/60 pb-4">
+                    <div className="bg-slate-100 dark:bg-slate-900/60 text-slate-600 dark:text-slate-300 p-3 rounded-full">
                         {escuro ? <Moon size={28} /> : <Sun size={28} />}
                     </div>
                     <div>
@@ -161,7 +161,7 @@ function Configuracoes() {
                 <div className="flex items-center justify-between py-2">
                     <div>
                         <h4 className="font-semibold text-slate-800 dark:text-slate-200">Tema Escuro (Night Theme)</h4>
-                        <p className="text-xs text-slate-400 dark:text-slate-500">
+                        <p className="text-xs text-slate-400 dark:text-slate-400/80">
                             Ajusta as cores para reduzir o cansaço visual.
                         </p>
                     </div>
@@ -169,7 +169,7 @@ function Configuracoes() {
                     {/* Botão Switch com animação fluida */}
                     <button
                         onClick={toggleTema}
-                        className={`w-14 h-8 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${escuro ? 'bg-blue-600' : 'bg-slate-300 dark:bg-slate-800'
+                        className={`w-14 h-8 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${escuro ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-900'
                             }`}
                         aria-label="Alternar tema"
                     >
@@ -178,7 +178,7 @@ function Configuracoes() {
                                 }`}
                         >
                             {escuro ? (
-                                <Moon size={14} className="text-blue-600" />
+                                <Moon size={14} className="text-indigo-600" />
                             ) : (
                                 <Sun size={14} className="text-amber-500" />
                             )}
@@ -188,8 +188,8 @@ function Configuracoes() {
             </div>
 
             {/* CARD 3: Acessibilidade e Teclado */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 p-6 space-y-6 transition-colors duration-300">
-                <div className="flex items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+            <div className="bg-white dark:bg-slate-800/90 rounded-2xl shadow-sm dark:shadow-black/20 border border-slate-200/80 dark:border-slate-700/60 p-6 space-y-6 transition-colors duration-300">
+                <div className="flex items-center gap-4 border-b border-slate-100 dark:border-slate-700/60 pb-4">
                     <div className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 p-3 rounded-full">
                         <Keyboard size={28} />
                     </div>
@@ -203,16 +203,16 @@ function Configuracoes() {
                 <div className="flex items-center justify-between py-2">
                     <div>
                         <h4 className="font-semibold text-slate-800 dark:text-slate-200">Navegação estilo Vim</h4>
-                        <p className="text-xs text-slate-400 dark:text-slate-500 max-w-sm">
-                            Use <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[11px] border border-slate-200 dark:border-slate-700">J</kbd> e <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[11px] border border-slate-200 dark:border-slate-700">K</kbd> para navegar entre questões,
-                            e <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[11px] border border-slate-200 dark:border-slate-700">Enter</kbd> para abrir. <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[11px] border border-slate-200 dark:border-slate-700">T</kbd> exibe a lista completa de atalhos.
+                        <p className="text-xs text-slate-400 dark:text-slate-400/80 max-w-sm">
+                            Use <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-900 font-mono text-[11px] border border-slate-200 dark:border-slate-700/60">J</kbd> e <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-900 font-mono text-[11px] border border-slate-200 dark:border-slate-700/60">K</kbd> para navegar entre questões,
+                            e <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-900 font-mono text-[11px] border border-slate-200 dark:border-slate-700/60">Enter</kbd> para abrir. <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-900 font-mono text-[11px] border border-slate-200 dark:border-slate-700/60">T</kbd> exibe a lista completa de atalhos.
                         </p>
                     </div>
 
                     <button
                         onClick={() => setVimAtivo(!vimAtivo)}
                         className={`w-14 h-8 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 ${
-                            vimAtivo ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-800'
+                            vimAtivo ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-900'
                         }`}
                         aria-label={vimAtivo ? 'Desativar navegação Vim' : 'Ativar navegação Vim'}
                         aria-pressed={vimAtivo}

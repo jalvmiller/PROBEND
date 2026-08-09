@@ -16,6 +16,7 @@
   --color-brand-50: #eef2ff;
   --color-brand-100: #e0e7ff;
   --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
   --color-brand-400: #818cf8;
   --color-brand-500: #6366f1;
   --color-brand-600: #4f46e5;
@@ -28,17 +29,25 @@
   --color-accent-400: #fbbf24;
   --color-accent-500: #f59e0b;
 
+  /* --- Superfícies e paleta escuro Slate Midnight --- */
+  --color-dark-bg: #0f172a;
+  --color-dark-surface: #1e293b;
+  --color-dark-border: #334155;
+  --color-dark-accent: #94a3b8;
+
   /* --- Superfícies (dark mode principal) --- */
-  --color-surface-950: #09090b;
-  /* zinc-950 — fundo raiz */
-  --color-surface-900: #18181b;
+  /* zinc-950 / slate-900 — fundo raiz */
   /* zinc-900 — navbar / sidebar */
-  --color-surface-800: #27272a;
   /* zinc-800 — cards */
-  --color-surface-700: #3f3f46;
   /* zinc-700 — bordas */
-  --color-surface-600: #52525b;
   /* zinc-600 — texto secundário */
+  --color-surface-950: #0f172a; /* Fundo raiz escuro (Slate 900) */
+  --color-surface-900: #161e2e; /* Sidebar / Navbar escuros */
+  --color-surface-800: #1e293b; /* Cards / Conteúdo escuro (Slate 800) */
+  --color-surface-700: #2d3748; /* Modais e elementos elevados */
+  --color-surface-600: #334155; /* Bordas e divisores escuros */
+  --color-surface-500: #475569; /* Destaques / bordas ativas */
+  --color-surface-400: #94a3b8; /* Texto secundário escuro (Slate 400) */
 
   /* --- Animações --- */
   --animate-fade-in: fade-in 0.35s ease both;
@@ -69,6 +78,7 @@
 }
 
 /* --- Dark mode via classe .dark no <html> --- */
+/* Recurso específico do Tailwind para tema escuro, é uma regra personalizada que diz ao compilador para usar a classe .dark */
 @variant dark (&:where(.dark, .dark *));
 
 /* --- Reset & Base Global --- */
@@ -85,8 +95,8 @@ html {
 
 body {
   margin: 0;
-  background-color: #f8fafc;
-  color: #0f172a;
+  background-color: #f4f6f8;
+  color: #1e293b;
   line-height: 1.6;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
@@ -94,5 +104,5 @@ body {
 .dark body,
 html.dark body {
   background-color: var(--color-surface-950);
-  color: #f4f4f5;
+  color: #f1f5f9;
 }

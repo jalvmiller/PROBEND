@@ -11,7 +11,7 @@ export const SCROLLBAR_CLASSES = `
   [&::-webkit-scrollbar-thumb]:bg-slate-400/50 
   [&::-webkit-scrollbar-thumb]:rounded-full 
   hover:[&::-webkit-scrollbar-thumb]:bg-slate-500/75 
-  dark:[&::-webkit-scrollbar-thumb]:bg-slate-600/50 
+  dark:[&::-webkit-scrollbar-thumb]:bg-slate-700/60 
   dark:hover:[&::-webkit-scrollbar-thumb]:bg-slate-500/80 
   [&_*::-webkit-scrollbar]:w-2 
   [&_*::-webkit-scrollbar]:h-2 
@@ -19,6 +19,6 @@ export const SCROLLBAR_CLASSES = `
   [&_*::-webkit-scrollbar-thumb]:bg-slate-400/50 
   [&_*::-webkit-scrollbar-thumb]:rounded-full 
   hover:[&_*::-webkit-scrollbar-thumb]:bg-slate-500/75 
-  dark:[&_*::-webkit-scrollbar-thumb]:bg-slate-600/50 
+  dark:[&_*::-webkit-scrollbar-thumb]:bg-slate-700/60 
   dark:hover:[&_*::-webkit-scrollbar-thumb]:bg-slate-500/80
 `.replace(/\s+/g, ' ').trim();

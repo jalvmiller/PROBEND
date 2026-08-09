@@ -48,8 +48,8 @@ function ResolucaoCard({ resolucao, meusUpvotes }) {
 
     return (
         // Janela do Card de Resolução
-        <div className='bg-white dark:bg-slate-900 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-800 p-6 space-y-4 transition hover:shadow-xl transition-colors duration-300'>
-            <div className='flex justify-between items-center border-b border-slate-50 dark:border-slate-800 pb-2'>
+        <div className='bg-white dark:bg-slate-800/90 rounded-2xl shadow-sm dark:shadow-black/20 border border-slate-200/80 dark:border-slate-700/60 p-6 space-y-4 transition hover:shadow-md transition-colors duration-300'>
+            <div className='flex justify-between items-center border-b border-slate-100 dark:border-slate-700/60 pb-2'>
                 {/* Informações sobre quem postou a resolução */}
                 <div className='flex items-center space-x-3'>
                     <UsuarioAvatar usuario={resolucao.autor} size="md" />
@@ -72,7 +72,7 @@ function ResolucaoCard({ resolucao, meusUpvotes }) {
                     onClick={handleUpvote}
                     className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer border ${isUpvoted
                         ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/50 hover:bg-blue-100'
-                        : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-800'
+                        : 'bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700/60 hover:bg-slate-100 dark:hover:bg-slate-800'
                         }`}
                     title={isUpvoted ? "Remover Upvote" : "Dar Upvote"}
                     aria-pressed={isUpvoted}
@@ -85,7 +85,7 @@ function ResolucaoCard({ resolucao, meusUpvotes }) {
                 {/* Botão de Comentários */}
                 <button
                     onClick={() => setModalComentariosAberto(true)}
-                    className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer border bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-800"
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer border bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700/60 hover:bg-slate-100 dark:hover:bg-slate-800"
                     aria-label={`Ver ${qtdComentarios ?? '...'} comentários desta resolução`}
                     title="Ver comentários"
                 >

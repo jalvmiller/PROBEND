@@ -19,7 +19,8 @@ export function AuthProvider({ children }) {
       setIsAuthenticated(true);
       // Guarda o objeto usuário completo
     } catch (err) {
-      if (err.response?.status !== 401) {
+      // 401 e 403 são retornos normais do Spring Security quando o usuário não possui sessão ativa
+      if (err.response?.status !== 401 && err.response?.status !== 403) {
         console.error("Erro ao buscar os dados do usuário logado", err);
       }
       setUser(null);

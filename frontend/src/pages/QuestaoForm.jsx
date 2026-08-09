@@ -111,7 +111,7 @@ function QuestaoForm({ SalvarSucesso }) {
         <form onSubmit={handleSalvar} className="w-full">
 
             {/* Bloco Auxiliar de IA */}
-            <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl space-y-3 transition-colors">
+            <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/60 rounded-xl space-y-3 transition-colors">
                 <label className="block text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1 transition-colors">
                     🪄 Copiloto de Criação IA (Gemini)
                 </label>
@@ -119,7 +119,7 @@ function QuestaoForm({ SalvarSucesso }) {
                     Digite sua ideia (ex: "Crie uma questão de Cálculo 1 sobre limites fundamentais") e deixe a IA preencher o formulário para você.
                 </p>
                 <textarea
-                    className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded text-sm bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                    className="w-full p-2 border border-slate-300 dark:border-slate-700/60 rounded text-sm bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-colors"
                     placeholder="Descreva a questão que deseja criar..."
                     value={promptIA}
                     onChange={(e) => setPromptIA(e.target.value)}
@@ -147,7 +147,7 @@ function QuestaoForm({ SalvarSucesso }) {
             </div>
 
             <textarea
-                className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded mb-3 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                className="w-full p-2 border border-slate-300 dark:border-slate-700/60 rounded mb-3 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-colors"
                 placeholder="Digite o enunciado:"
                 value={novaQuestao.enunciado}
                 onChange={(e) => setNovaQuestao({ ...novaQuestao, enunciado: e.target.value })}
@@ -156,7 +156,7 @@ function QuestaoForm({ SalvarSucesso }) {
 
             <div className="flex gap-4 mb-4">
                 <input
-                    className="flex-1 p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                    className="flex-1 p-2 border border-slate-300 dark:border-slate-700/60 rounded bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-colors"
                     placeholder="Matéria (ex: Java)"
                     value={novaQuestao.materia}
                     onChange={(e) => setNovaQuestao({ ...novaQuestao, materia: e.target.value })}
@@ -164,14 +164,14 @@ function QuestaoForm({ SalvarSucesso }) {
                 />
 
                 <input
-                    className="flex-1 p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                    className="flex-1 p-2 border border-slate-300 dark:border-slate-700/60 rounded bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-colors"
                     placeholder="Assunto"
                     value={novaQuestao.assunto}
                     onChange={(e) => setNovaQuestao({ ...novaQuestao, assunto: e.target.value })}
                 />
 
                 <select
-                    className="p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                    className="p-2 border border-slate-300 dark:border-slate-700/60 rounded bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-colors"
                     value={novaQuestao.dificuldade}
                     onChange={(e) => setNovaQuestao({ ...novaQuestao, dificuldade: e.target.value })}
                 >
@@ -182,14 +182,14 @@ function QuestaoForm({ SalvarSucesso }) {
             </div>
 
             <input
-                className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded mb-4 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                className="w-full p-2 border border-slate-300 dark:border-slate-700/60 rounded mb-4 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-colors"
                 placeholder="Fonte (ex: Livro X, Aula Y)"
                 value={novaQuestao.fonte}
                 onChange={(e) => setNovaQuestao({ ...novaQuestao, fonte: e.target.value })}
             />
 
             <textarea
-                className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded mb-3 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                className="w-full p-2 border border-slate-300 dark:border-slate-700/60 rounded mb-3 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-colors"
                 placeholder="Trecho de código (opcional)"
                 value={novaQuestao.trechoCodigo}
                 onChange={(e) => setNovaQuestao({ ...novaQuestao, trechoCodigo: e.target.value })}
@@ -206,16 +206,16 @@ function QuestaoForm({ SalvarSucesso }) {
                     accept="image/*"
                     onChange={handleFileChange}
                     disabled={enviandoImagem}
-                    className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full p-2 border border-slate-300 dark:border-slate-700/60 rounded bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
                 />
-                {enviandoImagem && <p className="text-xs text-blue-500 mt-1">Enviando imagem...</p>}
+                {enviandoImagem && <p className="text-xs text-indigo-500 dark:text-indigo-400 mt-1">Enviando imagem...</p>}
 
                 {novaQuestao.imagemUrl && (
                     <div className="mt-2 relative inline-block">
                         <img
                             src={novaQuestao.imagemUrl.startsWith("http") ? novaQuestao.imagemUrl : `http://localhost:8080${novaQuestao.imagemUrl}`}
                             alt="Preview da imagem"
-                            className="max-h-40 rounded border border-slate-200 dark:border-slate-800"
+                            className="max-h-40 rounded border border-slate-200 dark:border-slate-700/60"
                         />
                         <button
                             type="button"
@@ -231,7 +231,7 @@ function QuestaoForm({ SalvarSucesso }) {
 
 
             <select
-                className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded mb-4 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                className="w-full p-2 border border-slate-300 dark:border-slate-700/60 rounded mb-4 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-colors"
                 value={novaQuestao.linguagemCodigo}
                 onChange={(e) => setNovaQuestao({ ...novaQuestao, linguagemCodigo: e.target.value })}
             >
@@ -244,7 +244,7 @@ function QuestaoForm({ SalvarSucesso }) {
                 <option value="sql">SQL</option>
             </select>
 
-            <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded font-bold hover:bg-blue-700 w-full cursor-pointer">
+            <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded font-bold hover:bg-indigo-700 w-full cursor-pointer">
                 Adicionar Questão
             </button>
         </form>

@@ -77,15 +77,15 @@ export default function ComentarioModal({ resolucaoId, nomeAutorResolucao, onFec
             aria-modal="true"
             aria-label={`Comentários da resolução de ${nomeAutorResolucao}`}
         >
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700/60 w-full max-w-lg overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
-                <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex-shrink-0">
+                <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-900/60 flex-shrink-0">
                     <div className="flex items-center gap-2 text-slate-800 dark:text-slate-100 font-bold text-sm truncate pr-2">
-                        <MessageSquare size={18} className="text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                        <MessageSquare size={18} className="text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
                         <span className="truncate">Comentários · resolução de <strong className="font-semibold">{nomeAutorResolucao}</strong></span>
                     </div>
                     <button
-                        className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex-shrink-0"
+                        className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/60 flex-shrink-0"
                         onClick={onFechar}
                         aria-label="Fechar modal de comentários"
                     >
@@ -97,13 +97,13 @@ export default function ComentarioModal({ resolucaoId, nomeAutorResolucao, onFec
                 <div className="flex-1 overflow-y-auto p-5 space-y-4 min-h-[160px]" aria-label="Lista de comentários" aria-live="polite">
                     {carregando ? (
                         <div className="flex items-center justify-center py-12">
-                            <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                            <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
                         </div>
                     ) : comentarios.length === 0 ? (
-                        <p className="text-center py-12 text-slate-400 dark:text-slate-500 text-sm">Nenhum comentário ainda. Seja o primeiro!</p>
+                        <p className="text-center py-12 text-slate-400 dark:text-slate-400 text-sm">Nenhum comentário ainda. Seja o primeiro!</p>
                     ) : (
                         comentarios.map(c => (
-                            <div key={c.id} className="flex gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/80" role="article" aria-label={`Comentário de ${c.autor?.nome || c.autor?.username}`}>
+                            <div key={c.id} className="flex gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700/60" role="article" aria-label={`Comentário de ${c.autor?.nome || c.autor?.username}`}>
                                 <UsuarioAvatar usuario={c.autor} size="sm" />
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between gap-2 mb-1">
@@ -119,11 +119,11 @@ export default function ComentarioModal({ resolucaoId, nomeAutorResolucao, onFec
 
                 {/* Form de novo comentário */}
                 {user ? (
-                    <form className="flex items-center gap-3 p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex-shrink-0" onSubmit={handleEnviar}>
+                    <form className="flex items-center gap-3 p-4 border-t border-slate-100 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-900/60 flex-shrink-0" onSubmit={handleEnviar}>
                         <UsuarioAvatar usuario={user} size="sm" />
                         <input
                             ref={inputRef}
-                            className="flex-1 px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                            className="flex-1 px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-700/60 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
                             type="text"
                             value={novoComentario}
                             onChange={e => setNovoComentario(e.target.value)}
@@ -133,7 +133,7 @@ export default function ComentarioModal({ resolucaoId, nomeAutorResolucao, onFec
                         />
                         <button
                             type="submit"
-                            className="p-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-xs"
+                            className="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-xs"
                             disabled={enviando || !novoComentario.trim()}
                             aria-label="Enviar comentário"
                         >
@@ -141,7 +141,7 @@ export default function ComentarioModal({ resolucaoId, nomeAutorResolucao, onFec
                         </button>
                     </form>
                 ) : (
-                    <p className="p-4 text-center text-xs text-slate-400 dark:text-slate-500 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex-shrink-0">
+                    <p className="p-4 text-center text-xs text-slate-400 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-900/60 flex-shrink-0">
                         Faça login para adicionar um comentário.
                     </p>
                 )}

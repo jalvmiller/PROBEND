@@ -65,7 +65,7 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
 
     return (
         <div
-            className={`group relative overflow-hidden bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-md border border-slate-100 dark:border-slate-800/80 ${hoverBorderDificuldade} mb-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.01]`}
+            className={`group relative overflow-hidden bg-white dark:bg-slate-800/90 p-6 rounded-2xl shadow-sm dark:shadow-black/20 border border-slate-200/80 dark:border-slate-700/60 ${hoverBorderDificuldade} mb-4 transition-all duration-300 hover:shadow-md hover:scale-[1.005]`}
             role="article"
             aria-label={`Questão de ${questao.materia}${questao.assunto ? `, ${questao.assunto}` : ''}, dificuldade ${textoDificuldade}, ${questao.solucionada ? 'solucionada' : 'pendente'}`}
         >
@@ -75,11 +75,11 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
             {/* Linha superior: Matéria/Assunto e Status/Dificuldade */}
             <div className='flex flex-wrap justify-between items-start gap-2 mb-3'>
                 <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md">
+                    <span className="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900/70 px-2.5 py-1 rounded-md">
                         {questao.materia}
                     </span>
                     {questao.assunto && (
-                        <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-100 dark:border-slate-800">
+                        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/40 px-2.5 py-1 rounded-md border border-slate-200/80 dark:border-slate-700/60">
                             {questao.assunto}
                         </span>
                     )}
@@ -113,24 +113,24 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
             </h2>
 
             {/* Metadados: Autor, Role, Resoluções, Data de inserção */}
-            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-500 dark:text-slate-400">
+            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-500 dark:text-slate-400">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                    <User size={14} className="text-slate-400" />
-                    <span>Autor: <span className="font-semibold text-slate-700 dark:text-slate-300">{questao.autor?.nome || questao.autor?.username || 'Anônimo'}</span></span>
+                    <User size={14} className="text-slate-400 dark:text-slate-400/80" />
+                    <span>Autor: <span className="font-semibold text-slate-700 dark:text-slate-200">{questao.autor?.nome || questao.autor?.username || 'Anônimo'}</span></span>
                     <Role usuario={questao.autor} />
                 </div>
                 <div className="flex items-center gap-1.5">
-                    <MessageSquare size={14} className="text-slate-400" />
-                    <span>Resoluções: <span className="font-semibold text-slate-700 dark:text-slate-300">{questao.numeroResolucoes ?? 0}</span></span>
+                    <MessageSquare size={14} className="text-slate-400 dark:text-slate-400/80" />
+                    <span>Resoluções: <span className="font-semibold text-slate-700 dark:text-slate-200">{questao.numeroResolucoes ?? 0}</span></span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                    <Calendar size={14} className="text-slate-400" />
-                    <span>Inserida em: <span className="font-semibold text-slate-700 dark:text-slate-300">{formatarData(questao.dataInsercao)}</span></span>
+                    <Calendar size={14} className="text-slate-400 dark:text-slate-400/80" />
+                    <span>Inserida em: <span className="font-semibold text-slate-700 dark:text-slate-200">{formatarData(questao.dataInsercao)}</span></span>
                 </div>
             </div>
 
             {/* Ações */}
-            <div className="mt-4 flex justify-between items-center border-t border-slate-50 dark:border-slate-800 pt-4">
+            <div className="mt-4 flex justify-between items-center border-t border-slate-100 dark:border-slate-700/60 pt-4">
                 <div className="flex gap-2">
                     {/* Botão de Upvote */}
                     <button
@@ -138,7 +138,7 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer border ${
                             isUpvoted
                                 ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/50 hover:bg-blue-100'
-                                : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-800'
+                                : 'bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700/60 hover:bg-slate-100 dark:hover:bg-slate-800'
                         }`}
                         title={isUpvoted ? "Remover Upvote" : "Dar Upvote"}
                         aria-pressed={isUpvoted}
@@ -152,7 +152,7 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
                         <>
                             <button
                                 onClick={() => setModalEditOpen(true)}
-                                className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-lg text-xs font-bold transition"
+                                className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900/60 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 px-3 py-2 rounded-lg text-xs font-bold transition"
                                 title="Editar Questão"
                             >
                                 <Edit2 size={14} />
@@ -165,7 +165,7 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
 
                 <Link
                     to={`/questoes/${questao.id}`}
-                    className="bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition inline-flex items-center gap-1.5 text-center"
+                    className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition inline-flex items-center gap-1.5 text-center shadow-xs"
                 >
                     Responder
                 </Link>

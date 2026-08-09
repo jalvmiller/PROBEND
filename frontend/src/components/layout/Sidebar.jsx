@@ -5,7 +5,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { Link, useLocation } from 'react-router-dom';
 import { SCROLLBAR_CLASSES } from '../../utils/scrollbarUtils';
 
-// Sidebar lateral — fixa em desktop, overlay em mobile
+// Sidebar fica na lateral esquerda
+// Recebe isOpen para saber se está aberta (em mobile) e onClose para fechar, PROPS
 function Sidebar({ isOpen, onClose }) {
     const { logout } = useAuth();
     const [colapsado, setColapsado] = useState(() => {
@@ -38,8 +39,8 @@ function Sidebar({ isOpen, onClose }) {
                 como um elemento normal
                 left-0        -> posiciona no canto esquerdo
                 top-0         -> combinando com o left, posiciona no superior esquerdo
-                h-screen      -> fundo cinza escuro
-                text-white    -> texto branco
+                h-screen      -> altura total da tela
+                text-slate    -> cor do texto
                 shadow-lg     -> sombra ao redor
 
                 transform transition-all duration-300
@@ -54,7 +55,7 @@ function Sidebar({ isOpen, onClose }) {
                 lg:translate-x-0  -> se for tela grande, nunca fica escondida                 
             */}
             <aside
-                className={`fixed lg:static left-0 top-0 h-screen bg-slate-900 text-white shadow-lg transition-all duration-300 z-40 flex flex-col ${colapsado ? 'lg:w-20' : 'lg:w-64'
+                className={`fixed lg:static left-0 top-0 h-screen bg-white dark:bg-[#161e2e] text-slate-800 dark:text-slate-100 border-r border-slate-200 dark:border-slate-800 shadow-lg transition-all duration-300 z-40 flex flex-col ${colapsado ? 'lg:w-20' : 'lg:w-64'
                     } w-64 ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
                     }`}
                 role="navigation"
@@ -64,11 +65,11 @@ function Sidebar({ isOpen, onClose }) {
                 {/* 
                     flex items-center justify-between -> alinhamento e espaçamento
                     p-4                               -> padding
-                    border-b border-slate-700         -> borda bottom,
+                    border-b border-slate-200         -> borda bottom
                     chama onClose para fechar
                     o X é o ícone de fechar
                 */}
-                <div className="flex items-center justify-between p-4 border-b border-slate-700">
+                <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800">
                     <h2 className={`text-xl font-bold transition-opacity duration-200 ${colapsado ? 'lg:hidden' : 'block'}`}>
                         Menu
                     </h2>
@@ -76,7 +77,7 @@ function Sidebar({ isOpen, onClose }) {
                     {/* Botão fechar em mobile */}
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-slate-800 rounded lg:hidden"
+                        className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-600 dark:text-slate-400 lg:hidden"
                         aria-label="Fechar menu"
                     >
                         <X size={18} />
@@ -85,7 +86,7 @@ function Sidebar({ isOpen, onClose }) {
                     {/* Botão de retrar/expandir em desktop */}
                     <button
                         onClick={toggleColapsado}
-                        className="hidden lg:flex items-center justify-center p-2 rounded hover:bg-slate-800 text-slate-300 hover:text-white transition-colors"
+                        className="hidden lg:flex items-center justify-center p-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                         aria-label={colapsado ? "Expandir menu lateral" : "Recolher menu lateral"}
                         title={colapsado ? "Expandir menu lateral" : "Recolher menu lateral"}
                     >
@@ -96,12 +97,12 @@ function Sidebar({ isOpen, onClose }) {
                 {/* Lista de navegação com os links: Dashboard - Questões - Configurações */}
                 {/* space-y-2                    -> espaçamento vertical entre todos os elementos 
                     flex items-center gap-3      -> coloca tudo na mesma linha, gap é espaçamento entre ícone e texto
-                    hover:bg-blue-600 transition -> muda a cor do fundo ao passar o mouse, transição suave de cor                
+                    hover:bg-indigo-50 transition -> muda a cor do fundo ao passar o mouse, transição suave de cor                
                 */}
                 <nav className="p-3 space-y-2 flex-1">
                     <Link
                         to="/"
-                        className={`flex items-center gap-3 px-3 py-3 rounded hover:bg-blue-600 dark:hover:bg-slate-800 transition ${colapsado ? 'lg:justify-center' : ''
+                        className={`flex items-center gap-3 px-3 py-3 rounded text-slate-700 dark:text-slate-200 hover:bg-indigo-50/80 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-white transition font-medium ${colapsado ? 'lg:justify-center' : ''
                             }`}
                         title="Dashboard"
                         aria-label="Dashboard"
@@ -112,7 +113,7 @@ function Sidebar({ isOpen, onClose }) {
 
                     <Link
                         to="/"
-                        className={`flex items-center gap-3 px-3 py-3 rounded hover:bg-blue-600 dark:hover:bg-slate-800 transition ${colapsado ? 'lg:justify-center' : ''
+                        className={`flex items-center gap-3 px-3 py-3 rounded text-slate-700 dark:text-slate-200 hover:bg-indigo-50/80 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-white transition font-medium ${colapsado ? 'lg:justify-center' : ''
                             }`}
                         title="Questões"
                         aria-label="Questões"
@@ -123,7 +124,7 @@ function Sidebar({ isOpen, onClose }) {
 
                     <Link
                         to="/configuracoes"
-                        className={`flex items-center gap-3 px-3 py-3 rounded hover:bg-blue-600 dark:hover:bg-slate-800 transition ${colapsado ? 'lg:justify-center' : ''
+                        className={`flex items-center gap-3 px-3 py-3 rounded text-slate-700 dark:text-slate-200 hover:bg-indigo-50/80 dark:hover:bg-slate-800 hover:text-indigo-600 dark:hover:text-white transition font-medium ${colapsado ? 'lg:justify-center' : ''
                             }`}
                         title="Configurações"
                         aria-label="Configurações"
@@ -134,11 +135,11 @@ function Sidebar({ isOpen, onClose }) {
                 </nav>
 
                 {/* Botão Sair no rodapé da sidebar */}
-                <div className="p-3 border-t border-slate-800">
+                <div className="p-3 border-t border-slate-200 dark:border-slate-800">
                     <button
                         onClick={logout}
                         className={`flex items-center w-full gap-3 px-3 py-3 rounded
-                        hover:bg-red-600/20 hover:text-red-400 text-slate-400 transition
+                        hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 text-slate-500 dark:text-slate-400 transition
                         text-left font-medium ${colapsado ? 'lg:justify-center' : ''}`}
                         title="Sair da conta"
                         aria-label="Sair da conta"
