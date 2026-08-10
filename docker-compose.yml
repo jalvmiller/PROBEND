@@ -80,7 +80,7 @@ services:
     ports:
       - "127.0.0.1:8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:mysql://db:3306/probend_db?useSSL=false&serverTimezone=America/Sao_Paulo&allowPublicKeyRetrieval=true"
+      SPRING_DATASOURCE_URL: "jdbc:mysql://db:3306/probend_db?useSSL=${DB_USE_SSL:-false}&serverTimezone=America/Sao_Paulo&allowPublicKeyRetrieval=true"
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: "${MYSQL_ROOT_PASSWORD:-root1234}"
       JWT_SECRET: "${JWT_SECRET:-ChavePadraoParaDesenvolvimentoApenas}"

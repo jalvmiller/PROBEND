@@ -8,6 +8,7 @@ import br.com.joaomu.entity.Usuario;
 import br.com.joaomu.repository.UsuarioRepository;
 import br.com.joaomu.security.JwtUtil;
 import br.com.joaomu.security.TokenBlacklistService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+
+    @Value("${app.security.cookie-secure:false}")
+    private boolean cookieSecure;
 
     private final AuthenticationManager authenticationManager;
     private final UsuarioRepository usuarioRepository;
@@ -79,7 +83,7 @@ public class AuthController {
         // Geração de Cookie - ResponseCookie
         ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", token)
                 .httpOnly(true)
-                .secure(false) // Mudar para true em produção com HTTPS
+                .secure(cookieSecure)
                 .path("/")
                 .maxAge(3600)
                 .sameSite("Lax")
@@ -102,7 +106,7 @@ public class AuthController {
         // Monta o Cookie HttpOnly com SameSite configurado
         ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", token)
                 .httpOnly(true)
-                .secure(false) // Mudar para true em ambiente de produção com HTTPS
+                .secure(cookieSecure)
                 .path("/")
                 .maxAge(3600) // Expira em 1 hora (3600 segundos)
                 .sameSite("Lax") // Anti-CSRF Define explicitamente SameSite=Lax ou Strict
@@ -137,7 +141,7 @@ public class AuthController {
         // imediatamente
         ResponseCookie deleteCookie = ResponseCookie.from("AUTH_TOKEN", "")
                 .httpOnly(true)
-                .secure(false) // Mudar para true em produção com HTTPS
+                .secure(cookieSecure)
                 .path("/")
                 .maxAge(0) // 0 segundos obriga o navegador a deletar o cookie
                 .sameSite("Lax")
