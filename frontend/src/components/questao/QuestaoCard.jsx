@@ -7,9 +7,12 @@ import { useState, useEffect } from 'react';
 import { renderizarTextoMath } from '../../utils/mathRenderer';
 import { questaoService } from '../../services/questaoService';
 import Role from '../ui/Role';
+import { useToastContext } from '../../contexts/ToastContext';
+import { useDificuldade } from '../../hooks/useDificuldade';
 
 function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
     const { user } = useAuth();
+    const { showToast } = useToastContext();
     const [modalEditOpen, setModalEditOpen] = useState(false);
     const [expandido, setExpandido] = useState(false);
     const [upvotesCount, setUpvotesCount] = useState(questao.upvotes || 0);
@@ -28,7 +31,7 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
         e.stopPropagation();
 
         if (!user) {
-            alert("Você precisa estar logado para dar upvote!");
+            showToast('Você precisa estar logado para dar upvote!', 'info');
             return;
         }
 
@@ -41,21 +44,7 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
         }
     };
 
-    const glowDificuldade =
-        questao.dificuldade === 2 ? 'bg-red-500/10 dark:bg-red-500/20' :
-            questao.dificuldade === 1 ? 'bg-amber-500/10 dark:bg-amber-500/20' : 'bg-green-500/10 dark:bg-green-500/20';
-
-    const hoverBorderDificuldade =
-        questao.dificuldade === 2 ? 'hover:border-red-300 dark:hover:border-red-900/60' :
-            questao.dificuldade === 1 ? 'hover:border-amber-300 dark:hover:border-amber-900/60' : 'hover:border-green-300 dark:hover:border-green-900/60';
-
-    const textoDificuldade =
-        questao.dificuldade === 2 ? 'Difícil' :
-            questao.dificuldade === 1 ? 'Médio' : 'Fácil';
-
-    const badgesDificuldade =
-        questao.dificuldade === 2 ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/20 dark:text-red-400 dark:border-red-900/40' :
-            questao.dificuldade === 1 ? 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950/20 dark:text-amber-400 dark:border-amber-900/40' : 'bg-green-50 text-green-700 border-green-200 dark:bg-green-950/20 dark:text-green-400 dark:border-green-900/40';
+    const { textoDificuldade, badgesDificuldade, glowDificuldade, hoverBorderDificuldade } = useDificuldade(questao.dificuldade);
 
     const isAutor = user && questao.autor && questao.autor.username === user.username;
 
@@ -75,18 +64,22 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
     };
 
     return (
-        <div className={`group relative overflow-hidden bg-white dark:bg-slate-900 p-4 sm:p-6 rounded-2xl shadow-md border border-slate-100 dark:border-slate-800/80 ${hoverBorderDificuldade} mb-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.01]`}>
+        <div
+            className={`group relative overflow-hidden bg-white dark:bg-slate-800/90 p-6 rounded-2xl shadow-sm dark:shadow-black/20 border border-slate-200/80 dark:border-slate-700/60 ${hoverBorderDificuldade} mb-4 transition-all duration-300 hover:shadow-md hover:scale-[1.005]`}
+            role="article"
+            aria-label={`Questão de ${questao.materia}${questao.assunto ? `, ${questao.assunto}` : ''}, dificuldade ${textoDificuldade}, ${questao.solucionada ? 'solucionada' : 'pendente'}`}
+        >
             {/* Spotlight Gradient de Dificuldade */}
             <div className={`absolute -top-16 -right-16 w-36 h-36 rounded-full ${glowDificuldade} blur-2xl pointer-events-none transition-all duration-500 group-hover:scale-125`} />
 
             {/* Linha superior: Matéria/Assunto e Status/Dificuldade */}
             <div className='flex flex-wrap justify-between items-start gap-2 mb-3'>
                 <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-md">
+                    <span className="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900/70 px-2.5 py-1 rounded-md">
                         {questao.materia}
                     </span>
                     {questao.assunto && (
-                        <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 px-2.5 py-1 rounded-md border border-slate-100 dark:border-slate-800">
+                        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/40 px-2.5 py-1 rounded-md border border-slate-200/80 dark:border-slate-700/60">
                             {questao.assunto}
                         </span>
                     )}
@@ -120,34 +113,36 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
             </h2>
 
             {/* Metadados: Autor, Role, Resoluções, Data de inserção */}
-            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-500 dark:text-slate-400">
+            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-700/60 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-500 dark:text-slate-400">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                    <User size={14} className="text-slate-400" />
-                    <span>Autor: <span className="font-semibold text-slate-700 dark:text-slate-300">{questao.autor?.nome || questao.autor?.username || 'Anônimo'}</span></span>
+                    <User size={14} className="text-slate-400 dark:text-slate-400/80" />
+                    <span>Autor: <span className="font-semibold text-slate-700 dark:text-slate-200">{questao.autor?.nome || questao.autor?.username || 'Anônimo'}</span></span>
                     <Role usuario={questao.autor} />
                 </div>
                 <div className="flex items-center gap-1.5">
-                    <MessageSquare size={14} className="text-slate-400" />
-                    <span>Resoluções: <span className="font-semibold text-slate-700 dark:text-slate-300">{questao.numeroResolucoes ?? 0}</span></span>
+                    <MessageSquare size={14} className="text-slate-400 dark:text-slate-400/80" />
+                    <span>Resoluções: <span className="font-semibold text-slate-700 dark:text-slate-200">{questao.numeroResolucoes ?? 0}</span></span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                    <Calendar size={14} className="text-slate-400" />
-                    <span>Inserida em: <span className="font-semibold text-slate-700 dark:text-slate-300">{formatarData(questao.dataInsercao)}</span></span>
+                    <Calendar size={14} className="text-slate-400 dark:text-slate-400/80" />
+                    <span>Inserida em: <span className="font-semibold text-slate-700 dark:text-slate-200">{formatarData(questao.dataInsercao)}</span></span>
                 </div>
             </div>
 
             {/* Ações */}
-            <div className="mt-4 flex flex-wrap sm:flex-nowrap justify-between items-center gap-2 border-t border-slate-50 dark:border-slate-800 pt-4">
-                <div className="flex flex-wrap gap-2">
+            <div className="mt-4 flex justify-between items-center border-t border-slate-100 dark:border-slate-700/60 pt-4">
+                <div className="flex gap-2">
                     {/* Botão de Upvote */}
                     <button
                         onClick={handleUpvote}
                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer border ${
                             isUpvoted
                                 ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900/50 hover:bg-blue-100'
-                                : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:bg-slate-100 hover:text-slate-800'
+                                : 'bg-slate-50 dark:bg-slate-900/60 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700/60 hover:bg-slate-100 dark:hover:bg-slate-800'
                         }`}
                         title={isUpvoted ? "Remover Upvote" : "Dar Upvote"}
+                        aria-pressed={isUpvoted}
+                        aria-label={`${upvotesCount} upvotes. ${isUpvoted ? 'Clique para remover seu upvote' : 'Clique para dar upvote'}`}
                     >
                         <ThumbsUp size={14} className={isUpvoted ? "fill-current text-blue-600 dark:text-blue-400" : ""} />
                         <span>{upvotesCount}</span>
@@ -157,7 +152,7 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
                         <>
                             <button
                                 onClick={() => setModalEditOpen(true)}
-                                className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-3 py-2 rounded-lg text-xs font-bold transition"
+                                className="flex items-center gap-1 bg-slate-100 dark:bg-slate-900/60 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 px-3 py-2 rounded-lg text-xs font-bold transition"
                                 title="Editar Questão"
                             >
                                 <Edit2 size={14} />
@@ -170,7 +165,7 @@ function QuestaoCard({ questao, onExcluir, onEditarSucesso, meusUpvotes }) {
 
                 <Link
                     to={`/questoes/${questao.id}`}
-                    className="bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition inline-flex items-center gap-1.5 text-center"
+                    className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition inline-flex items-center gap-1.5 text-center shadow-xs"
                 >
                     Responder
                 </Link>

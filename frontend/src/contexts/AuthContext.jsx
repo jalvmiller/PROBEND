@@ -19,7 +19,10 @@ export function AuthProvider({ children }) {
       setIsAuthenticated(true);
       // Guarda o objeto usuário completo
     } catch (err) {
-      console.error("Erro ao buscar os dados do usuário logado", err);
+      // 401 e 403 são retornos normais do Spring Security quando o usuário não possui sessão ativa
+      if (err.response?.status !== 401 && err.response?.status !== 403) {
+        console.error("Erro ao buscar os dados do usuário logado", err);
+      }
       setUser(null);
       setIsAuthenticated(false);
     }
@@ -50,7 +53,7 @@ export function AuthProvider({ children }) {
   };
 
 
-  // Enquanto estiver verificando o localStorage, mostrar um loading na tela
+  // Enquanto estiver verificando a sessão do usuário, mostrar um loading na tela
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-slate-100">

@@ -215,7 +215,7 @@ public class QuestaoService implements CrudService<Questao, Long> {
     }
 
     public List<Resolucao> listarResolucoes(Long questaoId) {
-        return resolucaoRepository.findByQuestaoId(questaoId);
+        return resolucaoRepository.findByQuestao_Id(questaoId);
     }
 
     private String normalizarTermoBusca(String termo) {

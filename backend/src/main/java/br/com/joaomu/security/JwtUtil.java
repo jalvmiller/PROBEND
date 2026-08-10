@@ -58,13 +58,16 @@ public class JwtUtil {
     }
 
     public String extractUsername(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
-        // processo reverso da geração de token, recupera o usuário (subject)
+        try {
+            return Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .getSubject();
+        } catch (Exception e) {
+            return null; // Retorna nulo se o token estiver expirado ou inválido
+        }
     }
 
     public long getRemainingExpirationTime(String token) {

@@ -32,7 +32,7 @@ public class ComentarioService {
 
     // Leitura pública — não requer autenticação
     public List<Comentario> listarPorResolucao(Long resolucaoId) {
-        return comentarioRepository.findByResolucaoIdOrderByDataCriacaoAsc(resolucaoId);
+        return comentarioRepository.findByResolucao_IdOrderByDataCriacaoAsc(resolucaoId);
     }
 
     // Criação requer autenticação (Spring Security garante via SecurityConfig)

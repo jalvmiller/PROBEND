@@ -1,5 +1,7 @@
 package br.com.joaomu.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -22,9 +24,13 @@ public class Resolucao {
 
     private Boolean verificadoPorEspecialista = false; // Apenas User com "especialista=true" pode alterar isso
 
+    @org.hibernate.annotations.Formula("(SELECT COUNT(c.id) FROM comentarios c WHERE c.resolucao_id = id)")
+    private Integer qtdComentarios = 0;
+
     // Relações com as outras tabelas
     @ManyToOne
     @JoinColumn(name = "questao_id", nullable = false)
+    @JsonIgnore
     private Questao questao;
 
     @ManyToOne
@@ -104,8 +110,14 @@ public class Resolucao {
         this.verificadoPorEspecialista = verificadoPorEspecialista != null ? verificadoPorEspecialista : false;
     }
 
+    @JsonIgnore
     public Questao getQuestao() {
         return questao;
+    }
+
+    @JsonProperty("questaoId")
+    public Long getQuestaoId() {
+        return questao != null ? questao.getId() : null;
     }
 
     public void setQuestao(Questao questao) {
@@ -126,6 +138,14 @@ public class Resolucao {
 
     public void setDataCriacao(java.time.LocalDateTime dataCriacao) {
         this.dataCriacao = dataCriacao;
+    }
+
+    public Integer getQtdComentarios() {
+        return qtdComentarios != null ? qtdComentarios : 0;
+    }
+
+    public void setQtdComentarios(Integer qtdComentarios) {
+        this.qtdComentarios = qtdComentarios != null ? qtdComentarios : 0;
     }
 
 }

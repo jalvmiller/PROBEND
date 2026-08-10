@@ -1,6 +1,8 @@
 import { questaoService } from "../../services/questaoService";
+import { useToastContext } from "../../contexts/ToastContext";
 
 function BotaoExcluir({ idQuestao, aoExcluirSucesso }) {
+    const { showToast } = useToastContext();
 
     // Função que lida com o handle, ou apertar do botão
     const handleDeletar = async () => {
@@ -12,10 +14,10 @@ function BotaoExcluir({ idQuestao, aoExcluirSucesso }) {
 
             // Se o Spring respondeu com sucesso, avisamos o componente pai
             aoExcluirSucesso(idQuestao);
-            alert("Questão removida do banco de dados!");
+            showToast('Questão removida com sucesso!', 'success');
         } catch (err) {
             console.error("Erro ao deletar:", err);
-            alert("Erro ao excluir: O servidor pode estar offline ou o ID não existe.");
+            showToast('Erro ao excluir. O servidor pode estar offline ou o ID não existe.', 'error');
         }
     };
 

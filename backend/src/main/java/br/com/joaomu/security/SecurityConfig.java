@@ -56,10 +56,17 @@ public class SecurityConfig {
     // Spring Security
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler requestHandler = new org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler();
+        requestHandler.setCsrfRequestAttributeName(null);
+
+        CookieCsrfTokenRepository csrfRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        csrfRepository.setCookiePath("/");
+
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Habilita o CORS usando a fonte do Spring Security
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRepository(csrfRepository)
+                        .csrfTokenRequestHandler(requestHandler)
                         .ignoringRequestMatchers("/auth/login", "/auth/register"))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // Desabilitar sessões HTTP, o Spring Security não cria sessão, ou seja,

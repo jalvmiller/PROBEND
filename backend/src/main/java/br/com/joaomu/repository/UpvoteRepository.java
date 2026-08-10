@@ -20,4 +20,9 @@ public interface UpvoteRepository extends JpaRepository<Upvote, Long> {
 
     // Buscar todos os upvotes de um usuário
     List<Upvote> findByUsuario(Usuario usuario);
+
+    // Queries dedicadas por tipo — evita buscar todos e filtrar em memória
+    List<Upvote> findByUsuarioAndQuestaoIsNotNull(Usuario usuario);
+
+    List<Upvote> findByUsuarioAndResolucaoIsNotNull(Usuario usuario);
 }

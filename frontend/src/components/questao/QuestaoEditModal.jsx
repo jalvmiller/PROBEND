@@ -2,8 +2,10 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { questaoService } from "../../services/questaoService";
+import { useToastContext } from "../../contexts/ToastContext";
 
 function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
+    const { showToast } = useToastContext();
     const [dados, setDados] = useState({
         enunciado: questao.enunciado || "",
         imagemUrl: questao.imagemUrl || "",
@@ -26,10 +28,10 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
         try {
             const data = await questaoService.uploadImagem(file);
             setDados(prev => ({ ...prev, imagemUrl: data.imageUrl }));
-            alert("Imagem enviada com sucesso!");
+            showToast('Imagem enviada com sucesso!', 'success');
         } catch (err) {
             console.error("Erro ao enviar imagem:", err);
-            alert("Erro ao enviar imagem.");
+            showToast('Erro ao enviar imagem.', 'error');
         } finally {
             setEnviandoImagem(false);
         }
@@ -39,7 +41,7 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
 
     const handleMelhorarEnunciadoIA = async () => {
         if (!dados.enunciado.trim()) {
-            alert("Por favor, digite alguma coisa no enunciado para que a IA possa aprimorar.");
+            showToast('Digite alguma coisa no enunciado para que a IA possa aprimorar.', 'error');
             return;
         }
         setMelhorandoIA(true);
@@ -58,11 +60,11 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                     trechoCodigo: dadosSugeridos.trechoCodigo || prev.trechoCodigo,
                     linguagemCodigo: dadosSugeridos.linguagemCodigo || prev.linguagemCodigo
                 }));
-                alert("Enunciado aprimorado com sucesso pela IA!");
+                showToast('Enunciado aprimorado com sucesso pela IA!', 'success');
             }
         } catch (err) {
             console.error("Erro ao aprimorar com IA:", err);
-            alert("Erro ao aprimorar enunciado com a IA. Certifique-se de que a API Key do Gemini está configurada.");
+            showToast('Erro ao aprimorar com a IA. Verifique a API Key do Gemini.', 'error');
         } finally {
             setMelhorandoIA(false);
         }
@@ -80,7 +82,7 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
             onClose();
         } catch (err) {
             console.error("Erro ao atualizar questão:", err);
-            alert("Erro ao atualizar questão. Verifique se você é o autor ou se a conexão está ativa.");
+            showToast('Erro ao atualizar questão. Verifique se você é o autor ou se a conexão está ativa.', 'error');
         } finally {
             setSalvando(false);
         }
@@ -88,10 +90,10 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
 
     return createPortal(
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-colors duration-300">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl max-w-2xl w-full max-h-[95vh] overflow-y-auto p-6 relative border border-transparent dark:border-slate-800 transition-colors duration-300 animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[95vh] overflow-y-auto p-6 relative border border-transparent dark:border-slate-700/60 transition-colors duration-300 animate-in fade-in zoom-in-95 duration-200">
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors cursor-pointer"
+                    className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
                     type="button"
                 >
                     <X size={20} />
@@ -115,7 +117,7 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                             </button>
                         </div>
                         <textarea
-                            className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                            className="w-full p-2 border border-slate-300 dark:border-slate-700/60 rounded bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-colors"
                             placeholder="Digite o enunciado"
                             value={dados.enunciado}
                             onChange={(e) => setDados({ ...dados, enunciado: e.target.value })}
@@ -131,7 +133,7 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                             </label>
                             <input
                                 type="text"
-                                className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                                className="w-full p-2 border border-slate-300 dark:border-slate-700/60 rounded bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-colors"
                                 placeholder="Ex: Java, Cálculo"
                                 value={dados.materia}
                                 onChange={(e) => setDados({ ...dados, materia: e.target.value })}
@@ -145,7 +147,7 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                             </label>
                             <input
                                 type="text"
-                                className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                                className="w-full p-2 border border-slate-300 dark:border-slate-700/60 rounded bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-colors"
                                 placeholder="Ex: Orientação a Objetos"
                                 value={dados.assunto}
                                 onChange={(e) => setDados({ ...dados, assunto: e.target.value })}
@@ -157,7 +159,7 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                                 Dificuldade
                             </label>
                             <select
-                                className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                                className="w-full p-2 border border-slate-300 dark:border-slate-700/60 rounded bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-colors"
                                 value={dados.dificuldade}
                                 onChange={(e) => setDados({ ...dados, dificuldade: e.target.value })}
                             >
@@ -175,7 +177,7 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                             </label>
                             <input
                                 type="text"
-                                className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                                className="w-full p-2 border border-slate-300 dark:border-slate-700/60 rounded bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-colors"
                                 placeholder="Ex: Autoral, Livro X, Aula Y"
                                 value={dados.fonte}
                                 onChange={(e) => setDados({ ...dados, fonte: e.target.value })}
@@ -191,7 +193,7 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                                 accept="image/*"
                                 onChange={handleFileChange}
                                 disabled={enviandoImagem}
-                                className="w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 dark:file:bg-blue-950/40 dark:file:text-blue-400 hover:file:bg-blue-100 dark:hover:file:bg-blue-900/60 transition-all cursor-pointer"
+                                className="w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-indigo-50 file:text-indigo-700 dark:file:bg-indigo-950/40 dark:file:text-indigo-400 hover:file:bg-indigo-100 dark:hover:file:bg-indigo-900/60 transition-all cursor-pointer"
                             />
                             {dados.imagemUrl && (
                                 <p className="text-xs text-green-600 dark:text-green-400 mt-1 truncate">
@@ -206,7 +208,7 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                             Trecho de Código (Opcional)
                         </label>
                         <textarea
-                            className="w-full p-2 font-mono text-sm border border-slate-300 dark:border-slate-800 rounded bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                            className="w-full p-2 font-mono text-sm border border-slate-300 dark:border-slate-700/60 rounded bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-colors"
                             placeholder="Cole o código-fonte referente à questão aqui..."
                             value={dados.trechoCodigo}
                             onChange={(e) => setDados({ ...dados, trechoCodigo: e.target.value })}
@@ -219,7 +221,7 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                             Linguagem do Código
                         </label>
                         <select
-                            className="w-full p-2 border border-slate-300 dark:border-slate-800 rounded bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-colors"
+                            className="w-full p-2 border border-slate-300 dark:border-slate-700/60 rounded bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-colors"
                             value={dados.linguagemCodigo}
                             onChange={(e) => setDados({ ...dados, linguagemCodigo: e.target.value })}
                         >
@@ -234,18 +236,18 @@ function QuestaoEditModal({ questao, isOpen, onClose, onSalvarSucesso }) {
                         </select>
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800 transition-colors">
+                    <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-700/60 transition-colors">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-4 py-2 border border-slate-300 dark:border-slate-800 rounded text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold transition-colors cursor-pointer"
+                            className="px-4 py-2 border border-slate-300 dark:border-slate-700/60 rounded text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/60 font-semibold transition-colors cursor-pointer"
                             disabled={salvando}
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold transition-colors flex items-center justify-center min-w-[80px] cursor-pointer"
+                            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-semibold transition-colors flex items-center justify-center min-w-[80px] cursor-pointer"
                             disabled={salvando}
                         >
                             {salvando ? "Salvando..." : "Salvar"}

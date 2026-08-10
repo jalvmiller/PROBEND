@@ -21,138 +21,129 @@ function Login() {
       setLoading(true);
       setError('');
       await authService.login(username, password);
-
-      /*
-        O Spring Boot valida a senha e email e responde a
-        requisição de login com um cookie HttpOnly e JWT..
-        O cookie HttpOnly é um cookie que só pode ser acessado pelo servidor,
-        e vem contido no header Set-Cookie da resposta.
-        O cookie vem como 
-        "HttpOnly; Path=/;
-        SameSite=Lax; Secure;
-        Max-Age=600;
-        Expires=Wed, DD MM YYYY HH:MM:SS GMT;
-        Domain=localhost"
-
-        O useAuth(), hook de autenticação, que fica conectado ao AuthContext, 
-        é responsável por gerenciar o estado de autenticação do usuário..
-        que é compartilhado por toda aplicação, através do App.jsx
-
-        Quando é chamado o login() sem parâmetro e no contexto global,
-        o login faz uma chamada assíncrona para o fetchCurrentUser
-        que executa a chamada api.get('/auth/me').. como ela é feita
-        via Axios com o withCredentials setado como true, o navegador
-        vai anexar o cookie HttpOnly automaticamente no header da requisição
-        enviada para a API do backend e, quando ela validar, vai retornar
-        com os dados do usuário
-
-        O AuthContext atualiza o estado global com setUser(response.data) e
-        setIsAuthneticated(true)
-      */
       // Salva as credenciais no estado global (AuthContext)
       await login();
       // Redireciona o usuário para o Dashboard (raiz)
       navigate('/');
     } catch (error) {
-      console.error(error);
-      setError('Username ou senha incorretos');
+      const msg = error.response?.data?.erro;
+      setError(msg || 'Username ou senha incorretos.');
     } finally {
       setLoading(false);
     }
-  }
+  };
 
-  /*
-    flex = flexbox 
-    items-center, justify-center = centralizar verticalmente e horizontalmente
-    min-h screen = a altura da div vai ser de no mínimo 100% da altura da tela
-    p-4 = paddind interno de 4px
-    bg-slate-100 = cor de fundo da div (cinza claro)
-    w-full max-w-md = a largura da div vai ser de no máximo 100% da tela 
-    p-8 bg-white rounded-lg shadow-md = padding interno de 8px, cor de fundo branca, bordas arredondadas e sombra
-
-    focus = o focus é um estado que é ativado quando um usuário clica ou navega para dentro do campo, 
-    e os estilos aplicados dentro de focus são os estilos que serão aplicados no campo quando ele estiver em foco,
-    no caso, focus:outline-none remove a borda padrão do campo, e focus:ring-2 focus:ring-blue-500 adiciona
-    uma borda azul de 2px quando o campo estiver em foco.
-    text-sm = text size small, dimensão do texto para 14px
-    mb-2 = margin bottom de 2*4px=8px, adiciona um espaço no fundo do elemento.
-    */
   return (
     <AuthLayout>
-      <form onSubmit={handleLogin}>
-        <h2 className="text-2xl font-bold mb-6 text-center text-slate-800 dark:text-slate-100 transition-colors">Login</h2>
+      <form onSubmit={handleLogin} className="space-y-5">
 
-        {error && <p className='text-red-750 dark:text-red-400 mb-4 text-sm text-center bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 p-2 rounded transition-colors'>{error}</p>}
+        {/* Título */}
+        <div className="mb-6">
+          <h2
+            className="text-2xl font-bold text-slate-900 dark:text-slate-100"
+            style={{ fontFamily: '"Sora", sans-serif' }}
+          >
+            Bem-vindo de volta
+          </h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Acesse sua conta para continuar</p>
+        </div>
 
-        <div className="mb-5 p-3 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60 rounded-lg text-xs text-slate-700 dark:text-slate-300">
-          <p className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-1 flex items-center gap-1">
-            💡 Credenciais de Teste (Seeder no BD)
+        {/* Erro */}
+        {error && (
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm">
+            <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full bg-red-500" />
+            {error}
+          </div>
+        )}
+
+        {/* Badge de credenciais de teste */}
+        <div className="p-3.5 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20">
+          <p className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 mb-2 tracking-wide uppercase">
+            Credenciais de teste (seeder no BD)
           </p>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
-            Esta aplicação contém um usuário padrão cadastrado via seeder no banco de dados:
-          </p>
-          <div className="flex items-center justify-between bg-white dark:bg-slate-950 px-3 py-1.5 rounded border border-blue-100 dark:border-blue-900/50 font-mono text-xs text-slate-800 dark:text-slate-200">
-            <div><span className="text-sm text-slate-500 dark:text-slate-400 font-sans">Usuário:</span> <strong className="text-blue-600 dark:text-blue-400">user</strong></div>
-            <div><span className="text-sm text-slate-500 dark:text-slate-400 font-sans">Senha:</span> <strong className="text-blue-600 dark:text-blue-400">user123</strong></div>
+          <div className="flex items-center gap-4 font-mono text-xs text-slate-600 dark:text-slate-400">
+            <span>
+              <span className="text-slate-500 dark:text-slate-400">usuário:</span>{' '}
+              <strong className="text-indigo-600 dark:text-indigo-300">user</strong>
+            </span>
+            <span className="text-slate-300 dark:text-slate-700">·</span>
+            <span>
+              <span className="text-slate-500 dark:text-slate-400">senha:</span>{' '}
+              <strong className="text-indigo-600 dark:text-indigo-300">user123</strong>
+            </span>
           </div>
         </div>
 
-        <div className='mb-4'>
-          <label className="block text-slate-700 dark:text-slate-300 text-sm font-semibold mb-2 transition-colors">
+        {/* Campo: Username */}
+        <div className="space-y-1.5">
+          <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
             Username
           </label>
           <input
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className='w-full px-3 py-2 border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors'
-            placeholder="user"
+            className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 rounded-xl text-slate-900 dark:text-slate-100 text-sm
+              placeholder:text-slate-400 dark:placeholder:text-slate-500
+              focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20
+              transition-all duration-200"
+            placeholder="seu_username"
             required
           />
         </div>
 
-        <div className='mb-6'>
-          <label className="block text-slate-700 dark:text-slate-300 text-sm font-semibold mb-2 transition-colors">
+        {/* Campo: Senha */}
+        <div className="space-y-1.5">
+          <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">
             Senha
           </label>
+          {/* relative faz com que o botão de mostrar senha fique dentro do input */}
+          {/* pr-11 = padding right para dar espaço ao ícone de olho */}
           <div className="relative">
-            {/* relative faz com que o botão de mostrar senha fique dentro do input
-                  um elemento relative serve como ponto de origem para os elementos filhos
-                  absolutos, nesse caso o botão é absolute então ele vai ser posicionado em relação ao seu pai relative.
-                  Ou seja, ele usará dos limites impostos pelo pai (relative)
-              */}
             <input
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className='w-full px-3 py-2 border border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 transition-colors'
-              placeholder="user123"
+              className="w-full px-4 py-2.5 pr-11 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/60 rounded-xl text-slate-900 dark:text-slate-100 text-sm
+                placeholder:text-slate-400 dark:placeholder:text-slate-500
+                focus:outline-none focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20
+                transition-all duration-200"
+              placeholder="••••••••"
               required
             />
-            {/* pr-10 = padding right de 10px, coloca um espaçamento interno no lado direito do input.
-                  Usado para que o icone do olho não fique colado no texto
-              */}
             <button
               type="button"
-              className='absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 cursor-pointer transition-colors'
+              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 dark:text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
               onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
             >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
             </button>
           </div>
         </div>
 
+        {/* Botão submit */}
         <button
           type="submit"
+          id="btn-login-submit"
           disabled={loading}
-          className='w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:bg-blue-300 transition duration-200 cursor-pointer'
+          className="w-full py-2.5 mt-2 rounded-xl font-semibold text-sm text-white
+            bg-gradient-to-r from-indigo-500 to-violet-600
+            hover:from-indigo-400 hover:to-violet-500
+            hover:-translate-y-0.5 hover:shadow-lg hover:shadow-indigo-500/30
+            disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none
+            transition-all duration-200 cursor-pointer"
         >
           {loading ? 'Conectando...' : 'Entrar'}
         </button>
 
-        <p className="mt-4 text-sm text-center text-slate-600 dark:text-slate-400 transition-colors">
+        {/* Link para registro */}
+        <p className="text-center text-sm text-slate-500 dark:text-slate-400">
           Não tem uma conta?{' '}
-          <Link to="/register" className="text-blue-500 hover:underline font-semibold">
+          <Link
+            to="/register"
+            className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold transition-colors"
+          >
             Cadastre-se
           </Link>
         </p>
