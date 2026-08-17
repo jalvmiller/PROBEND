@@ -40,6 +40,12 @@ public class Resolucao {
     @Column(name = "data_criacao")
     private java.time.LocalDateTime dataCriacao;
 
+    // Flag de isolamento: TRUE = resolucao do seeder (visivel a todos);
+    // FALSE = resolucao de visitante/usuario (visivel so ao autor)
+    // NUNCA confiar no valor vindo do cliente
+    @Column(name = "is_seeder_content", nullable = false)
+    private boolean seederContent = false;
+
     @PrePersist
     protected void onCreate() {
         if (this.dataCriacao == null) {
@@ -146,6 +152,14 @@ public class Resolucao {
 
     public void setQtdComentarios(Integer qtdComentarios) {
         this.qtdComentarios = qtdComentarios != null ? qtdComentarios : 0;
+    }
+
+    public boolean isSeederContent() {
+        return seederContent;
+    }
+
+    public void setSeederContent(boolean seederContent) {
+        this.seederContent = seederContent;
     }
 
 }

@@ -44,6 +44,16 @@ public class Usuario implements UserDetails {
 
     private boolean administrador = false;
 
+    // Conta de visitante efêmera criada automaticamente para isolamento de sessão
+    // TRUE = conta temporária, FALSE = conta real (cadastrada ou do seeder)
+    @Column(name = "is_visitor", nullable = false)
+    private boolean visitor = false;
+
+    // Timestamp de criação da conta, usado pelo cleanup job para remover visitantes
+    // expirados
+    @Column(name = "criado_em")
+    private java.time.LocalDateTime criadoEm;
+
     // Construtor Padrão (NoArgsConstructor)
     public Usuario() {
     }
@@ -131,6 +141,22 @@ public class Usuario implements UserDetails {
 
     public void setAdministrador(boolean administrador) {
         this.administrador = administrador;
+    }
+
+    public boolean isVisitor() {
+        return visitor;
+    }
+
+    public void setVisitor(boolean visitor) {
+        this.visitor = visitor;
+    }
+
+    public java.time.LocalDateTime getCriadoEm() {
+        return criadoEm;
+    }
+
+    public void setCriadoEm(java.time.LocalDateTime criadoEm) {
+        this.criadoEm = criadoEm;
     }
 
     // Métodos exigidos pelo UserDetails
