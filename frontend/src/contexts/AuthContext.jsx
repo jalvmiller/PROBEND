@@ -1,6 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
 import api from '../services/api';
-import { authService } from '../services/authService';
 // Importa a instância do Axios configurada
 // com interceptor de requisições
 
@@ -26,29 +25,12 @@ export function AuthProvider({ children }) {
       }
       setUser(null);
       setIsAuthenticated(false);
-      // Retorna o status para o chamador decidir se cria sessão de visitante
-      return err.response?.status;
     }
   };
 
-  // O useEffect roda uma única vez quando a aplicação inicia no navegador.
-  // Se não houver sessão ativa (401), cria automaticamente uma sessão de visitante.
+  // O useEffect roda uma única vez quando a aplicação inicia no navegador
   useEffect(() => {
-    const initSession = async () => {
-      const status = await fetchCurrentUser();
-      if (status === 401 || status === 403) {
-        try {
-          // Cria conta efêmera visitor_<uuid> no backend e recebe cookie JWT de 24h
-          await authService.visitorSession();
-          // Busca os dados do visitante recém-criado
-          await fetchCurrentUser();
-        } catch (err) {
-          console.error("Erro ao criar sessão de visitante:", err);
-        }
-      }
-      setLoading(false);
-    };
-    initSession();
+    fetchCurrentUser().finally(() => setLoading(false));
   }, []);
 
   // Função disparada no login bem-sucedido
@@ -70,9 +52,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Flag derivada: true se a conta atual é uma sessão de visitante efêmera
-  const isVisitor = Boolean(user?.username?.startsWith('visitor_'));
-
   // Enquanto estiver verificando a sessão do usuário, mostrar um loading na tela
   if (loading) {
     return (
@@ -84,8 +63,9 @@ export function AuthProvider({ children }) {
 
   // Retornar o Provider passando os dados e funções que qualquer componente filho poderá usar
   return (
-    <AuthContext.Provider value={{ user, setUser, token: null, isAuthenticated, isVisitor, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, token: null, isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
-}
+}
+

@@ -71,6 +71,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      minio:
+        condition: service_started
       rabbitmq:
         condition: service_started
       mailpit:
@@ -84,7 +86,10 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: "${MYSQL_ROOT_PASSWORD:-root1234}"
       JWT_SECRET: "${JWT_SECRET:-ChavePadraoParaDesenvolvimentoApenas}"
+      # MinIO (S3)
       MINIO_ENDPOINT: "http://minio:9000"
+      MINIO_ACCESS_KEY: "${MINIO_ROOT_USER:-minioadmin}"
+      MINIO_SECRET_KEY: "${MINIO_ROOT_PASSWORD:-minioadminpassword}"
       GEMINI_API_KEY: "${GEMINI_API_KEY}"
       RABBITMQ_HOST: rabbitmq
       # credenciais mail pit
@@ -104,6 +109,7 @@ services:
       SPRING_DEVTOOLS_ENABLED: "${SPRING_DEVTOOLS_ENABLED:-true}"
       JPA_SHOW_SQL: "${JPA_SHOW_SQL:-true}"
     restart: unless-stopped
+
 
   frontend:
     build:

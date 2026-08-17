@@ -50,10 +50,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       const url = error.config?.url || '';
-      // Se não for a rota de verificar sessão, login, csrf ou criação de sessão de visitante,
-      // desloga e redireciona. Excluir visitor-session evita loop de redirecionamento.
-      if (!url.includes('/auth/me') && !url.includes('/auth/login')
-          && !url.includes('/auth/csrf') && !url.includes('/auth/visitor-session')) {
+      // Se não for a rota de verificar sessão, login ou csrf, desloga e redireciona
+      if (!url.includes('/auth/me') && !url.includes('/auth/login') && !url.includes('/auth/csrf')) {
         // Remove cookies (opcional, pois o backend cuida do JWT, mas ajuda a limpar)
         document.cookie = 'AUTH_TOKEN=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
         window.location.href = '/login';
@@ -62,6 +60,7 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 
 
 export default api;
