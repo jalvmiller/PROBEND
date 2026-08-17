@@ -36,6 +36,16 @@ public class QuestaoService implements CrudService<Questao, Long> {
         this.resolucaoService = resolucaoService;
     }
 
+    // Helper: resolve o usuário autenticado no contexto atual.
+    // Retorna null se não houver autenticação ou for anonymousUser.
+    private Usuario resolverUsuarioAtual() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
+            return null;
+        }
+        return usuarioRepository.findByUsername(auth.getName()).orElse(null);
+    }
+
     public void validarDificuldade(Questao questao) {
         if (questao.getDificuldade() == null || questao.getDificuldade() < 0 || questao.getDificuldade() > 2) {
             System.out.println("\nDificuldade inválida, a dificuldade será fácil por padrão.\n");
@@ -62,6 +72,10 @@ public class QuestaoService implements CrudService<Questao, Long> {
                 throw new IllegalArgumentException("Questões de dificuldade alta precisam ter fonte!");
             }
         }
+
+        // SEGURANÇA: Nunca confiar no valor de seederContent vindo do cliente.
+        // Somente o DatabaseSeeder define seederContent=true internamente.
+        questao.setSeederContent(false);
 
         // Atribuir autor logado se não estiver explicitado
         if (questao.getAutor() == null) {
@@ -122,6 +136,7 @@ public class QuestaoService implements CrudService<Questao, Long> {
         existente.setFonte(questao.getFonte());
         existente.setTrechoCodigo(questao.getTrechoCodigo());
         existente.setLinguagemCodigo(questao.getLinguagemCodigo());
+        // SEGURANÇA: seederContent do existente permanece intacto (nunca atualizar via PUT)
 
         return repository.save(existente);
     }
@@ -139,10 +154,16 @@ public class QuestaoService implements CrudService<Questao, Long> {
         return atualizarQuestao(entity);
     }
 
-    // findAll
+    // Leitura com filtro de visibilidade:
+    // Se houver usuário autenticado: retorna seeder content + conteúdo do próprio usuário.
+    // Se for anônimo: retorna apenas seeder content.
     @Override
     public List<Questao> listarTodos() {
-        return repository.findAll();
+        Usuario atual = resolverUsuarioAtual();
+        if (atual != null) {
+            return repository.findVisibleToUser(atual.getId());
+        }
+        return repository.findAll().stream().filter(Questao::isSeederContent).toList();
     }
 
     // método ficou bem mais compacto
@@ -176,46 +197,59 @@ public class QuestaoService implements CrudService<Questao, Long> {
         if (materia == null || materia.isBlank()) {
             throw new IllegalArgumentException("Matéria inválida");
         }
-
-        return repository.findByMateriaIgnoreCase(materia);
+        Usuario atual = resolverUsuarioAtual();
+        if (atual != null) {
+            return repository.findByMateriaVisibleToUser(materia, atual.getId());
+        }
+        return repository.findByMateriaIgnoreCase(materia).stream().filter(Questao::isSeederContent).toList();
     }
 
     public List<Questao> buscarPorDificuldade(Integer dificuldade) {
         if (dificuldade == null || dificuldade < 0 || dificuldade > 2) {
             throw new IllegalArgumentException("A dificuldade deve estar entre: 0 (fácil) - 1 (média) - 2 (difícil");
         }
-
-        return repository.findByDificuldade(dificuldade);
+        Usuario atual = resolverUsuarioAtual();
+        if (atual != null) {
+            return repository.findByDificuldadeVisibleToUser(dificuldade, atual.getId());
+        }
+        return repository.findByDificuldade(dificuldade).stream().filter(Questao::isSeederContent).toList();
     }
 
     public List<Questao> buscarPorAssunto(String assunto) {
         if (assunto == null || assunto.isBlank()) {
             throw new IllegalArgumentException("Assunto inválido");
         }
-
-        return repository.findByAssuntoIgnoreCase(assunto);
+        Usuario atual = resolverUsuarioAtual();
+        if (atual != null) {
+            return repository.findByAssuntoVisibleToUser(assunto, atual.getId());
+        }
+        return repository.findByAssuntoIgnoreCase(assunto).stream().filter(Questao::isSeederContent).toList();
     }
 
     @Override
     public List<Questao> buscarPorTermo(String termo) {
         if (termo == null || termo.isBlank()) {
-            return repository.findAll();
+            return listarTodos();
         }
         String termoNormalizado = normalizarTermoBusca(termo);
         if (termoNormalizado.isBlank()) {
-            return repository.findAll();
+            return listarTodos();
         }
-
-        return repository
-                .findTop200ByEnunciadoContainingIgnoreCaseOrMateriaContainingIgnoreCaseOrAssuntoContainingIgnoreCaseOrFonteContainingIgnoreCase(
-                        termoNormalizado,
-                        termoNormalizado,
-                        termoNormalizado,
-                        termoNormalizado);
+        Usuario atual = resolverUsuarioAtual();
+        if (atual != null) {
+            return repository.findByTermoVisibleToUser(termoNormalizado, atual.getId());
+        }
+        return repository.findTop200ByEnunciadoContainingIgnoreCaseOrMateriaContainingIgnoreCaseOrAssuntoContainingIgnoreCaseOrFonteContainingIgnoreCase(
+                termoNormalizado, termoNormalizado, termoNormalizado, termoNormalizado)
+                .stream().filter(Questao::isSeederContent).toList();
     }
 
     public List<Resolucao> listarResolucoes(Long questaoId) {
-        return resolucaoRepository.findByQuestao_Id(questaoId);
+        Usuario atual = resolverUsuarioAtual();
+        if (atual != null) {
+            return resolucaoRepository.findByQuestaoVisibleToUser(questaoId, atual.getId());
+        }
+        return resolucaoRepository.findByQuestao_Id(questaoId).stream().filter(Resolucao::isSeederContent).toList();
     }
 
     private String normalizarTermoBusca(String termo) {
@@ -232,6 +266,9 @@ public class QuestaoService implements CrudService<Questao, Long> {
     public Resolucao salvarResolucao(Long questaoId, Resolucao resolucao) {
         Questao questao = buscarPorId(questaoId);
         resolucao.setQuestao(questao);
+
+        // SEGURANÇA: nunca confiar no seederContent vindo do cliente.
+        resolucao.setSeederContent(false);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
