@@ -82,7 +82,6 @@ public class AuthController {
         String token = jwtUtil.generateToken(user.getUsername());
 
         // Geração de Cookie - ResponseCookie
-        // Geração de Cookie - ResponseCookie
         ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", token)
                 .httpOnly(true)
                 .secure(cookieSecure)
@@ -99,29 +98,45 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+        // Valida as credenciais enviadas contra o usuário padrão
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password()));
 
-        // Geração de Cookie - ResponseCookie
-        // Geração de Cookie - ResponseCookie
-        String token = jwtUtil.generateToken(request.username());
-        // Monta o Cookie HttpOnly com SameSite configurado
+        String usernameToToken = request.username();
+
+        // Se o login for com o usuário demo ('user'), gera um ID/UUID aleatório e não-sequencial
+        // para criar uma sandbox isolada exclusiva deste navegador/sessão.
+        if ("user".equalsIgnoreCase(request.username())) {
+            String demoId = UUID.randomUUID().toString().replace("-", "").substring(0, 10);
+            String demoUsername = "demo_" + demoId;
+
+            Usuario demoUser = new Usuario();
+            demoUser.setUsername(demoUsername);
+            demoUser.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
+            demoUser.setNome("João Aluno");
+            demoUser.setEmail(demoUsername + "@probend.demo");
+            demoUser.setVisitor(true);
+            demoUser.setCriadoEm(LocalDateTime.now());
+            usuarioRepository.save(demoUser);
+
+            usernameToToken = demoUsername;
+        }
+
+        // Geração de Cookie - ResponseCookie com o identificador da sessão
+        String token = jwtUtil.generateToken(usernameToToken);
         ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", token)
                 .httpOnly(true)
                 .secure(cookieSecure)
                 .path("/")
-                .maxAge(3600) // Expira em 1 hora (3600 segundos)
-                .sameSite("Lax") // Anti-CSRF Define explicitamente SameSite=Lax ou Strict
+                .maxAge(86400) // Expira em 24 horas
+                .sameSite("Lax")
                 .build();
-        // Retorna a resposta HTTP com o cabeçalho Set-Cookie
+
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(new AuthResponse(token));
-
-        // No login, o usuário é autenticado e recebe um token de autenticação
-        // o token é devolvido pelo corpo da resposta AuthResponse
-        // Retorna HTTP 200 OK caso o login seja realizado normalmente
     }
+
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
@@ -174,52 +189,10 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    // Endpoint leve para disparar o filtro CSRF do Spring e gravar o cookie XSRF-TOKEN no navegador
+    // Endpoint leve para disparar o filtro CSRF do Spring e gravar o cookie
+    // XSRF-TOKEN no navegador
     @GetMapping("/csrf")
     public ResponseEntity<Void> csrf() {
         return ResponseEntity.ok().build();
-    }
-
-    /**
-     * Cria uma conta de visitante efemera e retorna um JWT de 24h.
-     * Cada visitante recebe um username unico (visitor_<uuid>), sem email.
-     * O isolamento de conteudo e feito via flag is_seeder_content nas queries.
-     *
-     * Seguranca:
-     *  - Rate limiting aplicado via Bucket4j no RateLimitFilter (5 req / 10 min por IP)
-     *  - Sem CSRF: endpoint publico de criacao de sessao anonima
-     *  - Conta removida automaticamente pelo DatabaseSeeder.resetAndSeedDatabase() a cada 30 min
-     */
-    @PostMapping("/visitor-session")
-    public ResponseEntity<AuthResponse> visitorSession() {
-        String uuid = UUID.randomUUID().toString().replace("-", "").substring(0, 12);
-        String username = "visitor_" + uuid;
-
-        // Garante unicidade no caso improvavel de colisao de UUID
-        if (usuarioRepository.findByUsername(username).isPresent()) {
-            username = "visitor_" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
-        }
-
-        br.com.joaomu.entity.Usuario visitor = new br.com.joaomu.entity.Usuario();
-        visitor.setUsername(username);
-        visitor.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
-        visitor.setNome("Visitante");
-        visitor.setEmail(null); // email unico nao obrigatorio para visitantes
-        visitor.setVisitor(true);
-        visitor.setCriadoEm(LocalDateTime.now());
-        usuarioRepository.save(visitor);
-
-        String token = jwtUtil.generateToken(visitor.getUsername());
-        ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", token)
-                .httpOnly(true)
-                .secure(cookieSecure)
-                .path("/")
-                .maxAge(86400) // 24h
-                .sameSite("Lax")
-                .build();
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(new AuthResponse(token));
     }
 }
