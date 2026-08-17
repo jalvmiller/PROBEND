@@ -25,13 +25,14 @@ function Layout({ children, fullHeight = false }) {
 
         {/* Conteúdo principal (children) */}
         <main className={fullHeight ? `flex-1 overflow-hidden ${SCROLLBAR_CLASSES}` : `flex-1 overflow-y-auto p-6 ${SCROLLBAR_CLASSES}`}>
-          <DemoBanner />
+          {!fullHeight && <DemoBanner />}
           {children}
         </main>
       </div>
     </div>
   );
 }
+
 
 export default Layout;
 
