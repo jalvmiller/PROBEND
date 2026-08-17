@@ -19,7 +19,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/auth")
@@ -176,5 +178,48 @@ public class AuthController {
     @GetMapping("/csrf")
     public ResponseEntity<Void> csrf() {
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Cria uma conta de visitante efemera e retorna um JWT de 24h.
+     * Cada visitante recebe um username unico (visitor_<uuid>), sem email.
+     * O isolamento de conteudo e feito via flag is_seeder_content nas queries.
+     *
+     * Seguranca:
+     *  - Rate limiting aplicado via Bucket4j no RateLimitFilter (5 req / 10 min por IP)
+     *  - Sem CSRF: endpoint publico de criacao de sessao anonima
+     *  - Conta removida automaticamente pelo DatabaseSeeder.resetAndSeedDatabase() a cada 30 min
+     */
+    @PostMapping("/visitor-session")
+    public ResponseEntity<AuthResponse> visitorSession() {
+        String uuid = UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+        String username = "visitor_" + uuid;
+
+        // Garante unicidade no caso improvavel de colisao de UUID
+        if (usuarioRepository.findByUsername(username).isPresent()) {
+            username = "visitor_" + UUID.randomUUID().toString().replace("-", "").substring(0, 12);
+        }
+
+        br.com.joaomu.entity.Usuario visitor = new br.com.joaomu.entity.Usuario();
+        visitor.setUsername(username);
+        visitor.setPassword(passwordEncoder.encode(UUID.randomUUID().toString()));
+        visitor.setNome("Visitante");
+        visitor.setEmail(null); // email unico nao obrigatorio para visitantes
+        visitor.setVisitor(true);
+        visitor.setCriadoEm(LocalDateTime.now());
+        usuarioRepository.save(visitor);
+
+        String token = jwtUtil.generateToken(visitor.getUsername());
+        ResponseCookie cookie = ResponseCookie.from("AUTH_TOKEN", token)
+                .httpOnly(true)
+                .secure(cookieSecure)
+                .path("/")
+                .maxAge(86400) // 24h
+                .sameSite("Lax")
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(new AuthResponse(token));
     }
 }

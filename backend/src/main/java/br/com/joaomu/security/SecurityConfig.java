@@ -67,7 +67,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(csrfRepository)
                         .csrfTokenRequestHandler(requestHandler)
-                        .ignoringRequestMatchers("/auth/login", "/auth/register"))
+                        .ignoringRequestMatchers("/auth/login", "/auth/register", "/auth/visitor-session"))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // Desabilitar sessões HTTP, o Spring Security não cria sessão, ou seja,
                 // cada requisição é independente e tem que trazer o token
@@ -76,6 +76,7 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/auth/register").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/auth/logout").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/auth/visitor-session").permitAll()
 
                         // ── Swagger (portfólio: acesso público) ─────────────────
                         .requestMatchers("/swagger-ui/**").permitAll()
