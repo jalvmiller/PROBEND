@@ -11,5 +11,13 @@ export const authService = {
   register: async (username, password, nome, email) => {
     const response = await api.post('/auth/register', { username, password, nome, email });
     return response.data;
-  }
+  },
+
+  // Cria uma sessao de visitante efemera — sem credenciais.
+  // O backend gera uma conta visitor_<uuid> com JWT de 24h.
+  visitorSession: async () => {
+    const response = await api.post('/auth/visitor-session');
+    return response.data;
+  },
 };
+
