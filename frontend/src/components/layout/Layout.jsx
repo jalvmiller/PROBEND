@@ -3,7 +3,6 @@ import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import DemoBanner from './DemoBanner';
 import { useAccessibility } from '../../contexts/AccessibilityContext';
-import { useAuth } from '../../hooks/useAuth';
 import { SCROLLBAR_CLASSES } from '../../utils/scrollbarUtils';
 
 // Layout é o container principal
@@ -12,7 +11,6 @@ import { SCROLLBAR_CLASSES } from '../../utils/scrollbarUtils';
 function Layout({ children, fullHeight = false }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { vimAtivo } = useAccessibility();
-  const { isVisitor } = useAuth();
 
   return (
     // Fundo sutil com gradiente ambiente
@@ -27,7 +25,7 @@ function Layout({ children, fullHeight = false }) {
 
         {/* Conteúdo principal (children) */}
         <main className={fullHeight ? `flex-1 overflow-hidden ${SCROLLBAR_CLASSES}` : `flex-1 overflow-y-auto p-6 ${SCROLLBAR_CLASSES}`}>
-          {isVisitor && <DemoBanner />}
+          <DemoBanner />
           {children}
         </main>
       </div>
@@ -36,4 +34,5 @@ function Layout({ children, fullHeight = false }) {
 }
 
 export default Layout;
+
 
