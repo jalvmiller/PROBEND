@@ -9,6 +9,11 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 </div>
 
+# Nota sobre a Live Demo
+A Digital Ocean saiu da iniciativa do Student Developer Pack oferecido pelo Github, consequentemente, os créditos que ela oferecia "expiraram".
+Desativei a Live Demo temporariamente, peço desculpas.
+Irei fazer uma transição para o Microsoft Azure nos próximos dias.
+
 ### 📌 Sobre o Projeto + Stack Completa
 <div align="center">
 É uma plataforma voltada para a criação, compartilhamento e renderização de questões  de matemática e de algoritmos de diferentes linguagens de programação.
