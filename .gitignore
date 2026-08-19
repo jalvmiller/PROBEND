@@ -22,3 +22,7 @@ uml/DIAGCASO.drawio
 *.env
 .env.local
 .env.*.local
+
+# Backup files
+probend_backup.tar.gz
+*.tar.gz
