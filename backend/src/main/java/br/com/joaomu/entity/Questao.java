@@ -47,6 +47,12 @@ public class Questao {
     @Column(name = "data_insercao")
     private java.time.LocalDateTime dataInsercao;
 
+    // Flag de isolamento: TRUE = conteúdo do seeder (visível a todos);
+    // FALSE = conteúdo de usuário/visitante (visível só ao autor)
+    // NUNCA confiar no valor vindo do cliente, o service sempre força FALSE
+    @Column(name = "is_seeder_content", nullable = false)
+    private boolean seederContent = false;
+
     // Cascade = todas as ações que acontecerem na
     // questão vão acontecer nas resoluções
     // orphanRemoval = true = se deletar uma questão, deleta as resoluções
@@ -173,6 +179,15 @@ public class Questao {
         this.dataInsercao = dataInsercao;
     }
 
+    public boolean isSeederContent() {
+        return seederContent;
+    }
+
+    public void setSeederContent(boolean seederContent) {
+        this.seederContent = seederContent;
+    }
+
+    @JsonIgnore
     public int getNumeroResolucoes() {
         return this.resolucoes != null ? this.resolucoes.size() : 0;
     }

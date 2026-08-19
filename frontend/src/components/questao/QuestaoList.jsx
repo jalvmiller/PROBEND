@@ -103,9 +103,9 @@ function QuestaoList({
 	return (
 		<div className="space-y-6">
 			{/* Bloco contendo a lista de questões */}
-			<div className="bg-white dark:bg-slate-900 rounded-lg shadow-md p-4 sm:p-6 border border-transparent dark:border-slate-800 transition-colors">
+			<div className="bg-white dark:bg-slate-800/90 rounded-2xl shadow-sm p-6 border border-slate-200/80 dark:border-slate-700/60 transition-colors">
 				{/* Cabeçalho do bloco */}
-				<div className="mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
+				<div className="mb-6 pb-4 border-b border-slate-200 dark:border-slate-700/60">
 					<h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
 						{listaQuestoes.length} Questão(ões)
 					</h3>
@@ -116,11 +116,11 @@ function QuestaoList({
 					{carregando ? (
 						// Animação enquanto carrega
 						<div className="flex justify-center items-center h-40">
-							<div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-600" />
+							<div className="animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-600" />
 						</div>
 					) : erro ? (
 						// Caso haja erro
-						<div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 px-4 py-3 rounded text-center">
+						<div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 px-4 py-3 rounded-xl text-center">
 							<p>{erro}</p>
 						</div>
 					) : listaQuestoes.length === 0 ? (
@@ -145,14 +145,14 @@ function QuestaoList({
 
 				{/* Controles de Paginação */}
 				{totalPages > 1 && (
-					<div className="flex flex-wrap items-center justify-center gap-2 mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
+					<div className="flex items-center justify-center gap-2 mt-6 pt-4 border-t border-slate-200 dark:border-slate-700/60">
 						{/* Botão Anterior */}
 						<button
 							onClick={() => setPaginaAtual(prev => Math.max(prev - 1, 1))}
 							disabled={paginaAtual === 1}
 							className={`p-2 rounded-lg border transition-all duration-200 flex items-center justify-center ${paginaAtual === 1
-								? 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-300 dark:text-slate-700 cursor-not-allowed'
-								: 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:scale-105 active:scale-95 shadow-sm cursor-pointer'
+								? 'bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 text-slate-300 dark:text-slate-600 cursor-not-allowed'
+								: 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-700/60 hover:border-indigo-500 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white hover:scale-105 active:scale-95 shadow-xs cursor-pointer'
 								}`}
 							title="Página Anterior"
 						>
@@ -160,13 +160,13 @@ function QuestaoList({
 						</button>
 
 						{/* Números das Páginas */}
-						<div className="flex flex-wrap items-center gap-1 sm:gap-1.5 justify-center">
+						<div className="flex items-center gap-1.5">
 							{getPageNumbers().map((page, index) => {
 								if (page === '...') {
 									return (
 										<span
 											key={`dots-${index}`}
-											className="px-3 py-1.5 text-slate-400 dark:text-slate-600 select-none font-medium"
+											className="px-3 py-1.5 text-slate-400 dark:text-slate-400/60 select-none font-medium"
 										>
 											...
 										</span>
@@ -177,8 +177,8 @@ function QuestaoList({
 										key={page}
 										onClick={() => setPaginaAtual(page)}
 										className={`px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 cursor-pointer ${paginaAtual === page
-											? 'bg-blue-600 dark:bg-blue-600 text-white shadow-md shadow-blue-500/20'
-											: 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:scale-105 active:scale-95 shadow-sm'
+											? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+											: 'bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/60 hover:border-indigo-500 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white hover:scale-105 active:scale-95 shadow-xs'
 											}`}
 									>
 										{page}
@@ -192,8 +192,8 @@ function QuestaoList({
 							onClick={() => setPaginaAtual(prev => Math.min(prev + 1, totalPages))}
 							disabled={paginaAtual === totalPages}
 							className={`p-2 rounded-lg border transition-all duration-200 flex items-center justify-center ${paginaAtual === totalPages
-								? 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-300 dark:text-slate-700 cursor-not-allowed'
-								: 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:scale-105 active:scale-95 shadow-sm cursor-pointer'
+								? 'bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 text-slate-300 dark:text-slate-600 cursor-not-allowed'
+								: 'bg-white dark:bg-slate-900/60 border-slate-200 dark:border-slate-700/60 hover:border-indigo-500 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white hover:scale-105 active:scale-95 shadow-xs cursor-pointer'
 								}`}
 							title="Próxima Página"
 						>

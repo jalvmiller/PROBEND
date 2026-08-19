@@ -1,5 +1,6 @@
 package br.com.joaomu.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -42,6 +43,16 @@ public class Usuario implements UserDetails {
     private boolean especialista = false;
 
     private boolean administrador = false;
+
+    // Conta de visitante efêmera criada automaticamente para isolamento de sessão
+    // TRUE = conta temporária, FALSE = conta real (cadastrada ou do seeder)
+    @Column(name = "is_visitor", nullable = false)
+    private boolean visitor = false;
+
+    // Timestamp de criação da conta, usado pelo cleanup job para remover visitantes
+    // expirados
+    @Column(name = "criado_em")
+    private java.time.LocalDateTime criadoEm;
 
     // Construtor Padrão (NoArgsConstructor)
     public Usuario() {
@@ -132,6 +143,22 @@ public class Usuario implements UserDetails {
         this.administrador = administrador;
     }
 
+    public boolean isVisitor() {
+        return visitor;
+    }
+
+    public void setVisitor(boolean visitor) {
+        this.visitor = visitor;
+    }
+
+    public java.time.LocalDateTime getCriadoEm() {
+        return criadoEm;
+    }
+
+    public void setCriadoEm(java.time.LocalDateTime criadoEm) {
+        this.criadoEm = criadoEm;
+    }
+
     // Métodos exigidos pelo UserDetails
     // O getAuthorities retornava uma lista vazia antes das roles,
     // agora ele retorna uma lista de permissões baseada no tipo de usuário
@@ -163,6 +190,8 @@ public class Usuario implements UserDetails {
         return this.username;
     }
 
+    // Sem exposição em JSON, nível de entity
+    @JsonIgnore
     @Override
     public String getPassword() {
         return this.password;

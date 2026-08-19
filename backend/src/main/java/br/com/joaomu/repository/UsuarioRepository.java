@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import br.com.joaomu.entity.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 // Optional = objeto ou null,
@@ -19,4 +21,10 @@ import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     Optional<Usuario> findByUsername(String username);
+    Optional<Usuario> findByEmail(String email);
+
+    // Retorna visitantes cuja conta foi criada antes de um determinado momento.
+    // Usado pelo DatabaseSeeder.resetAndSeedDatabase() para limpeza de sessões expiradas.
+    List<Usuario> findByVisitorTrueAndCriadoEmBefore(LocalDateTime threshold);
 }
+

@@ -55,6 +55,17 @@ public class DatabaseSeeder implements CommandLineRunner {
 	@Transactional
 	public void resetAndSeedDatabase() {
 		System.out.println("=== Resetando banco de dados para o estado inicial do Seeder (agendamento 30 min)... ===");
+		// Remover upvotes, comentarios, resolucoes e questoes de visitantes expirados
+		// antes do reset geral (evita violacao de FK)
+		var visitantes = usuarioRepository.findByVisitorTrueAndCriadoEmBefore(
+				java.time.LocalDateTime.now());
+		for (var v : visitantes) {
+			questaoRepository.deleteAllByAutor_Id(v.getId());
+			resolucaoRepository.deleteAllByAutor_Id(v.getId());
+		}
+		usuarioRepository.deleteAll(visitantes);
+
+		// Reset completo e recarga do seed
 		upvoteRepository.deleteAllInBatch();
 		resolucaoRepository.deleteAllInBatch();
 		questaoRepository.deleteAllInBatch();
@@ -106,6 +117,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		q1.setDificuldade(0); // Fácil
 		q1.setFonte("Probend Vestibulares");
 		q1.setAutor(user);
+		q1.setSeederContent(true);
 
 		Questao q2 = new Questao();
 		q2.setEnunciado(
@@ -118,6 +130,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 				"public int somarPares(int[] numeros) {\n    int soma = 0;\n    for(int num : numeros) {\n        if(num % 2 == 0) {\n            soma += num;\n        }\n    }\n    return soma;\n}");
 		q2.setLinguagemCodigo("java");
 		q2.setAutor(especialista);
+		q2.setSeederContent(true);
 
 		Questao q3 = new Questao();
 		q3.setEnunciado(
@@ -127,6 +140,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		q3.setDificuldade(2); // Difícil
 		q3.setFonte("FUVEST");
 		q3.setAutor(admin);
+		q3.setSeederContent(true);
 
 		Questao q4 = new Questao();
 		q4.setEnunciado(
@@ -136,6 +150,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		q4.setDificuldade(1); // Médio
 		q4.setFonte("Probend Vestibulares");
 		q4.setAutor(user);
+		q4.setSeederContent(true);
 
 		Questao q5 = new Questao();
 		q5.setEnunciado(
@@ -143,8 +158,9 @@ public class DatabaseSeeder implements CommandLineRunner {
 		q5.setMateria("Matemática");
 		q5.setAssunto("Cálculo Integral");
 		q5.setDificuldade(1); // Médio
-		q5.setFonte("Probend Cálculo I");
+		q5.setFonte("Probend Calculo I");
 		q5.setAutor(admin);
+		q5.setSeederContent(true);
 
 		Questao q6 = new Questao();
 		q6.setEnunciado(
@@ -157,6 +173,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		q6.setDificuldade(1); // Médio
 		q6.setFonte("Estruturas de Dados");
 		q6.setAutor(admin);
+		q6.setSeederContent(true);
 
 		Questao q7 = new Questao();
 		q7.setEnunciado(
@@ -169,6 +186,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		q7.setDificuldade(2); // Difícil
 		q7.setFonte("MIT Introduction to Algorithms");
 		q7.setAutor(especialista);
+		q7.setSeederContent(true);
 
 		Questao q8 = new Questao();
 		q8.setEnunciado(
@@ -178,6 +196,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		q8.setDificuldade(1); // Médio
 		q8.setFonte("FUVEST");
 		q8.setAutor(admin);
+		q8.setSeederContent(true);
 
 		Questao q9 = new Questao();
 		q9.setEnunciado(
@@ -187,6 +206,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		q9.setDificuldade(0); // Fácil
 		q9.setFonte("Probend Vestibulares");
 		q9.setAutor(especialista);
+		q9.setSeederContent(true);
 
 		Questao q10 = new Questao();
 		q10.setEnunciado(
@@ -196,6 +216,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		q10.setDificuldade(2); // Difícil
 		q10.setFonte("ITA");
 		q10.setAutor(admin);
+		q10.setSeederContent(true);
 
 		Questao q11 = new Questao();
 		q11.setEnunciado(
@@ -208,6 +229,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		q11.setDificuldade(2); // Difícil
 		q11.setFonte("Cracking the Coding Interview");
 		q11.setAutor(especialista);
+		q11.setSeederContent(true);
 
 		Questao q12 = new Questao();
 		q12.setEnunciado(
@@ -217,6 +239,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		q12.setDificuldade(1); // Médio
 		q12.setFonte("Desafio de Algoritmos");
 		q12.setAutor(admin);
+		q12.setSeederContent(true);
 
 		questaoRepository.saveAll(Arrays.asList(q1, q2, q3, q4, q5, q6, q7, q8, q9, q10, q11, q12));
 		System.out.println("Questões de teste cadastradas!");
@@ -229,6 +252,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		r1.setAutor(especialista);
 		r1.setUpvotes(5);
 		r1.setVerificadoPorEspecialista(true);
+		r1.setSeederContent(true);
 
 		Resolucao r2 = new Resolucao();
 		r2.setConteudo("Também é possível resolver de forma concisa usando a Stream API do Java:");
@@ -239,6 +263,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		r2.setAutor(admin);
 		r2.setUpvotes(8);
 		r2.setVerificadoPorEspecialista(true);
+		r2.setSeederContent(true);
 
 		Resolucao rP = new Resolucao();
 		rP.setConteudo(
@@ -247,6 +272,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		rP.setAutor(admin);
 		rP.setUpvotes(6);
 		rP.setVerificadoPorEspecialista(true);
+		rP.setSeederContent(true);
 
 		Resolucao r3 = new Resolucao();
 		r3.setConteudo(
@@ -255,6 +281,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		r3.setAutor(especialista);
 		r3.setUpvotes(4);
 		r3.setVerificadoPorEspecialista(true);
+		r3.setSeederContent(true);
 
 		Resolucao r4 = new Resolucao();
 		r4.setConteudo(
@@ -263,6 +290,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		r4.setAutor(especialista);
 		r4.setUpvotes(7);
 		r4.setVerificadoPorEspecialista(true);
+		r4.setSeederContent(true);
 
 		Resolucao r5 = new Resolucao();
 		r5.setConteudo(
@@ -271,6 +299,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		r5.setAutor(especialista);
 		r5.setUpvotes(3);
 		r5.setVerificadoPorEspecialista(true);
+		r5.setSeederContent(true);
 
 		Resolucao r6 = new Resolucao();
 		r6.setConteudo(
@@ -279,6 +308,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 		r6.setAutor(admin);
 		r6.setUpvotes(9);
 		r6.setVerificadoPorEspecialista(true);
+		r6.setSeederContent(true);
 
 		resolucaoRepository.saveAll(Arrays.asList(r1, r2, rP, r3, r4, r5, r6));
 		System.out.println("Resoluções de teste cadastradas!");

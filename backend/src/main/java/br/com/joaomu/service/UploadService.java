@@ -46,11 +46,25 @@ public class UploadService {
     // dependências
     @PostConstruct
     public void init() {
-        // Cria o bucket ao iniciar a aplicação caso ele não exista
+        garantirBucketExiste();
+    }
+
+    private void garantirBucketExiste() {
         try {
             s3Client.headBucket(HeadBucketRequest.builder().bucket(bucketName).build());
         } catch (NoSuchBucketException e) {
-            s3Client.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
+            try {
+                s3Client.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
+            } catch (Exception ex) {
+                System.err.println("Aviso: Falha ao criar bucket '" + bucketName + "': " + ex.getMessage());
+            }
+        } catch (Exception e) {
+            try {
+                // Em caso de erro 404 retornado como S3Exception genérica
+                s3Client.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
+            } catch (Exception ex) {
+                System.err.println("Aviso: MinIO indisponível no startup para verificar bucket: " + ex.getMessage());
+            }
         }
     }
 
@@ -62,6 +76,8 @@ public class UploadService {
         String extension = getFileExtension(file.getOriginalFilename());
         String fileName = UUID.randomUUID().toString() + (extension.isEmpty() ? "" : "." + extension);
         try {
+            garantirBucketExiste();
+
             String contentType = file.getContentType();
             if (contentType == null || contentType.isBlank() || contentType.equalsIgnoreCase("application/octet-stream")) {
                 contentType = resolveContentTypeFromExtension(extension);
@@ -82,6 +98,7 @@ public class UploadService {
             throw new RuntimeException("Falha ao salvar a imagem", e);
         }
     }
+
 
     // Método utilitário usado no uploadImage, só recupera
     // o tipo (extensão) do arquivo

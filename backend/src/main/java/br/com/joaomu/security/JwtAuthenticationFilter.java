@@ -2,6 +2,7 @@ package br.com.joaomu.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,6 +39,7 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    private static final String AUTH_COOKIE_NAME = "AUTH_TOKEN";
 
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
@@ -59,16 +61,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
+        String token = null;
         // Pega o token enviado no cabeçalho (Authorization: Bearer <token>)
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-            // Se não tiver header de autorização ou não estiver no padrão Bearer <token>,
-            // não autentica e segue o fluxo.
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+        } else {
+            token = extrairTokenDoCookie(request);
         }
 
-        String token = authHeader.substring(7);
+        if (token == null || token.isBlank()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         // o header vem como "Authorization: Bearer <token>", temos a retirada do token
         // puro, o resto é removido
 
@@ -89,18 +94,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // não vai estar nulo e o filtro vai simplesmente pular a autenticação e deixar
         // passar.
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            try {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (jwtUtil.validateToken(token)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                // UsernamePasswordAuthenticationToken é a classe do Spring Security
-                // que representa um usuário autenticado
+                if (jwtUtil.validateToken(token)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    // UsernamePasswordAuthenticationToken é a classe do Spring Security
+                    // que representa um usuário autenticado
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-                // usuário colocado no contexto, logado para requisição
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    // usuário colocado no contexto, logado para requisição
+                }
+            } catch (org.springframework.security.core.userdetails.UsernameNotFoundException e) {
+                // Usuário do token não existe mais no banco (ex: reset de dados do seeder).
+                // Limpa o contexto para que a requisição seja tratada como anônima / 401 não-autenticado.
+                SecurityContextHolder.clearContext();
             }
         }
+
 
         filterChain.doFilter(request, response);
         // Esse é o método que passa para o próximo filtro.
@@ -111,5 +123,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // Quando a requisição passa por esses filtros, o spring entrega ela para o
         // DispatcherServlet
         // que faz a análise da URL e encaminha pro Controller
+    }
+
+    private String extrairTokenDoCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
+
+        for (Cookie cookie : cookies) {
+            if (AUTH_COOKIE_NAME.equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
     }
 }
