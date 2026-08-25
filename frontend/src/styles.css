@@ -1,0 +1,312 @@
+/* ==========================================================================
+   PROBEND DESIGN Base
+
+   estrutura de estilo do CSS; configuração do estilo de botão, scrollbar..
+   paleta de cores e etc
+
+   nomenclatura baseada em convenções (surface; muted; accent)
+   ========================================================================== */
+
+:root {
+  /* Tipografia */
+  --font-serif: 'Fraunces', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Modo Escuro (Default - Deep Slate Mineral) */
+  --bg-app: #0d1117;
+  --bg-surface: #151b23;
+  --bg-surface-raised: #1c2430;
+  --bg-surface-hover: #232d3d;
+  --bg-overlay: rgba(13, 17, 23, 0.85);
+
+  --border-subtle: #212836;
+  --border-default: #2d3748;
+  --border-strong: #4a5568;
+  --border-focus: #f59e0b;
+
+  --text-primary: #f0f6fc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --text-inverse: #0d1117;
+
+  /* Cores de Destaque Editorial e Técnico */
+  --accent-amber: #f59e0b;
+  --accent-amber-hover: #d97706;
+  --accent-amber-subtle: rgba(245, 158, 11, 0.12);
+
+  --accent-blue: #38bdf8;
+  --accent-blue-subtle: rgba(56, 189, 248, 0.12);
+
+  --accent-emerald: #10b981;
+  --accent-emerald-subtle: rgba(16, 185, 129, 0.12);
+
+  --accent-rose: #f43f5e;
+  --accent-rose-subtle: rgba(244, 63, 94, 0.12);
+
+  --accent-purple: #a855f7;
+  --accent-purple-subtle: rgba(168, 85, 247, 0.12);
+
+  /* Grid & Linhas Milimetradas */
+  --grid-line-color: rgba(255, 255, 255, 0.035);
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-modal: 0 20px 40px rgba(0, 0, 0, 0.6);
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+}
+
+[data-theme="light"] {
+  /* Modo Claro (Thermal Paper / Editorial Book) */
+  --bg-app: #f7f9fa;
+  --bg-surface: #ffffff;
+  --bg-surface-raised: #f1f4f8;
+  --bg-surface-hover: #e9eef4;
+  --bg-overlay: rgba(247, 249, 250, 0.85);
+
+  --border-subtle: #e2e8f0;
+  --border-default: #cbd5e1;
+  --border-strong: #94a3b8;
+  --border-focus: #d97706;
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-inverse: #ffffff;
+
+  --accent-amber: #d97706;
+  --accent-amber-hover: #b45309;
+  --accent-amber-subtle: rgba(217, 119, 6, 0.1);
+
+  --accent-blue: #0284c7;
+  --accent-blue-subtle: rgba(2, 132, 199, 0.1);
+
+  --accent-emerald: #059669;
+  --accent-emerald-subtle: rgba(5, 150, 105, 0.1);
+
+  --accent-rose: #e11d48;
+  --accent-rose-subtle: rgba(225, 29, 72, 0.1);
+
+  --grid-line-color: rgba(0, 0, 0, 0.04);
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-card: 0 4px 10px rgba(0, 0, 0, 0.06);
+  --shadow-modal: 0 20px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* ==========================================================================
+   Base & Reset
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: var(--font-sans);
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Grid de Blueprint de Fundo sutil */
+.blueprint-grid {
+  background-size: 32px 32px;
+  background-image:
+    linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);
+}
+
+/* Tipografia */
+h1,
+h2,
+h3,
+.font-serif {
+  font-family: var(--font-serif);
+  font-feature-settings: "liga" 1, "kern" 1;
+  letter-spacing: -0.015em;
+}
+
+code,
+pre,
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* ==========================================================================
+   Componentes & Utilitários Visuais
+   ========================================================================== */
+
+/* Botões */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  text-decoration: none;
+  user-select: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--accent-amber);
+  color: #0f172a;
+  border-color: var(--accent-amber);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--accent-amber-hover);
+  border-color: var(--accent-amber-hover);
+}
+
+.btn-secondary {
+  background-color: var(--bg-surface-raised);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--border-strong);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background-color: var(--bg-surface);
+  border-color: var(--border-strong);
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border-color: transparent;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background-color: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+/* Inputs + Controles de Formulário */
+.input-field {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.input-field:focus {
+  border-color: var(--border-focus);
+}
+
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.725rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+}
+
+.badge-tag {
+  background-color: var(--accent-blue-subtle);
+  color: var(--accent-blue);
+  border-color: rgba(56, 189, 248, 0.25);
+}
+
+.badge-facil {
+  background-color: var(--accent-emerald-subtle);
+  color: var(--accent-emerald);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.badge-media {
+  background-color: var(--accent-amber-subtle);
+  color: var(--accent-amber);
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.badge-dificil {
+  background-color: var(--accent-rose-subtle);
+  color: var(--accent-rose);
+  border-color: rgba(244, 63, 94, 0.25);
+}
+
+/* Cards com Borda */
+.editorial-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-subtle);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.editorial-card:hover {
+  border-color: var(--border-default);
+  box-shadow: var(--shadow-card);
+}
+
+/* KaTeX Custom */
+.katex {
+  font-size: 1.08em;
+  text-rendering: optimizeLegibility;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-app);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
