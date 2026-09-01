@@ -1,0 +1,165 @@
+<div class="auth-layout blueprint-grid">
+  <!-- Painel Decorativo Editorial (Visível em Desktop) -->
+  <aside class="auth-sidebar">
+    <div class="sidebar-header">
+      <div class="logo-badge">
+        <span class="simbolo-integral">∫</span>
+      </div>
+      <div class="logo-text">
+        <span class="brand-name">PROBEND</span>
+        <span class="brand-sub">Sistema de Questões</span>
+      </div>
+    </div>
+
+    <div class="sidebar-body">
+      <h1 class="sidebar-title">
+        Organize seus estudos.<br />
+        <span class="text-amber">Domine as provas.</span>
+      </h1>
+      <p class="sidebar-desc">
+        Acesse questões técnicas de alto nível com resolução detalhada, suporte a LaTeX e métricas de desempenho.
+      </p>
+
+      <div class="feature-badges">
+        <span class="badge badge-facil">Fórmulas em KaTeX</span>
+        <span class="badge badge-tag">Questões Militares & Concursos</span>
+        <span class="badge badge-media">Sistema de Upvotes</span>
+      </div>
+    </div>
+
+    <footer class="sidebar-footer">
+      <p>© {{ 2026 }} PROBEND · Plataforma de Estudos Avançados</p>
+    </footer>
+  </aside>
+
+  <!-- Painel Principal do Formulário -->
+  <main class="auth-main">
+    <div class="auth-card editorial-card">
+      <!-- Mobile Logo Header -->
+      <div class="mobile-brand">
+        <div class="logo-badge">
+          <span class="simbolo-integral">∫</span>
+        </div>
+        <span class="brand-name">PROBEND</span>
+      </div>
+
+      <div class="form-header">
+        <h2 class="form-title">Bem-vindo de volta</h2>
+        <p class="form-subtitle">Informe suas credenciais para acessar sua conta</p>
+      </div>
+
+      <!-- Alerta de Erro -->
+      @if (errorMessage()) {
+        <div class="alert-error" role="alert">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <!-- Badge de Credenciais de Demonstração -->
+      <div class="demo-box">
+        <div class="demo-header">
+          <span class="demo-tag">Ambiente de Demonstração</span>
+        </div>
+        <div class="demo-credentials font-mono">
+          <span>usuário: <strong>user</strong></span>
+          <span class="dot-separator">·</span>
+          <span>senha: <strong>user123</strong></span>
+        </div>
+      </div>
+
+      <!-- Formulário Reativo -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="form-body">
+        <!-- Campo: Usuário -->
+        <div class="form-group">
+          <label for="username" class="form-label">Usuário</label>
+          <input
+            id="username"
+            type="text"
+            formControlName="username"
+            class="input-field"
+            placeholder="Digite seu usuário..."
+            [class.input-error]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+            autocomplete="username"
+          />
+          @if (loginForm.get('username')?.invalid && loginForm.get('username')?.touched) {
+            <span class="field-error">O nome de usuário é obrigatório.</span>
+          }
+        </div>
+
+        <!-- Campo: Senha -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="password" class="form-label">Senha</label>
+          </div>
+          <div class="password-wrapper">
+            <input
+              id="password"
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              class="input-field password-input"
+              placeholder="••••••••"
+              [class.input-error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+              autocomplete="current-password"
+            />
+            <button
+              type="button"
+              class="toggle-password-btn"
+              (click)="alternarVisibilidadeSenha()"
+              [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Exibir senha'"
+            >
+              @if (showPassword()) {
+                <!-- Eye Off SVG -->
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              } @else {
+                <!-- Eye SVG -->
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              }
+            </button>
+          </div>
+          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+            <span class="field-error">A senha deve ter no mínimo 6 caracteres.</span>
+          }
+        </div>
+
+        <!-- Botão Principal de Login -->
+        <button
+          type="submit"
+          class="btn btn-primary btn-submit"
+          [disabled]="isSubmitting() || loginForm.invalid"
+        >
+          @if (isSubmitting()) {
+            <span class="spinner"></span>
+            <span>Conectando...</span>
+          } @else {
+            <span>Entrar na Plataforma</span>
+          }
+        </button>
+
+        <!-- Botão Secundário: Entrar como Visitante / Convidado -->
+        <button
+          type="button"
+          class="btn btn-secondary btn-visitor"
+          (click)="entrarComoVisitante()"
+          [disabled]="isSubmitting()"
+        >
+          <span>Acessar Modo Visitante (Sandbox)</span>
+        </button>
+      </form>
+
+      <div class="form-footer">
+        <p>Ainda não tem conta? <a routerLink="/register" class="link-destaque">Cadastre-se</a></p>
+      </div>
+    </div>
+  </main>
+</div>
