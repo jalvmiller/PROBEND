@@ -1,0 +1,97 @@
+<div class="dashboard-container">
+  <!-- Hero Editorial -->
+  <section class="hero-section">
+    <div class="hero-tag">
+      <span class="dot"></span> REPOSITÓRIO ACADÊMICO
+    </div>
+    <h1 class="hero-titulo">Matemática, Lógica & Algoritmos</h1>
+    <p class="hero-subtitulo">
+      Explore problemas técnicos, resoluções matemáticas e algoritmos da comunidade.
+    </p>
+  </section>
+
+  <!-- Painel de Filtros e Busca -->
+  <div class="painel-controle">
+    <div class="campo-busca">
+      <input 
+        type="text" 
+        [ngModel]="termoBusca()"
+        (ngModelChange)="aoDigitarBusca($event)"
+        placeholder="Buscar questões por título, tag ou conceito..." 
+        class="input-busca"
+      />
+    </div>
+
+    <div class="filtros-dificuldade">
+      <button 
+        class="filtro-btn" 
+        [class.ativo]="filtroDificuldade() === 'TODAS'"
+        (click)="alterarFiltroDificuldade('TODAS')"
+      >
+        Todas
+      </button>
+      <button 
+        class="filtro-btn facil" 
+        [class.ativo]="filtroDificuldade() === 'FACIL'"
+        (click)="alterarFiltroDificuldade('FACIL')"
+      >
+        Fácil
+      </button>
+      <button 
+        class="filtro-btn media" 
+        [class.ativo]="filtroDificuldade() === 'MEDIA'"
+        (click)="alterarFiltroDificuldade('MEDIA')"
+      >
+        Média
+      </button>
+      <button 
+        class="filtro-btn dificil" 
+        [class.ativo]="filtroDificuldade() === 'DIFICIL'"
+        (click)="alterarFiltroDificuldade('DIFICIL')"
+      >
+        Difícil
+      </button>
+    </div>
+  </div>
+
+  <!-- Feed de Questões -->
+  @if (loading()) {
+    <div class="estado-carregando">
+      <span class="simbolo-loading">∫</span>
+      <p>Carregando repositório de questões...</p>
+    </div>
+  } @else if (questoesFiltradas.length === 0) {
+    <div class="estado-vazio">
+      <p>Nenhuma questão encontrada no repositório.</p>
+    </div>
+  } @else {
+    <div class="grid-questoes">
+      @for (q of questoesFiltradas; track q.id) {
+        <article class="card-questao">
+          <div class="card-topo">
+            <span class="badge" [ngClass]="'badge-' + q.dificuldade.toLowerCase()">
+              {{ q.dificuldade }}
+            </span>
+            <div class="estatisticas">
+              <span>▲ {{ q.upvotesCount || 0 }} upvotes</span>
+              <span>💬 {{ q.resolucoesCount || 0 }} respostas</span>
+            </div>
+          </div>
+
+          <!-- Título renderizado com KaTeX -->
+          <h2 class="questao-titulo" [routerLink]="['/questoes', q.id]">
+            <span [appKatex]="q.titulo"></span>
+          </h2>
+
+          <!-- Enunciado resumido com KaTeX -->
+          <div class="questao-enunciado" [appKatex]="q.enunciado"></div>
+
+          <div class="card-rodape">
+            <span class="autor">Por {{ q.autor?.nome || 'Autor Anônimo' }}</span>
+            <a [routerLink]="['/questoes', q.id]" class="btn-ver">Ver Questão →</a>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>
