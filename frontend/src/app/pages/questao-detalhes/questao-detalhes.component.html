@@ -1,0 +1,106 @@
+<div class="detalhes-container">
+  <!-- Botão de Voltar ao Feed -->
+  <div class="navegacao-topo">
+    <a routerLink="/" class="link-voltar">← Voltar para o repositório</a>
+  </div>
+
+  @if (loading()) {
+    <div class="estado-carregando">
+      <span class="simbolo-loading">∫</span>
+      <p>Carregando demonstração da questão...</p>
+    </div>
+  } @else if (erro()) {
+    <div class="estado-erro">
+      <p>{{ erro() }}</p>
+      <a routerLink="/" class="btn-erro">Voltar ao início</a>
+    </div>
+  } @else if (questao(); as q) {
+    <div class="layout-duplo">
+      <!-- Coluna da Esquerda: O Enunciado do Problema -->
+      <section class="secao-problema">
+        <div class="cabecalho-questao">
+          <div class="badges-row">
+            <span class="badge" [ngClass]="'badge-' + q.dificuldade.toLowerCase()">
+              {{ q.dificuldade }}
+            </span>
+            @if (q.tags) {
+              @for (tag of getTagsArray(q.tags); track tag) {
+                <span class="badge badge-tag">#{{ tag }}</span>
+              }
+            }
+          </div>
+
+          <!-- Título com renderização KaTeX -->
+          <h1 class="titulo-problema" [appKatex]="q.titulo"></h1>
+
+          <div class="meta-autor">
+            <span>Postado por <strong>{{ q.autor?.nome || 'Anônimo' }}</strong></span>
+            <span>•</span>
+            <button (click)="darUpvote()" class="btn-upvote">
+              ▲ Upvote ({{ q.upvotesCount || 0 }})
+            </button>
+          </div>
+        </div>
+
+        <!-- Enunciado com fórmulas matemáticas processadas pela diretiva [appKatex] -->
+        <div class="corpo-enunciado" [appKatex]="q.enunciado"></div>
+
+        @if (q.imagemUrl) {
+          <div class="container-imagem">
+            <img [src]="q.imagemUrl" alt="Diagrama da questão" class="imagem-problema" />
+          </div>
+        }
+      </section>
+
+      <!-- Coluna da Direita: Painel de Resoluções & Envio -->
+      <section class="secao-resolucoes">
+        <!-- Caixa de Envio de Nova Resolução -->
+        <div class="card-formulario">
+          <h2 class="subtitulo">Submeter Demonstração / Resolução</h2>
+          <p class="instrucao">Use fórmulas em LaTeX com $...$ para linha ou $$...$$ para bloco.</p>
+
+          <textarea 
+            [ngModel]="novaResolucao()"
+            (ngModelChange)="novaResolucao.set($event)"
+            rows="5" 
+            placeholder="Ex: Pelo Teorema Fundamental do Cálculo, temos: $$\int_a^b f'(x) dx = f(b) - f(a)$$"
+            class="textarea-resolucao"
+          ></textarea>
+
+          <!-- Live Preview com KaTeX enquanto o usuário digita -->
+          @if (novaResolucao()) {
+            <div class="caixa-preview">
+              <span class="preview-tag">PRÉVIA MATEMÁTICA EM TEMPO REAL</span>
+              <div [appKatex]="novaResolucao()"></div>
+            </div>
+          }
+
+          <button class="btn btn-primary" [disabled]="!novaResolucao() || submetendo()">
+            Publicar Resolução
+          </button>
+        </div>
+
+        <!-- Lista de Resoluções da Comunidade -->
+        <div class="lista-resolucoes">
+          <h2 class="subtitulo">Resoluções Publicadas ({{ q.resolucoes?.length || 0 }})</h2>
+
+          @if (!q.resolucoes || q.resolucoes.length === 0) {
+            <div class="sem-resolucoes">
+              <p>Nenhuma resolução publicada ainda. Seja o primeiro a demonstrar!</p>
+            </div>
+          } @else {
+            @for (res of q.resolucoes; track res.id) {
+              <article class="card-resolucao">
+                <div class="res-topo">
+                  <span class="res-autor">{{ res.autor?.nome || 'Membro do Lab' }}</span>
+                  <span class="res-upvotes">▲ {{ res.upvotesCount || 0 }}</span>
+                </div>
+                <div class="res-conteudo" [appKatex]="res.conteudo"></div>
+              </article>
+            }
+          }
+        </div>
+      </section>
+    </div>
+  }
+</div>

@@ -1,0 +1,234 @@
+.detalhes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.navegacao-topo {
+  margin-bottom: 0.5rem;
+}
+
+.link-voltar {
+  font-size: 0.8125rem;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.link-voltar:hover {
+  color: var(--accent-amber);
+}
+
+.layout-duplo {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .layout-duplo {
+    grid-template-columns: 1.15fr 1fr;
+  }
+}
+
+.secao-problema {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  box-shadow: var(--shadow-subtle);
+}
+
+.cabecalho-questao {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.badges-row {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.titulo-problema {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.meta-autor {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.75rem;
+}
+
+.btn-upvote {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-upvote:hover {
+  background-color: var(--accent-amber-subtle);
+  color: var(--accent-amber);
+  border-color: var(--accent-amber);
+}
+
+.corpo-enunciado {
+  font-size: 1rem;
+  color: var(--text-primary);
+  line-height: 1.8;
+}
+
+.container-imagem {
+  margin-top: 1rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.imagem-problema {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.secao-resolucoes {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.card-formulario {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: var(--shadow-subtle);
+}
+
+.subtitulo {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.instrucao {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: -0.5rem;
+}
+
+.textarea-resolucao {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  background-color: var(--bg-surface-raised);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  outline: none;
+  resize: vertical;
+}
+
+.textarea-resolucao:focus {
+  border-color: var(--accent-amber);
+}
+
+.caixa-preview {
+  background-color: var(--bg-surface-raised);
+  border: 1px dashed var(--border-default);
+  padding: 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
+
+.preview-tag {
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent-amber);
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.lista-resolucoes {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.card-resolucao {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.res-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.res-autor {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.res-upvotes {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--accent-amber);
+}
+
+.res-conteudo {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.estado-carregando, .estado-erro, .sem-resolucoes {
+  text-align: center;
+  padding: 2.5rem;
+  color: var(--text-muted);
+}
+
+.simbolo-loading {
+  font-family: var(--font-serif);
+  font-size: 3rem;
+  color: var(--accent-amber);
+  display: block;
+}
+
+.btn-erro {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--accent-amber);
+  text-decoration: none;
+  font-weight: 600;
+}
