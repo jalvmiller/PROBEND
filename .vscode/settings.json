@@ -10,7 +10,9 @@
     "**/target": true,
     "**/node_modules": true
   },
-"explorer.compactFolders": true,
-"java.compile.nullAnalysis.mode": "automatic",
-"java.configuration.updateBuildConfiguration": "interactive"
+  "explorer.compactFolders": true,
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "typescript.tsdk": "frontend/node_modules/typescript/lib",
+  "typescript.preferences.includePackageJsonAutoImports": "auto"
 }
