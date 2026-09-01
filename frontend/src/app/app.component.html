@@ -1,44 +1,9 @@
-<main class="container">
-    <!-- Componente Filho Reutilizável: Header -->
-    <app-header></app-header>
+<div class="layout-app">
+  <!-- Barra de Navegação Superior Fixa -->
+  <app-header></app-header>
 
-    <!-- Título vindo da variável do TypeScript do AppComponent -->
-    <header class="header">
-        <h1>{{ titulo() }}</h1> <!-- () indica que é um signal, {{}} indica que é expressão do TypeScript -->
-        <p>Primeiro contato prático com Angular 19 & Signals</p>
-    </header>
-
-    <hr class="divisor" />
-
-    <!-- Bloco 1: Contador com Signals -->
-    <section class="card">
-        <h2>1. Reatividade com Signals (Contador)</h2>
-        <p>O valor atual é: <strong>{{ contador() }}</strong></p>
-
-        <div class="botoes">
-            <button (click)="decrementar()" class="btn btn-secondary">- 1</button>
-            <button (click)="incrementar()" class="btn btn-primary">+ 1</button>
-        </div>
-
-        <!-- condicional usando a nova sintaxe @if do Angular -->
-        @if (contador() > 5) {
-        <p class="alerta">Contador maior que 5</p>
-        } @else if (contador() < 0) { <p class="alerta-negativo">Contador negativo</p>
-            }
-    </section>
-
-    <!-- Bloco 2: Eventos e Input em tempo real -->
-    <section class="card">
-        <h2>2. Captura de Eventos (Digitação)</h2>
-
-        <label for="campo-texto" class="label">Digite algo abaixo:</label>
-        <input id="campo-texto" type="text" placeholder="Escreva algo aqui..." (input)="atualizarMensagem($event)"
-            class="input" />
-
-        @if (mensagem()) {
-        <p class="resultado">Você digitou: <em>"{{ mensagem() }}"</em></p>
-        } @else {
-        <p class="dica">O texto que você digitar aparecerá aqui em tempo real.</p>
-        }
-    </section>
-</main>
+  <!-- Janela de Roteamento SPA: Aqui o Angular renderiza a página da rota ativa (Dashboard ou QuestaoDetalhes) -->
+  <main class="conteudo-principal">
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,0 +1,10 @@
+.layout-app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  min-height: 100vh;
+}
+
+.conteudo-principal {
+  margin-top: 1rem;
+}

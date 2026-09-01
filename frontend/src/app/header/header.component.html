@@ -1,11 +1,24 @@
 <header class="navbar">
-  <div class="logo">
+  <div class="logo" routerLink="/" style="cursor: pointer;">
     <span class="simbolo">∫</span>
-    <span class="titulo">{{ nomeApp() }}</span>
+    <span class="titulo">PROBEND</span>
   </div>
 
   <nav class="links">
-    <a href="#feed">Feed de Questões</a>
-    <a href="#sobre">Documentação</a>
+    @if (authService.isAuthenticated()) {
+      <a routerLink="/" class="nav-link">Feed de Questões</a>
+      
+      <div class="user-pill">
+        <span class="user-avatar-badge">{{ (authService.currentUser()?.nome || authService.currentUser()?.username || 'U')[0].toUpperCase() }}</span>
+        <span class="user-name">{{ authService.currentUser()?.nome || authService.currentUser()?.username }}</span>
+        @if (authService.currentUser()?.pontos !== undefined) {
+          <span class="user-pts">{{ authService.currentUser()?.pontos }} pts</span>
+        }
+      </div>
+
+      <button type="button" class="btn-logout" (click)="logout()">Sair</button>
+    } @else {
+      <a routerLink="/login" class="nav-link link-login">Acessar Conta</a>
+    }
   </nav>
 </header>

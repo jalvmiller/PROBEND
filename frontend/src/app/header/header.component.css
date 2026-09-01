@@ -2,10 +2,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.85rem 1.25rem;
-  background-color: #0f172a;
-  color: #f8fafc;
-  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
 }
 
@@ -14,27 +14,96 @@
   align-items: center;
   gap: 0.5rem;
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
+  user-select: none;
 }
 
 .simbolo {
-  color: #f59e0b;
+  color: var(--accent-amber);
   font-size: 1.4rem;
+  font-family: var(--font-serif);
   line-height: 1;
+}
+
+.titulo {
+  font-family: var(--font-serif);
+  letter-spacing: 0.04em;
 }
 
 .links {
   display: flex;
+  align-items: center;
   gap: 1.25rem;
 }
 
-.links a {
-  color: #94a3b8;
+.nav-link {
+  color: var(--text-secondary);
   text-decoration: none;
   font-size: 0.875rem;
+  font-weight: 500;
   transition: color 0.15s ease;
 }
 
-.links a:hover {
-  color: #f8fafc;
+.nav-link:hover {
+  color: var(--text-primary);
+}
+
+.link-login {
+  color: var(--accent-amber);
+  font-weight: 600;
+}
+
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--bg-surface-raised);
+  border: 1px solid var(--border-default);
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.825rem;
+}
+
+.user-avatar-badge {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--accent-amber);
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-name {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.user-pts {
+  color: var(--accent-amber);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-left: 1px solid var(--border-default);
+  padding-left: 0.5rem;
+}
+
+.btn-logout {
+  background: none;
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-logout:hover {
+  background-color: var(--accent-rose-subtle);
+  border-color: rgba(244, 63, 94, 0.3);
+  color: var(--accent-rose);
 }
