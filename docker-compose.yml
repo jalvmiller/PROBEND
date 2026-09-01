@@ -103,7 +103,7 @@ services:
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
       # segurança / HTTPS
-      APP_SECURITY_ALLOWED_ORIGINS: "${APP_SECURITY_ALLOWED_ORIGINS:-http://localhost:5173}"
+      APP_SECURITY_ALLOWED_ORIGINS: "${APP_SECURITY_ALLOWED_ORIGINS:-http://localhost:8081,http://localhost:4200}"
       APP_SECURITY_COOKIE_SECURE: "${APP_SECURITY_COOKIE_SECURE:-false}"
       # debug (desabilitado em produção)
       SPRING_DEVTOOLS_ENABLED: "${SPRING_DEVTOOLS_ENABLED:-true}"
