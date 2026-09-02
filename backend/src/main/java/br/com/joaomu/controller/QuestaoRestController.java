@@ -6,7 +6,7 @@ import br.com.joaomu.service.QuestaoService;
 import br.com.joaomu.entity.Comentario;
 import br.com.joaomu.entity.Questao;
 import br.com.joaomu.entity.Resolucao;
-import br.com.joaomu.service.GeminiService;
+import br.com.joaomu.service.integration.GeminiService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.http.HttpStatus;

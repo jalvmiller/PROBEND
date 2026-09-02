@@ -1,4 +1,4 @@
-package br.com.joaomu.service;
+package br.com.joaomu.service.integration;
 
 import jakarta.annotation.PostConstruct;
 

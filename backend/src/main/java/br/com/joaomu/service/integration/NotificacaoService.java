@@ -1,4 +1,4 @@
-package br.com.joaomu.service;
+package br.com.joaomu.service.integration;
 
 import org.springframework.stereotype.Service;
 import org.springframework.mail.SimpleMailMessage;

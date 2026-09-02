@@ -1,6 +1,6 @@
 package br.com.joaomu.controller;
 
-import br.com.joaomu.service.UploadService;
+import br.com.joaomu.service.integration.UploadService;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.core.ResponseBytes;

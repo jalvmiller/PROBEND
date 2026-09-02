@@ -1,4 +1,4 @@
-package br.com.joaomu.service;
+package br.com.joaomu.security;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -3,7 +3,7 @@ package br.com.joaomu.controller;
 import org.springframework.web.bind.annotation.*;
 import br.com.joaomu.entity.Usuario;
 import br.com.joaomu.service.UsuarioService;
-import br.com.joaomu.service.UploadService;
+import br.com.joaomu.service.integration.UploadService;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;

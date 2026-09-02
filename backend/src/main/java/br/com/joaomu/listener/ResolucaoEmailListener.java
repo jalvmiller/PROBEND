@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import br.com.joaomu.config.RabbitMQConfig;
 import br.com.joaomu.dto.ResolucaoEmailEvent;
-import br.com.joaomu.service.NotificacaoService;
+import br.com.joaomu.service.integration.NotificacaoService;
 
 @Component
 public class ResolucaoEmailListener {
