@@ -79,6 +79,7 @@ public class Usuario implements UserDetails {
     }
 
     // Getters e Setters Manuais
+    @JsonIgnore
     public Long getId() {
         return id;
     }
@@ -95,6 +96,7 @@ public class Usuario implements UserDetails {
         this.password = password;
     }
 
+    @JsonIgnore
     public String getNome() {
         return nome;
     }
@@ -103,6 +105,7 @@ public class Usuario implements UserDetails {
         this.nome = nome;
     }
 
+    @JsonIgnore
     public String getEmail() {
         return email;
     }
@@ -127,6 +130,7 @@ public class Usuario implements UserDetails {
         this.pontos = pontos;
     }
 
+    @JsonIgnore
     public boolean isEspecialista() {
         return especialista;
     }
@@ -135,6 +139,7 @@ public class Usuario implements UserDetails {
         this.especialista = especialista;
     }
 
+    @JsonIgnore
     public boolean isAdministrador() {
         return administrador;
     }
@@ -143,6 +148,7 @@ public class Usuario implements UserDetails {
         this.administrador = administrador;
     }
 
+    @JsonIgnore
     public boolean isVisitor() {
         return visitor;
     }
@@ -151,6 +157,7 @@ public class Usuario implements UserDetails {
         this.visitor = visitor;
     }
 
+    @JsonIgnore
     public java.time.LocalDateTime getCriadoEm() {
         return criadoEm;
     }
@@ -166,6 +173,7 @@ public class Usuario implements UserDetails {
     // retorna uma lista de objetos que implementam GrantedAuthority, ou seja,
     // qualquer objeto de uma classe que herde GrantedAuthority (conceito de
     // Wildcard) indicado pelo "?"
+    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -197,21 +205,25 @@ public class Usuario implements UserDetails {
         return this.password;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @JsonIgnore
     @Override
     public boolean isEnabled() {
         return true;
