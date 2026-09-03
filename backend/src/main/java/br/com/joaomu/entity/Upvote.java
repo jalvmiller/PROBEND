@@ -15,19 +15,19 @@ public class Upvote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
     // Se for um upvote em uma Questão, este campo será preenchido e o resolucao
     // será null
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "questao_id")
     private Questao questao;
 
     // Se for um upvote em uma Resolução, este campo será preenchido e o questao
     // será null
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resolucao_id")
     private Resolucao resolucao;
 

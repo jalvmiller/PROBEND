@@ -16,13 +16,13 @@ public class Comentario {
     private String conteudo;
 
     // Comentário pertence a uma resolução (N comentários : 1 resolução)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "resolucao_id", nullable = false)
     @JsonIgnore
     private Resolucao resolucao;
 
     // Comentário foi escrito por um usuário
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario autor;
 

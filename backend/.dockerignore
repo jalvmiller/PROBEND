@@ -1,0 +1,13 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.git
+.gitignore
+.gitattributes
+.env
+.env.*
+.vscode
+.idea
+*.log
+Dockerfile
+HELP.md
+README.md

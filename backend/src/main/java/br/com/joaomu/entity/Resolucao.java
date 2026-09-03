@@ -28,12 +28,12 @@ public class Resolucao {
     private Integer qtdComentarios = 0;
 
     // Relações com as outras tabelas
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "questao_id", nullable = false)
     @JsonIgnore
     private Questao questao;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario autor;
 
