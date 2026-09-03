@@ -1,9 +1,10 @@
 import { HelpCircle, CheckCircle2, Clock } from 'lucide-react';
 
 function PainelEstatisticas({ listaQuestoes = [] }) {
-    const total = listaQuestoes.length;
-    const solucionadas = listaQuestoes.filter(q => q.solucionada).length;
-    const pendentes = listaQuestoes.filter(q => !q.solucionada).length;
+    const lista = Array.isArray(listaQuestoes) ? listaQuestoes : [];
+    const total = lista.length;
+    const solucionadas = lista.filter(q => q.solucionada).length;
+    const pendentes = lista.filter(q => !q.solucionada).length;
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

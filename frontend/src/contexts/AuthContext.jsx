@@ -15,8 +15,13 @@ export function AuthProvider({ children }) {
   const fetchCurrentUser = async () => {
     try {
       const response = await api.get('/auth/me');
-      setUser(response.data);
-      setIsAuthenticated(true);
+      if (response.data && typeof response.data === 'object' && (response.data.id || response.data.username)) {
+        setUser(response.data);
+        setIsAuthenticated(true);
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
+      }
       // Guarda o objeto usuário completo
     } catch (err) {
       // 401 e 403 são retornos normais do Spring Security quando o usuário não possui sessão ativa

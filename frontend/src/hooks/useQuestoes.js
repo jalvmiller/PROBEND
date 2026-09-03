@@ -16,10 +16,10 @@ export function useQuestoes() {
 				setErro(null); // Resetar antes de buscar
 
 				const dados = await questaoService.listarTodas();
-				setListaQuestoes(dados);
+				setListaQuestoes(Array.isArray(dados) ? dados : []);
 
 				const upvotes = await questaoService.getMeusUpvotes();
-				setMeusUpvotes(upvotes);
+				setMeusUpvotes(Array.isArray(upvotes) ? upvotes : []);
 			} catch (err) {
 				console.error("Erro ao conectar no Spring", err);
 				setErro("O servidor não está ligado");

@@ -107,7 +107,7 @@ function QuestaoList({
 				{/* Cabeçalho do bloco */}
 				<div className="mb-6 pb-4 border-b border-slate-200 dark:border-slate-700/60">
 					<h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-						{listaQuestoes.length} Questão(ões)
+						{listaQuestoes.length === 1 ? '1 Questão' : `${listaQuestoes.length} Questões`}
 					</h3>
 				</div>
 

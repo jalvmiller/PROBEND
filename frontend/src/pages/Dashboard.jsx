@@ -32,9 +32,11 @@ function Dashboard() {
 						Questões
 					</h2>
 					<p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-						{listaQuestoes.length > 0
-							? `${listaQuestoes.length} questão${listaQuestoes.length !== 1 ? 'ões' : ''} cadastrada${listaQuestoes.length !== 1 ? 's' : ''}`
-							: 'Nenhuma questão cadastrada ainda'
+						{listaQuestoes.length === 0
+							? 'Nenhuma questão cadastrada ainda'
+							: listaQuestoes.length === 1
+								? '1 questão cadastrada'
+								: `${listaQuestoes.length} questões cadastradas`
 						}
 					</p>
 				</div>
