@@ -1,11 +1,14 @@
 package br.com.joaomu.controller;
 
-import br.com.joaomu.service.ComentarioService;
-import br.com.joaomu.service.UpvoteService;
-import br.com.joaomu.service.QuestaoService;
+import br.com.joaomu.dto.entity.ComentarioResponse;
+import br.com.joaomu.dto.entity.QuestaoResponse;
+import br.com.joaomu.dto.entity.ResolucaoResponse;
 import br.com.joaomu.entity.Comentario;
 import br.com.joaomu.entity.Questao;
 import br.com.joaomu.entity.Resolucao;
+import br.com.joaomu.service.ComentarioService;
+import br.com.joaomu.service.QuestaoService;
+import br.com.joaomu.service.UpvoteService;
 import br.com.joaomu.service.integration.GeminiService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 // Define a rota base do Controller
 @RequestMapping("/questoes")
-public class QuestaoRestController extends BaseRestController<Questao, Long> {
+public class QuestaoRestController {
 
     // Injeção de dependências
     private final QuestaoService questaoService;
@@ -40,26 +43,74 @@ public class QuestaoRestController extends BaseRestController<Questao, Long> {
             GeminiService geminiService,
             UpvoteService upvoteService,
             ComentarioService comentarioService) {
-        super(questaoService);
         this.questaoService = questaoService;
         this.geminiService = geminiService;
         this.upvoteService = upvoteService;
         this.comentarioService = comentarioService;
     }
 
-    // Listagem trabalha com a busca (herdado do BaseRestController)
+    // Listagem trabalha com a busca por termo opcional (?busca=...)
     // @PathVariable captura variáveis da URL, o Spring injeta ${id} na variável id
     // @RequestBody converte o body da requisição (vem em JSON) para um objeto Java
+    @GetMapping
+    public ResponseEntity<List<QuestaoResponse>> listarTodas(@RequestParam(required = false) String busca) {
+        List<Questao> questoes;
+        if (busca != null && !busca.isBlank()) {
+            questoes = questaoService.buscarPorTermo(busca);
+        } else {
+            questoes = questaoService.listarTodos();
+        }
+        List<QuestaoResponse> response = questoes.stream()
+                .map(QuestaoResponse::fromEntity)
+                .toList();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<QuestaoResponse> buscarPorId(@PathVariable Long id) {
+        Questao questao = questaoService.buscarPorId(id);
+        return ResponseEntity.ok(QuestaoResponse.fromEntity(questao));
+    }
+
+    @PostMapping
+    public ResponseEntity<QuestaoResponse> criar(@RequestBody Questao entity) {
+        Questao salva = questaoService.salvar(entity);
+        return ResponseEntity.status(HttpStatus.CREATED).body(QuestaoResponse.fromEntity(salva));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Questao entity) {
+        try {
+            Questao atualizada = questaoService.atualizar(id, entity);
+            return ResponseEntity.ok(QuestaoResponse.fromEntity(atualizada));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> remover(@PathVariable Long id) {
+        try {
+            questaoService.remover(id);
+            return ResponseEntity.noContent().build();
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
 
     // o status é passado via request param, o ? é obrigatório
     // o status true ou false vem pelo ?status=
     // esse metodo é chamado quando o usuário logado clica no botão de marcar como
     // solucionada e só funciona se o usuario logado for o autor da questão
     @PutMapping("/{id}/solucionada")
-    public ResponseEntity<Questao> marcarSolucionada(@PathVariable Long id, @RequestParam boolean status) {
+    public ResponseEntity<QuestaoResponse> marcarSolucionada(@PathVariable Long id, @RequestParam boolean status) {
         try {
             Questao atualizada = questaoService.marcarComoSolucionada(id, status);
-            return ResponseEntity.ok(atualizada);
+            return ResponseEntity.ok(QuestaoResponse.fromEntity(atualizada));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         } catch (IllegalStateException e) {
@@ -68,14 +119,17 @@ public class QuestaoRestController extends BaseRestController<Questao, Long> {
     }
 
     @GetMapping("/{id}/resolucoes")
-    public ResponseEntity<List<Resolucao>> listarResolucoes(@PathVariable Long id) {
-        return ResponseEntity.ok(questaoService.listarResolucoes(id));
+    public ResponseEntity<List<ResolucaoResponse>> listarResolucoes(@PathVariable Long id) {
+        List<ResolucaoResponse> resolucoes = questaoService.listarResolucoes(id).stream()
+                .map(ResolucaoResponse::fromEntity)
+                .toList();
+        return ResponseEntity.ok(resolucoes);
     }
 
     @PostMapping("/{id}/resolucoes")
-    public ResponseEntity<Resolucao> criarResolucao(@PathVariable Long id, @RequestBody Resolucao resolucao) {
+    public ResponseEntity<ResolucaoResponse> criarResolucao(@PathVariable Long id, @RequestBody Resolucao resolucao) {
         Resolucao salva = questaoService.salvarResolucao(id, resolucao);
-        return ResponseEntity.status(HttpStatus.CREATED).body(salva);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ResolucaoResponse.fromEntity(salva));
     }
 
     // Retorna a sugestão/rascunho de questão gerado pela IA em JSON
@@ -106,7 +160,7 @@ public class QuestaoRestController extends BaseRestController<Questao, Long> {
             ObjectMapper mapper = new ObjectMapper();
             Questao questao = mapper.readValue(jsonResposta, Questao.class);
             Questao salva = questaoService.validarQuestao(questao);
-            return ResponseEntity.status(HttpStatus.CREATED).body(salva);
+            return ResponseEntity.status(HttpStatus.CREATED).body(QuestaoResponse.fromEntity(salva));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("erro", "Erro ao processar e salvar a questão gerada pela IA: " + e.getMessage()));
@@ -181,8 +235,11 @@ public class QuestaoRestController extends BaseRestController<Questao, Long> {
 
     // GET público — qualquer pessoa pode ler os comentários
     @GetMapping("/resolucoes/{resolucaoId}/comentarios")
-    public ResponseEntity<List<Comentario>> listarComentarios(@PathVariable Long resolucaoId) {
-        return ResponseEntity.ok(comentarioService.listarPorResolucao(resolucaoId));
+    public ResponseEntity<List<ComentarioResponse>> listarComentarios(@PathVariable Long resolucaoId) {
+        List<ComentarioResponse> comentarios = comentarioService.listarPorResolucao(resolucaoId).stream()
+                .map(ComentarioResponse::fromEntity)
+                .toList();
+        return ResponseEntity.ok(comentarios);
     }
 
     // POST autenticado — apenas usuários logados podem comentar
@@ -191,7 +248,7 @@ public class QuestaoRestController extends BaseRestController<Questao, Long> {
                                              @RequestBody Comentario comentario) {
         try {
             Comentario salvo = comentarioService.salvarComentario(resolucaoId, comentario);
-            return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ComentarioResponse.fromEntity(salvo));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("erro", e.getMessage()));
         } catch (IllegalStateException e) {

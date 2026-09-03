@@ -1,6 +1,7 @@
 package br.com.joaomu.controller;
 
 import org.springframework.web.bind.annotation.*;
+import br.com.joaomu.dto.UsuarioResponse;
 import br.com.joaomu.entity.Usuario;
 import br.com.joaomu.service.UsuarioService;
 import br.com.joaomu.service.integration.UploadService;
@@ -10,13 +11,12 @@ import org.springframework.http.ResponseEntity;
 
 @RestController
 @RequestMapping("/usuarios")
-public class UsuarioRestController extends BaseRestController<Usuario, Long> {
+public class UsuarioRestController {
 
     private final UploadService uploadService;
     private final UsuarioService usuarioService;
 
     public UsuarioRestController(UsuarioService usuarioService, UploadService uploadService) {
-        super(usuarioService);
         this.usuarioService = usuarioService;
         this.uploadService = uploadService;
     }
@@ -25,9 +25,8 @@ public class UsuarioRestController extends BaseRestController<Usuario, Long> {
     // já que existe a mutação da entidade de negócio, e a entidade
     // Midia não tem um atributo público que recebe a referência
     // para o User.
-
     @PostMapping("/me/avatar")
-    public ResponseEntity<Usuario> uploadAvatar(
+    public ResponseEntity<UsuarioResponse> uploadAvatar(
             @RequestParam("file") MultipartFile file,
             Authentication authentication) {
         String username = authentication.getName();
@@ -35,8 +34,18 @@ public class UsuarioRestController extends BaseRestController<Usuario, Long> {
 
         Usuario usuario = usuarioService.buscarPorUsername(username);
         usuario.setAvatar(caminhoAvatar);
-        Usuario usuarioAtualizado = service.salvar(usuario);
+        Usuario usuarioAtualizado = usuarioService.salvar(usuario);
 
-        return ResponseEntity.ok(usuarioAtualizado);
+        UsuarioResponse response = new UsuarioResponse(
+                usuarioAtualizado.getId(),
+                usuarioAtualizado.getUsername(),
+                usuarioAtualizado.getNome(),
+                usuarioAtualizado.getEmail(),
+                usuarioAtualizado.getAvatar(),
+                usuarioAtualizado.getPontos(),
+                usuarioAtualizado.isEspecialista(),
+                usuarioAtualizado.isAdministrador());
+
+        return ResponseEntity.ok(response);
     }
 }
