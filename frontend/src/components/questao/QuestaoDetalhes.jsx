@@ -175,45 +175,47 @@ function QuestaoDetalhes() {
                 Separar o "Voltar" dos badges evita que a barra fique
                 poluída numa única linha e melhora a hierarquia visual.
             ──────────────────────────────────────────────────────── */}
-            <div className="flex-shrink-0 bg-white dark:bg-[#161e2e] border-b border-slate-200 dark:border-slate-800 px-5 pt-3 pb-2 space-y-2 transition-colors">
-                {/* Linha 1: Voltar */}
-                <div>
-                    <button
-                        className="flex items-center gap-1.5 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer"
-                        onClick={() => navigate('/')}
-                        aria-label="Voltar para o Dashboard"
-                    >
-                        <ArrowLeft size={16} /> Voltar
-                    </button>
-                </div>
+            <div className="flex-shrink-0 bg-white dark:bg-[#161e2e] border-b border-slate-200 dark:border-slate-800 px-6 py-3.5 transition-colors">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    {/* Botão Voltar */}
+                    <div>
+                        <button
+                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                            onClick={() => navigate('/')}
+                            aria-label="Voltar para o Dashboard"
+                        >
+                            <ArrowLeft size={16} /> Voltar para Questões
+                        </button>
+                    </div>
 
-                {/* Linha 2: badges (matéria · assunto · dificuldade · status) */}
-                <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900/60 px-2.5 py-1 rounded-md">
-                        {questao?.materia}
-                    </span>
-                    {questao?.assunto && (
-                        <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/40 px-2.5 py-1 rounded-md border border-slate-200/80 dark:border-slate-700/60">
-                            {questao.assunto}
+                    {/* Badges de contexto (matéria · assunto · dificuldade · status) */}
+                    <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-900/60 px-2.5 py-1 rounded-md">
+                            {questao?.materia}
                         </span>
-                    )}
-                    <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded border ${badgesDificuldade}`}>
-                        {textoDificuldade}
-                    </span>
-                    {questao?.solucionada ? (
-                        <span className="flex items-center gap-1 text-xs font-bold text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/40 px-2.5 py-1 rounded-full">
-                            <CheckCircle size={12} /> Solucionada
+                        {questao?.assunto && (
+                            <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/40 px-2.5 py-1 rounded-md border border-slate-200/80 dark:border-slate-700/60">
+                                {questao.assunto}
+                            </span>
+                        )}
+                        <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded border ${badgesDificuldade}`}>
+                            {textoDificuldade}
                         </span>
-                    ) : (
-                        <span className="flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 px-2.5 py-1 rounded-full">
-                            <Clock size={12} /> Pendente
-                        </span>
-                    )}
+                        {questao?.solucionada ? (
+                            <span className="flex items-center gap-1 text-xs font-bold text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/40 px-2.5 py-1 rounded-full">
+                                <CheckCircle size={12} /> Solucionada
+                            </span>
+                        ) : (
+                            <span className="flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 px-2.5 py-1 rounded-full">
+                                <Clock size={12} /> Pendente
+                            </span>
+                        )}
+                    </div>
                 </div>
             </div>
 
             {error && (
-                <div className="mx-5 mt-3 p-3 rounded-lg bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 text-sm border border-red-200 dark:border-red-900/40">
+                <div className="mx-6 mt-4 p-3 rounded-xl bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 text-sm border border-red-200 dark:border-red-900/40">
                     {error}
                 </div>
             )}
@@ -228,25 +230,27 @@ function QuestaoDetalhes() {
                     role="main"
                     aria-label="Enunciado da questão e resoluções"
                 >
-                    <div className="p-6 space-y-5">
-                        {/* Autor — linha abaixo dos badges, dentro do painel */}
-                        <div className="flex items-center gap-3">
-                            <UsuarioAvatar usuario={questao?.autor} size="md" />
-                            <div>
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">
-                                        Criado por: <span className="text-slate-800 dark:text-slate-200">{questao?.autor?.nome || questao?.autor?.username || 'Anônimo'}</span>
-                                    </span>
-                                    <Role usuario={questao?.autor} />
+                    <div className="p-6 space-y-6">
+                        {/* Card da Questão */}
+                        <div className="bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/60 rounded-2xl p-6 shadow-sm dark:shadow-black/20 space-y-5 transition-colors">
+                            {/* Autor — linha abaixo dos badges, dentro do painel */}
+                            <div className="flex items-center gap-3">
+                                <UsuarioAvatar usuario={questao?.autor} size="md" />
+                                <div>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">
+                                            Criado por: <span className="text-slate-800 dark:text-slate-200">{questao?.autor?.nome || questao?.autor?.username || 'Anônimo'}</span>
+                                        </span>
+                                        <Role usuario={questao?.autor} />
+                                    </div>
+                                    {questao?.dataInsercao && <DataFormatada data={questao.dataInsercao} />}
                                 </div>
-                                {questao?.dataInsercao && <DataFormatada data={questao.dataInsercao} />}
                             </div>
-                        </div>
 
-                        {/* Enunciado */}
-                        <div className="text-slate-800 dark:text-slate-100 leading-relaxed text-base whitespace-pre-wrap">
-                            {renderizarTextoMath(questao?.enunciado)}
-                        </div>
+                            {/* Enunciado */}
+                            <div className="text-slate-800 dark:text-slate-100 leading-relaxed text-base whitespace-pre-wrap pt-2 border-t border-slate-100 dark:border-slate-700/60">
+                                {renderizarTextoMath(questao?.enunciado)}
+                            </div>
 
                         {/* Imagem */}
                         {questao?.imagemUrl && (
@@ -296,9 +300,12 @@ function QuestaoDetalhes() {
                                 </button>
                             )}
                         </div>
+                        {/* Fim das Ações */}
+                    </div>
+                    {/* Fim do Card da Questão */}
 
-                        {/* Divider + Resoluções */}
-                        <div className="border-t border-slate-100 dark:border-slate-700/60 pt-4">
+                    {/* Divider + Resoluções */}
+                        <div className="bg-white dark:bg-slate-800/90 border border-slate-200/80 dark:border-slate-700/60 rounded-2xl p-6 shadow-sm dark:shadow-black/20 transition-colors">
                             <h3 className="text-slate-700 dark:text-slate-200 text-base font-bold mb-3" id="resolucoes-titulo">
                                 Resoluções ({resolucoes.length})
                             </h3>

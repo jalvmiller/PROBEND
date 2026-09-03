@@ -1,3 +1,4 @@
+import { Trash2 } from "lucide-react";
 import { questaoService } from "../../services/questaoService";
 import { useToastContext } from "../../contexts/ToastContext";
 
@@ -25,10 +26,12 @@ function BotaoExcluir({ idQuestao, aoExcluirSucesso }) {
     return (
         <button
             onClick={handleDeletar}
-            className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-full transition-colors group cursor-pointer"
+            className="flex items-center gap-1 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 px-3 py-2 rounded-lg text-xs font-bold border border-red-200 dark:border-red-900/40 transition-colors cursor-pointer"
             title="Excluir Questão"
+            aria-label="Excluir Questão"
         >
-            Excluir Questão
+            <Trash2 size={14} />
+            Excluir
         </button>
     );
 }
