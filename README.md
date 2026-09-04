@@ -60,18 +60,33 @@ Após subir via docker compose, utilize os links abaixo para acessar as interfac
 
 ### 🔧 Passos para Executar (pré-requisitos: Docker e **Docker Compose** instalados);
 
-### 
+#### ⚡ 1. Modo Híbrido (Recomendado para Desenvolvimento Local)
+Neste modo, o Docker gerencia apenas bancos e mensageria em segundo plano, enquanto Backend e Frontend rodam diretamente no host com **Live Reload** e depuração instantânea:
+
 ```bash
-# 1. Clone o repositório
-git clone [https://github.com/joaomu/probend.git](https://github.com/joaomu/probend.git)
+# 1. Copie o arquivo de variáveis de ambiente
+cp .env.example .env
 
-# 2. Acesse o diretório do projeto
-cd probend
-
-# 3. Suba o ecossistema completo de containers
+# 2. Suba apenas a infraestrutura (MySQL, Redis, RabbitMQ, MinIO, Mailpit)
 docker compose up -d
+# (ou explicitamente: docker compose --profile infra up -d)
 
+# 3. Em um terminal, inicie o Backend (Spring Boot com profile 'dev'):
+cd backend
+./mvnw spring-boot:run
+
+# 4. Em outro terminal, inicie o Frontend (React + Vite):
+cd frontend
+npm run dev
 ```
+
+#### 🐳 2. Modo Full Stack / Produção (EC2 ou Teste Completo em Contêineres)
+Para subir todos os serviços encapsulados em contêineres Docker (incluindo build do backend e frontend):
+
+```bash
+docker compose --profile full up -d --build
+```
+*(caso esteja no EC2, basta definir `COMPOSE_PROFILES=full` no arquivo `.env` para rodar diretamente com `docker compose up -d`).*
 ### 📁 Estrutura de Diretórios
 ```text
 PROBEND/
