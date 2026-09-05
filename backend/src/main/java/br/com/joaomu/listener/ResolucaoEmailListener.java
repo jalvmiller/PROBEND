@@ -6,7 +6,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import br.com.joaomu.config.RabbitMQConfig;
-import br.com.joaomu.dto.ResolucaoEmailEvent;
+import br.com.joaomu.dto.event.ResolucaoEmailEvent;
 import br.com.joaomu.service.integration.NotificacaoService;
 
 @Component

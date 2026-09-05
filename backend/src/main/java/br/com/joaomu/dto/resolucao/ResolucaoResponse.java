@@ -1,5 +1,6 @@
-package br.com.joaomu.dto.entity;
+package br.com.joaomu.dto.resolucao;
 
+import br.com.joaomu.dto.auth.AutorResumoResponse;
 import br.com.joaomu.entity.Resolucao;
 import java.time.LocalDateTime;
 

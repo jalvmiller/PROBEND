@@ -1,9 +1,11 @@
 package br.com.joaomu.controller;
 
-import br.com.joaomu.dto.entity.QuestaoResponse;
+import br.com.joaomu.dto.questao.QuestaoResponse;
+import br.com.joaomu.dto.questao.QuestaoRequest;
 import br.com.joaomu.entity.Questao;
 import br.com.joaomu.service.QuestaoService;
 import br.com.joaomu.service.UpvoteService;
+import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,15 +62,15 @@ public class QuestaoRestController {
     }
 
     @PostMapping
-    public ResponseEntity<QuestaoResponse> criar(@RequestBody Questao entity) {
-        Questao salva = questaoService.salvar(entity);
+    public ResponseEntity<QuestaoResponse> criar(@Valid @RequestBody QuestaoRequest dto) {
+        Questao salva = questaoService.salvar(dto.toEntity());
         return ResponseEntity.status(HttpStatus.CREATED).body(QuestaoResponse.fromEntity(salva));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody Questao entity) {
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @Valid @RequestBody QuestaoRequest dto) {
         try {
-            Questao atualizada = questaoService.atualizar(id, entity);
+            Questao atualizada = questaoService.atualizar(id, dto.toEntity());
             return ResponseEntity.ok(QuestaoResponse.fromEntity(atualizada));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());

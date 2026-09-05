@@ -1,10 +1,13 @@
 package br.com.joaomu.controller;
 
-import br.com.joaomu.dto.entity.QuestaoResponse;
+import br.com.joaomu.dto.questao.QuestaoResponse;
+import br.com.joaomu.dto.questao.IaCriarRequest;
+import br.com.joaomu.dto.questao.IaSugerirRequest;
 import br.com.joaomu.entity.Questao;
 import br.com.joaomu.service.QuestaoService;
 import br.com.joaomu.service.integration.GeminiService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +30,9 @@ public class IaQuestaoRestController {
     // Retorna a sugestão/rascunho de questão gerado pela IA em JSON
     // (não-persistente)
     @PostMapping("/ia-sugerir")
-    public ResponseEntity<String> iaSugerir(@RequestBody Map<String, String> body) {
-        String prompt = body.get("prompt");
-        String rascunhoEnunciado = body.get("rascunhoEnunciado");
+    public ResponseEntity<String> iaSugerir(@Valid @RequestBody IaSugerirRequest dto) {
+        String prompt = dto.prompt();
+        String rascunhoEnunciado = dto.rascunhoEnunciado() != null ? dto.rascunhoEnunciado() : "";
         String jsonResposta = geminiService.gerarSugestaoQuestao(prompt, rascunhoEnunciado);
         return ResponseEntity.ok()
                 .header("Content-Type", "application/json")
@@ -39,8 +42,8 @@ public class IaQuestaoRestController {
     // Gera e salva uma nova questão no banco a partir da ideia fornecida pela IA
     // (persistente)
     @PostMapping("/ia-criar-total")
-    public ResponseEntity<?> iaCriarTotal(@RequestBody Map<String, String> body) {
-        String prompt = body.get("prompt");
+    public ResponseEntity<?> iaCriarTotal(@Valid @RequestBody IaCriarRequest dto) {
+        String prompt = dto.prompt();
         String jsonResposta = geminiService.gerarSugestaoQuestao(prompt, "");
         try {
             // Mapper é usado pra converter JSON em objeto Java,

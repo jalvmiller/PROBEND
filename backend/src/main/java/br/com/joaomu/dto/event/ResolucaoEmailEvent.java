@@ -1,4 +1,4 @@
-package br.com.joaomu.dto;
+package br.com.joaomu.dto.event;
 
 import java.io.Serializable;
 

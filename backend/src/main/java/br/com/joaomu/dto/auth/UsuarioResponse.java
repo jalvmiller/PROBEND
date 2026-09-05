@@ -1,4 +1,4 @@
-package br.com.joaomu.dto;
+package br.com.joaomu.dto.auth;
 
 /**
  * DTO de saída para dados de usuário.

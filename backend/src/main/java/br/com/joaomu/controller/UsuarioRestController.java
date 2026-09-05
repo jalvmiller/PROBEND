@@ -1,7 +1,7 @@
 package br.com.joaomu.controller;
 
 import org.springframework.web.bind.annotation.*;
-import br.com.joaomu.dto.UsuarioResponse;
+import br.com.joaomu.dto.auth.UsuarioResponse;
 import br.com.joaomu.entity.Usuario;
 import br.com.joaomu.service.UsuarioService;
 import br.com.joaomu.service.integration.UploadService;

@@ -1,13 +1,14 @@
 package br.com.joaomu.controller;
 
-import br.com.joaomu.dto.AuthResponse;
-import br.com.joaomu.dto.LoginRequest;
-import br.com.joaomu.dto.RegisterRequest;
-import br.com.joaomu.dto.UsuarioResponse;
+import br.com.joaomu.dto.auth.AuthResponse;
+import br.com.joaomu.dto.auth.LoginRequest;
+import br.com.joaomu.dto.auth.RegisterRequest;
+import br.com.joaomu.dto.auth.UsuarioResponse;
 import br.com.joaomu.entity.Usuario;
 import br.com.joaomu.repository.UsuarioRepository;
 import br.com.joaomu.security.JwtUtil;
 import br.com.joaomu.security.TokenBlacklistService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -46,7 +47,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         // Validação de campos obrigatórios
         if (request.username() == null || request.username().isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -97,7 +98,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         // Valida as credenciais enviadas contra o usuário padrão
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password()));

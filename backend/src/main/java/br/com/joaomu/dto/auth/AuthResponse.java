@@ -1,4 +1,4 @@
-package br.com.joaomu.dto;
+package br.com.joaomu.dto.auth;
 
 public record AuthResponse(String token) {
     

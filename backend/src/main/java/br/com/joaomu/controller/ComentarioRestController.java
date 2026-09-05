@@ -1,8 +1,10 @@
 package br.com.joaomu.controller;
 
-import br.com.joaomu.dto.entity.ComentarioResponse;
+import br.com.joaomu.dto.comentario.ComentarioResponse;
+import br.com.joaomu.dto.comentario.ComentarioRequest;
 import br.com.joaomu.entity.Comentario;
 import br.com.joaomu.service.ComentarioService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,9 +40,9 @@ public class ComentarioRestController {
     // POST autenticado — apenas usuários logados podem comentar
     @PostMapping("/resolucoes/{resolucaoId}/comentarios")
     public ResponseEntity<?> criarComentario(@PathVariable Long resolucaoId,
-                                             @RequestBody Comentario comentario) {
+                                             @Valid @RequestBody ComentarioRequest dto) {
         try {
-            Comentario salvo = comentarioService.salvarComentario(resolucaoId, comentario);
+            Comentario salvo = comentarioService.salvarComentario(resolucaoId, dto.toEntity());
             return ResponseEntity.status(HttpStatus.CREATED).body(ComentarioResponse.fromEntity(salvo));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("erro", e.getMessage()));

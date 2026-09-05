@@ -1,4 +1,4 @@
-package br.com.joaomu.dto.entity;
+package br.com.joaomu.dto.auth;
 
 import br.com.joaomu.entity.Usuario;
 

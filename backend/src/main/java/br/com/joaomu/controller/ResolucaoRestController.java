@@ -1,9 +1,11 @@
 package br.com.joaomu.controller;
 
-import br.com.joaomu.dto.entity.ResolucaoResponse;
+import br.com.joaomu.dto.resolucao.ResolucaoResponse;
+import br.com.joaomu.dto.resolucao.ResolucaoCreateRequest;
 import br.com.joaomu.entity.Resolucao;
 import br.com.joaomu.service.QuestaoService;
 import br.com.joaomu.service.UpvoteService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +36,8 @@ public class ResolucaoRestController {
     }
 
     @PostMapping("/{id}/resolucoes")
-    public ResponseEntity<ResolucaoResponse> criarResolucao(@PathVariable Long id, @RequestBody Resolucao resolucao) {
-        Resolucao salva = questaoService.salvarResolucao(id, resolucao);
+    public ResponseEntity<ResolucaoResponse> criarResolucao(@PathVariable Long id, @Valid @RequestBody ResolucaoCreateRequest dto) {
+        Resolucao salva = questaoService.salvarResolucao(id, dto.toEntity());
         return ResponseEntity.status(HttpStatus.CREATED).body(ResolucaoResponse.fromEntity(salva));
     }
 

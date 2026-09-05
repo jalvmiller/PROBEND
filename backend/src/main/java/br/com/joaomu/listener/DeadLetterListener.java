@@ -6,7 +6,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 import br.com.joaomu.config.RabbitMQConfig;
-import br.com.joaomu.dto.ResolucaoEmailEvent;
+import br.com.joaomu.dto.event.ResolucaoEmailEvent;
 
 // Listener da Dead Letter Queue (DLQ),
 // consome mensagens que falharam após todas as tentativas de retry na fila principal
