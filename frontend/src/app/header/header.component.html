@@ -6,19 +6,26 @@
 
   <nav class="links">
     @if (authService.isAuthenticated()) {
-      <a routerLink="/" class="nav-link">Feed de Questões</a>
+      <a routerLink="/" class="nav-link" routerLinkActive="nav-link-active" [routerLinkActiveOptions]="{ exact: true }">Feed de Questões</a>
       
-      <div class="user-pill">
-        <span class="user-avatar-badge">{{ (authService.currentUser()?.nome || authService.currentUser()?.username || 'U')[0].toUpperCase() }}</span>
-        <span class="user-name">{{ authService.currentUser()?.nome || authService.currentUser()?.username }}</span>
-        @if (authService.currentUser()?.pontos !== undefined) {
-          <span class="user-pts">{{ authService.currentUser()?.pontos }} pts</span>
-        }
-      </div>
+      <a routerLink="/questoes/nova" class="btn-nova-questao">
+        <span>+ Nova Questão</span>
+      </a>
+
+      <a routerLink="/configuracoes" class="user-pill-link" title="Configurações e Perfil">
+        <div class="user-pill">
+          <span class="user-avatar-badge">{{ (authService.currentUser()?.nome || authService.currentUser()?.username || 'U')[0].toUpperCase() }}</span>
+          <span class="user-name">{{ authService.currentUser()?.nome || authService.currentUser()?.username }}</span>
+          @if (authService.currentUser()?.pontos !== undefined) {
+            <span class="user-pts">{{ authService.currentUser()?.pontos }} pts</span>
+          }
+        </div>
+      </a>
 
       <button type="button" class="btn-logout" (click)="logout()">Sair</button>
     } @else {
       <a routerLink="/login" class="nav-link link-login">Acessar Conta</a>
+      <a routerLink="/register" class="btn-nova-questao">Criar Conta</a>
     }
   </nav>
 </header>

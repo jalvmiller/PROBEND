@@ -2,7 +2,7 @@ import { Directive, ElementRef, Input, OnChanges, SimpleChanges } from '@angular
 import katex from 'katex';
 
 /**
- * Diretiva [appKatex] — Superpoder anexado a qualquer tag HTML para
+ * Diretiva [appKatex]: Superpoder anexado a qualquer tag HTML para
  * converter texto com sintaxe LaTeX ($...$ ou $$...$$) em fórmulas matemáticas.
  */
 @Directive({
@@ -30,30 +30,31 @@ export class KatexDirective implements OnChanges {
     }
 
     try {
-      let textoProcessado = this.content;
+      let texto = this.content;
 
-      // 1. Converte fórmulas em bloco: $$ fórmula $$
-      textoProcessado = textoProcessado.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
-        try {
-          return katex.renderToString(math.trim(), { displayMode: true, throwOnError: false });
-        } catch {
-          return math;
-        }
-      });
+      // 1. Converte fórmulas em bloco: $$...$$ e \[...\]
+      texto = texto.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => this.renderKaTeX(math.trim(), true));
+      texto = texto.replace(/\\\[([\s\S]+?)\\\]/g, (_, math) => this.renderKaTeX(math.trim(), true));
 
-      // 2. Converte fórmulas inline (na mesma linha): $ fórmula $
-      textoProcessado = textoProcessado.replace(/\$([^\$\n]+?)\$/g, (_, math) => {
-        try {
-          return katex.renderToString(math.trim(), { displayMode: false, throwOnError: false });
-        } catch {
-          return math;
-        }
-      });
+      // 2. Converte fórmulas inline: $...$ e \(...\)
+      texto = texto.replace(/\$([^\$\n]+?)\$/g, (_, math) => this.renderKaTeX(math.trim(), false));
+      texto = texto.replace(/\\\(([\s\S]+?)\\\)/g, (_, math) => this.renderKaTeX(math.trim(), false));
 
-      // Injeta o HTML resultante com as equações matemáticas formatadas
-      this.el.nativeElement.innerHTML = textoProcessado;
+      // Injeta o HTML resultante com as equações formatadas
+      this.el.nativeElement.innerHTML = texto;
     } catch {
       this.el.nativeElement.textContent = this.content;
+    }
+  }
+
+  private renderKaTeX(math: string, displayMode: boolean): string {
+    try {
+      return katex.renderToString(math, {
+        displayMode,
+        throwOnError: false
+      });
+    } catch {
+      return math;
     }
   }
 }
