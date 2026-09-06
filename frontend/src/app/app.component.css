@@ -3,6 +3,14 @@
   margin: 0 auto;
   padding: 1.5rem;
   min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Somente na tela de detalhes da questão, o layout permite expansão dinâmica até 95vw */
+.layout-app:has(app-questao-detalhes) {
+  max-width: 95vw;
+  width: 100%;
+  padding: 1.5rem 0.5rem;
 }
 
 .conteudo-principal {

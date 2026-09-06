@@ -1,13 +1,34 @@
-<div class="detalhes-container">
-  <!-- Botão de Voltar ao Feed -->
+<div class="detalhes-container" [class.expandido-95]="janelasModificadas()">
+  <!-- Navegação de topo com contexto da questão -->
   <div class="navegacao-topo">
-    <a routerLink="/" class="link-voltar">← Voltar para o repositório</a>
+    <div class="linha-voltar">
+      <a routerLink="/" class="link-voltar">Voltar para o repositório</a>
+    </div>
+
+    @if (questao(); as q) {
+      <div class="badges-row tags-esquerda">
+        <span class="badge" [ngClass]="getDificuldadeClasse(q.dificuldade)">
+          {{ getDificuldadeTexto(q.dificuldade) }}
+        </span>
+        @if (q.materia) {
+          <span class="badge badge-tag">{{ q.materia }}</span>
+        }
+        @if (q.assunto) {
+          <span class="badge badge-tag badge-assunto-tag">{{ q.assunto }}</span>
+        }
+        @if (q.solucionada) {
+          <span class="badge-solucionada-mini" title="Questão solucionada">Solucionada</span>
+        } @else {
+          <span class="badge-pendente-mini" title="Questão pendente de solução">Pendente</span>
+        }
+      </div>
+    }
   </div>
 
   @if (loading()) {
     <div class="estado-carregando">
       <span class="simbolo-loading">∫</span>
-      <p>Carregando demonstração da questão...</p>
+      <p>Carregando demonstração técnica da questão...</p>
     </div>
   } @else if (erro()) {
     <div class="estado-erro">
@@ -15,92 +36,403 @@
       <a routerLink="/" class="btn-erro">Voltar ao início</a>
     </div>
   } @else if (questao(); as q) {
-    <div class="layout-duplo">
-      <!-- Coluna da Esquerda: O Enunciado do Problema -->
-      <section class="secao-problema">
-        <div class="cabecalho-questao">
-          <div class="badges-row">
-            <span class="badge" [ngClass]="'badge-' + q.dificuldade.toLowerCase()">
-              {{ q.dificuldade }}
-            </span>
-            @if (q.tags) {
-              @for (tag of getTagsArray(q.tags); track tag) {
-                <span class="badge badge-tag">#{{ tag }}</span>
-              }
-            }
-          </div>
+    <div class="split-container" #splitContainer [class.resizing]="isResizing()">
+      <!-- Coluna da Esquerda: Enunciado e Resoluções da Comunidade -->
+      <section 
+        class="secao-problema" 
+        [style.width.%]="leftWidthPct()"
+        [style.flex-basis.%]="leftWidthPct()"
+      >
+        <article class="card-enunciado resizable-window" #janelaEnunciado>
+          <!-- Área interna rolável desacoplada do frame da janela -->
+          <div class="janela-conteudo-scroll">
+            <!-- Título com renderização KaTeX -->
+            <h1 class="titulo-problema" [appKatex]="q.titulo || ('Problema de ' + q.materia + (q.assunto ? ' · ' + q.assunto : ''))"></h1>
 
-          <!-- Título com renderização KaTeX -->
-          <h1 class="titulo-problema" [appKatex]="q.titulo"></h1>
-
-          <div class="meta-autor">
-            <span>Postado por <strong>{{ q.autor?.nome || 'Anônimo' }}</strong></span>
-            <span>•</span>
-            <button (click)="darUpvote()" class="btn-upvote">
-              ▲ Upvote ({{ q.upvotesCount || 0 }})
-            </button>
-          </div>
-        </div>
-
-        <!-- Enunciado com fórmulas matemáticas processadas pela diretiva [appKatex] -->
-        <div class="corpo-enunciado" [appKatex]="q.enunciado"></div>
-
-        @if (q.imagemUrl) {
-          <div class="container-imagem">
-            <img [src]="q.imagemUrl" alt="Diagrama da questão" class="imagem-problema" />
-          </div>
-        }
-      </section>
-
-      <!-- Coluna da Direita: Painel de Resoluções & Envio -->
-      <section class="secao-resolucoes">
-        <!-- Caixa de Envio de Nova Resolução -->
-        <div class="card-formulario">
-          <h2 class="subtitulo">Submeter Demonstração / Resolução</h2>
-          <p class="instrucao">Use fórmulas em LaTeX com $...$ para linha ou $$...$$ para bloco.</p>
-
-          <textarea 
-            [ngModel]="novaResolucao()"
-            (ngModelChange)="novaResolucao.set($event)"
-            rows="5" 
-            placeholder="Ex: Pelo Teorema Fundamental do Cálculo, temos: $$\int_a^b f'(x) dx = f(b) - f(a)$$"
-            class="textarea-resolucao"
-          ></textarea>
-
-          <!-- Live Preview com KaTeX enquanto o usuário digita -->
-          @if (novaResolucao()) {
-            <div class="caixa-preview">
-              <span class="preview-tag">PRÉVIA MATEMÁTICA EM TEMPO REAL</span>
-              <div [appKatex]="novaResolucao()"></div>
-            </div>
-          }
-
-          <button class="btn btn-primary" [disabled]="!novaResolucao() || submetendo()">
-            Publicar Resolução
-          </button>
-        </div>
-
-        <!-- Lista de Resoluções da Comunidade -->
-        <div class="lista-resolucoes">
-          <h2 class="subtitulo">Resoluções Publicadas ({{ q.resolucoes?.length || 0 }})</h2>
-
-          @if (!q.resolucoes || q.resolucoes.length === 0) {
-            <div class="sem-resolucoes">
-              <p>Nenhuma resolução publicada ainda. Seja o primeiro a demonstrar!</p>
-            </div>
-          } @else {
-            @for (res of q.resolucoes; track res.id) {
-              <article class="card-resolucao">
-                <div class="res-topo">
-                  <span class="res-autor">{{ res.autor?.nome || 'Membro do Lab' }}</span>
-                  <span class="res-upvotes">▲ {{ res.upvotesCount || 0 }}</span>
+            <!-- Metadados do Autor e Ações -->
+            <div class="meta-autor-linha">
+              <div class="autor-info">
+                <span class="avatar-circulo">{{ (q.autor?.nome || q.autor?.username || 'A')[0].toUpperCase() }}</span>
+                <div class="autor-detalhes">
+                  <span class="autor-nome">Por <strong>{{ q.autor?.nome || q.autor?.username || 'Anônimo' }}</strong></span>
+                  @if (q.dataInsercao) {
+                    <span class="data-post">{{ q.dataInsercao | date:'dd/MM/yyyy' }}</span>
+                  }
                 </div>
-                <div class="res-conteudo" [appKatex]="res.conteudo"></div>
-              </article>
+              </div>
+
+              <div class="acoes-topo">
+                <button 
+                  type="button"
+                  (click)="darUpvoteQuestao()" 
+                  class="btn-upvote"
+                  [class.ativo]="isUpvotedQuestao()"
+                  title="Curtir questão"
+                >
+                  {{ upvotesCount() }} Upvotes
+                </button>
+
+                @if (isAutor()) {
+                  <button 
+                    type="button" 
+                    (click)="alternarStatusSolucionada()" 
+                    class="btn-status"
+                    [class.btn-status-desmarcar]="q.solucionada"
+                  >
+                    {{ q.solucionada ? 'Desmarcar Solucionada' : 'Marcar como Solucionada' }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Tags -->
+            @if (q.tags && q.tags.length > 0) {
+              <div class="tags-container">
+                @for (tag of getTagsArray(q.tags); track tag) {
+                  <span class="tag-item">#{{ tag }}</span>
+                }
+              </div>
             }
-          }
-        </div>
+
+            <!-- Enunciado com renderização KaTeX -->
+            <div class="corpo-enunciado" [appKatex]="q.enunciado"></div>
+
+            <!-- Imagem / Diagrama da questão -->
+            @if (q.imagemUrl) {
+              <div class="container-imagem">
+                <img [src]="q.imagemUrl" alt="Diagrama da questão" class="imagem-problema" />
+              </div>
+            }
+
+            <!-- Trecho de código (se houver) -->
+            @if (q.trechoCodigo) {
+              <div class="bloco-codigo">
+                <div class="codigo-topo">
+                  <span>{{ q.linguagemCodigo || 'Código' }}</span>
+                </div>
+                <pre class="codigo-conteudo"><code>{{ q.trechoCodigo }}</code></pre>
+              </div>
+            }
+
+            <!-- Fonte da questão -->
+            @if (q.fonte) {
+              <div class="fonte-info">
+                <span>Fonte: {{ q.fonte }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Vértices de Redimensionamento fixados no frame exterior da janela -->
+          <div class="vertex-handle vertex-br" 
+               (mousedown)="iniciarResizeJanela($event, 'br', janelaEnunciado)" 
+               (touchstart)="iniciarResizeJanela($event, 'br', janelaEnunciado)"
+               (dblclick)="resetarJanela(janelaEnunciado)"
+               title="Arraste o vértice para redimensionar (duplo clique para resetar)">
+            <svg class="vertex-grip-icon" viewBox="0 0 10 10">
+              <path d="M9 1L1 9M9 5L5 9M9 9L9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="vertex-handle vertex-bl" 
+               (mousedown)="iniciarResizeJanela($event, 'bl', janelaEnunciado)" 
+               (touchstart)="iniciarResizeJanela($event, 'bl', janelaEnunciado)"
+               (dblclick)="resetarJanela(janelaEnunciado)"
+               title="Arraste o vértice para redimensionar (duplo clique para resetar)"></div>
+          <div class="vertex-handle vertex-tr" 
+               (mousedown)="iniciarResizeJanela($event, 'tr', janelaEnunciado)" 
+               (touchstart)="iniciarResizeJanela($event, 'tr', janelaEnunciado)"
+               (dblclick)="resetarJanela(janelaEnunciado)"
+               title="Arraste o vértice para redimensionar (duplo clique para resetar)"></div>
+          <div class="vertex-handle vertex-tl" 
+               (mousedown)="iniciarResizeJanela($event, 'tl', janelaEnunciado)" 
+               (touchstart)="iniciarResizeJanela($event, 'tl', janelaEnunciado)"
+               (dblclick)="resetarJanela(janelaEnunciado)"
+               title="Arraste o vértice para redimensionar (duplo clique para resetar)"></div>
+          <div class="edge-handle edge-b" 
+               (mousedown)="iniciarResizeJanela($event, 'b', janelaEnunciado)" 
+               (touchstart)="iniciarResizeJanela($event, 'b', janelaEnunciado)"
+               (dblclick)="resetarJanela(janelaEnunciado)"
+               title="Arraste para ajustar altura"></div>
+          <div class="edge-handle edge-r" 
+               (mousedown)="iniciarResizeJanela($event, 'r', janelaEnunciado)" 
+               (touchstart)="iniciarResizeJanela($event, 'r', janelaEnunciado)"
+               (dblclick)="resetarJanela(janelaEnunciado)"
+               title="Arraste para ajustar largura"></div>
+          <div class="edge-handle edge-l" 
+               (mousedown)="iniciarResizeJanela($event, 'l', janelaEnunciado)" 
+               (touchstart)="iniciarResizeJanela($event, 'l', janelaEnunciado)"
+               (dblclick)="resetarJanela(janelaEnunciado)"
+               title="Arraste para ajustar largura"></div>
+          <div class="edge-handle edge-t" 
+               (mousedown)="iniciarResizeJanela($event, 't', janelaEnunciado)" 
+               (touchstart)="iniciarResizeJanela($event, 't', janelaEnunciado)"
+               (dblclick)="resetarJanela(janelaEnunciado)"
+               title="Arraste para ajustar altura"></div>
+        </article>
+
+        <!-- Bloco de Resoluções da Comunidade (Janela 2) -->
+        <section class="bloco-resolucoes-card resizable-window" #janelaResolucoes>
+          <!-- Área interna rolável desacoplada do frame da janela -->
+          <div class="janela-conteudo-scroll">
+            <div class="resolucoes-cabecalho">
+              <h2 class="subtitulo-secao">Resoluções da Comunidade ({{ resolucoes().length }})</h2>
+            </div>
+
+            @if (resolucoes().length === 0) {
+              <div class="sem-resolucoes">
+                <p>Nenhuma resolução submetida ainda. Seja o primeiro a compartilhar o passo a passo matemático!</p>
+              </div>
+            } @else {
+              <div class="lista-cards-resolucoes">
+                @for (res of resolucoes(); track res.id) {
+                  <article class="card-resolucao">
+                    <div class="res-topo">
+                      <div class="res-autor-detalhes">
+                        <span class="avatar-mini">{{ (res.autor?.nome || res.autor?.username || 'A')[0].toUpperCase() }}</span>
+                        <div class="res-nome-data">
+                          <span class="res-nome">{{ res.autor?.nome || res.autor?.username }}</span>
+                          @if (res.dataCriacao || res.criadoEm) {
+                            <span class="res-data">{{ (res.dataCriacao || res.criadoEm) | date:'dd/MM/yyyy HH:mm' }}</span>
+                          }
+                        </div>
+                      </div>
+
+                      <div class="res-acoes-botoes">
+                        <!-- Upvote na Resolução -->
+                        <button 
+                          type="button"
+                          (click)="darUpvoteResolucao(res)"
+                          class="btn-res-upvote"
+                          [class.ativo]="isResolucaoUpvoted(res.id)"
+                          title="Curtir resolução"
+                        >
+                          {{ res.upvotesCount ?? res.upvotes ?? 0 }}
+                        </button>
+
+                        <!-- Abrir Modal de Comentários -->
+                        <button 
+                          type="button"
+                          (click)="abrirModalComentarios(res)"
+                          class="btn-res-comentarios"
+                          title="Ver e adicionar comentários"
+                        >
+                          {{ res.qtdComentarios ?? res.comentarios?.length ?? 0 }} Comentários
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Conteúdo da Resolução com KaTeX -->
+                    <div class="res-corpo" [appKatex]="res.conteudo"></div>
+
+                    @if (res.trechoCodigo) {
+                      <div class="bloco-codigo">
+                        <pre class="codigo-conteudo"><code>{{ res.trechoCodigo }}</code></pre>
+                      </div>
+                    }
+                  </article>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Vértices de Redimensionamento fixados no frame exterior da janela -->
+          <div class="vertex-handle vertex-br" 
+               (mousedown)="iniciarResizeJanela($event, 'br', janelaResolucoes)" 
+               (touchstart)="iniciarResizeJanela($event, 'br', janelaResolucoes)"
+               (dblclick)="resetarJanela(janelaResolucoes)"
+               title="Arraste o vértice para redimensionar (duplo clique para resetar)">
+            <svg class="vertex-grip-icon" viewBox="0 0 10 10">
+              <path d="M9 1L1 9M9 5L5 9M9 9L9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="vertex-handle vertex-bl" 
+               (mousedown)="iniciarResizeJanela($event, 'bl', janelaResolucoes)" 
+               (touchstart)="iniciarResizeJanela($event, 'bl', janelaResolucoes)"
+               (dblclick)="resetarJanela(janelaResolucoes)"
+               title="Arraste o vértice para redimensionar (duplo clique para resetar)"></div>
+          <div class="vertex-handle vertex-tr" 
+               (mousedown)="iniciarResizeJanela($event, 'tr', janelaResolucoes)" 
+               (touchstart)="iniciarResizeJanela($event, 'tr', janelaResolucoes)"
+               (dblclick)="resetarJanela(janelaResolucoes)"
+               title="Arraste o vértice para redimensionar (duplo clique para resetar)"></div>
+          <div class="vertex-handle vertex-tl" 
+               (mousedown)="iniciarResizeJanela($event, 'tl', janelaResolucoes)" 
+               (touchstart)="iniciarResizeJanela($event, 'tl', janelaResolucoes)"
+               (dblclick)="resetarJanela(janelaResolucoes)"
+               title="Arraste o vértice para redimensionar (duplo clique para resetar)"></div>
+          <div class="edge-handle edge-b" 
+               (mousedown)="iniciarResizeJanela($event, 'b', janelaResolucoes)" 
+               (touchstart)="iniciarResizeJanela($event, 'b', janelaResolucoes)"
+               (dblclick)="resetarJanela(janelaResolucoes)"
+               title="Arraste para ajustar altura"></div>
+          <div class="edge-handle edge-r" 
+               (mousedown)="iniciarResizeJanela($event, 'r', janelaResolucoes)" 
+               (touchstart)="iniciarResizeJanela($event, 'r', janelaResolucoes)"
+               (dblclick)="resetarJanela(janelaResolucoes)"
+               title="Arraste para ajustar largura"></div>
+          <div class="edge-handle edge-l" 
+               (mousedown)="iniciarResizeJanela($event, 'l', janelaResolucoes)" 
+               (touchstart)="iniciarResizeJanela($event, 'l', janelaResolucoes)"
+               (dblclick)="resetarJanela(janelaResolucoes)"
+               title="Arraste para ajustar largura"></div>
+          <div class="edge-handle edge-t" 
+               (mousedown)="iniciarResizeJanela($event, 't', janelaResolucoes)" 
+               (touchstart)="iniciarResizeJanela($event, 't', janelaResolucoes)"
+               (dblclick)="resetarJanela(janelaResolucoes)"
+               title="Arraste para ajustar altura"></div>
+        </section>
       </section>
+
+      <!-- Divisor Arrastável Resizable -->
+      <div 
+        class="split-resizer" 
+        (mousedown)="iniciarArrasto($event)"
+        (touchstart)="iniciarArrastoTouch($event)"
+        role="separator" 
+        aria-orientation="vertical"
+        title="Arraste para redimensionar as janelas"
+      >
+        <div class="resizer-linha"></div>
+      </div>
+
+      <!-- Coluna da Direita: Formulário de Envio de Resolução com Live Preview -->
+      <aside class="secao-formulario-resolucao">
+        <div class="painel-envio-card resizable-window" #janelaEnvio>
+          <!-- Área interna rolável desacoplada do frame da janela -->
+          <div class="janela-conteudo-scroll">
+            <div class="envio-cabecalho">
+              <h2 class="subtitulo-envio">Submeter Resolução</h2>
+              <p class="instrucao-latex">
+                Suporta fórmulas em LaTeX: use <code>$fórmula$</code> para fórmulas na linha ou <code>$$fórmula$$</code> para equações em bloco.
+              </p>
+            </div>
+
+            @if (authService.isAuthenticated()) {
+              <div class="campo-edicao">
+                <textarea 
+                  [ngModel]="novaResolucao()"
+                  (ngModelChange)="novaResolucao.set($event)"
+                  rows="7" 
+                  placeholder="Explique os passos da demonstração matemática ou algoritmo...&#10;Ex: Seja a função $$f(x) = \lim_{n \to \infty} (1 + \frac{x}{n})^n = e^x$$..."
+                  class="textarea-resolucao"
+                ></textarea>
+              </div>
+
+              <!-- Live Preview do KaTeX em tempo real -->
+              @if (novaResolucao().trim()) {
+                <div class="caixa-live-preview">
+                  <span class="preview-badge">Prévia Matemática em Tempo Real</span>
+                  <div class="preview-conteudo" [appKatex]="novaResolucao()"></div>
+                </div>
+              }
+
+              <button 
+                type="button"
+                class="btn-publicar" 
+                [disabled]="!novaResolucao().trim() || submetendo()"
+                (click)="submeterResolucao()"
+              >
+                @if (submetendo()) {
+                  Publicando resolução...
+                } @else {
+                  Publicar Demonstração
+                }
+              </button>
+            } @else {
+              <div class="box-login-requerido">
+                <p>Você precisa estar autenticado para enviar uma demonstração ou resolução técnica.</p>
+                <a routerLink="/login" class="btn-ir-login">Fazer Login</a>
+              </div>
+            }
+          </div>
+
+          <!-- Vértices de Redimensionamento fixados no frame exterior da janela -->
+          <div class="vertex-handle vertex-br" 
+               (mousedown)="iniciarResizeJanela($event, 'br', janelaEnvio)" 
+               (touchstart)="iniciarResizeJanela($event, 'br', janelaEnvio)"
+               (dblclick)="resetarJanela(janelaEnvio)"
+               title="Arraste o vértice para redimensionar (duplo clique para resetar)">
+            <svg class="vertex-grip-icon" viewBox="0 0 10 10">
+              <path d="M9 1L1 9M9 5L5 9M9 9L9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="vertex-handle vertex-bl" 
+               (mousedown)="iniciarResizeJanela($event, 'bl', janelaEnvio)" 
+               (touchstart)="iniciarResizeJanela($event, 'bl', janelaEnvio)"
+               (dblclick)="resetarJanela(janelaEnvio)"
+               title="Arraste o vértice para redimensionar (duplo clique para resetar)"></div>
+          <div class="vertex-handle vertex-tr" 
+               (mousedown)="iniciarResizeJanela($event, 'tr', janelaEnvio)" 
+               (touchstart)="iniciarResizeJanela($event, 'tr', janelaEnvio)"
+               (dblclick)="resetarJanela(janelaEnvio)"
+               title="Arraste o vértice para redimensionar (duplo clique para resetar)"></div>
+          <div class="vertex-handle vertex-tl" 
+               (mousedown)="iniciarResizeJanela($event, 'tl', janelaEnvio)" 
+               (touchstart)="iniciarResizeJanela($event, 'tl', janelaEnvio)"
+               (dblclick)="resetarJanela(janelaEnvio)"
+               title="Arraste o vértice para redimensionar (duplo clique para resetar)"></div>
+          <div class="edge-handle edge-b" 
+               (mousedown)="iniciarResizeJanela($event, 'b', janelaEnvio)" 
+               (touchstart)="iniciarResizeJanela($event, 'b', janelaEnvio)"
+               (dblclick)="resetarJanela(janelaEnvio)"
+               title="Arraste para ajustar altura"></div>
+          <div class="edge-handle edge-r" 
+               (mousedown)="iniciarResizeJanela($event, 'r', janelaEnvio)" 
+               (touchstart)="iniciarResizeJanela($event, 'r', janelaEnvio)"
+               (dblclick)="resetarJanela(janelaEnvio)"
+               title="Arraste para ajustar largura"></div>
+          <div class="edge-handle edge-l" 
+               (mousedown)="iniciarResizeJanela($event, 'l', janelaEnvio)" 
+               (touchstart)="iniciarResizeJanela($event, 'l', janelaEnvio)"
+               (dblclick)="resetarJanela(janelaEnvio)"
+               title="Arraste para ajustar largura"></div>
+          <div class="edge-handle edge-t" 
+               (mousedown)="iniciarResizeJanela($event, 't', janelaEnvio)" 
+               (touchstart)="iniciarResizeJanela($event, 't', janelaEnvio)"
+               (dblclick)="resetarJanela(janelaEnvio)"
+               title="Arraste para ajustar altura"></div>
+        </div>
+      </aside>
     </div>
+  }
+
+  <!-- Alerta Flutuante de Rollback (Desfazer Alterações de Janela) na beirada inferior direita -->
+  @if (janelasModificadas()) {
+    <div class="alerta-rollback-container" role="alert">
+      <div 
+        class="alerta-rollback" 
+        (click)="desfazerAlteracoesJanelas()" 
+        role="button" 
+        tabindex="0"
+        title="Clique para desfazer alterações e restaurar as janelas ao padrão"
+      >
+        <div class="icone-rollback-wrapper">
+          <svg class="icone-rollback" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <polyline points="3 3 3 8 8 8"/>
+          </svg>
+        </div>
+        <div class="alerta-conteudo">
+          <span class="alerta-titulo">Desfazer alterações de Janela</span>
+          <span class="alerta-subtitulo">Restaurar layout e dimensões padrão</span>
+        </div>
+      </div>
+      <button 
+        type="button" 
+        class="btn-fechar-alerta-rollback" 
+        (click)="fecharAlertaRollback()" 
+        title="Ocultar aviso"
+      >
+        &times;
+      </button>
+    </div>
+  }
+
+  <!-- Modal de Comentários para uma Resolução -->
+  @if (modalResolucaoId(); as resId) {
+    <app-comentario-modal
+      [resolucaoId]="resId"
+      [nomeAutorResolucao]="modalAutorNome()"
+      (fechar)="fecharModalComentarios()"
+    ></app-comentario-modal>
   }
 </div>
