@@ -5,9 +5,9 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 /**
- * LoginComponent — Componente Standalone da tela de login
+ * LoginComponent: Componente Standalone da tela de login
  *
- * Comparativo React ➔ Angular:
+ * Comparativo React para Angular:
  * - Em React: Criávamos estados com `useState('user')` e fazíamos inputs manuais `onChange={(e) => setUsername(e.target.value)}`.
  * - Em Angular: Usamos **Reactive Forms** (`FormBuilder` / `FormGroup`). O controle de estado, validação síncrona
  *   e estado do formulário (`valid`, `touched`, `dirty`) são gerenciados de forma robusta e tipada pelo Angular.

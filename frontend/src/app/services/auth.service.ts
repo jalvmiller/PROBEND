@@ -5,9 +5,9 @@ import { Observable, tap, catchError, of, firstValueFrom } from 'rxjs';
 import { Usuario, LoginRequest, RegisterRequest, AuthResponse } from '../models/auth.model';
 
 /**
- * AuthService — Gerenciador Central de Autenticação com Signals
+ * AuthService: Gerenciador Central de Autenticação com Signals
  *
- * Comparativo React ➔ Angular:
+ * Comparativo React para Angular:
  * - Em React: Criávamos `AuthContext` com `useState(null)` para `user` e `isAuthenticated`.
  * - Em Angular: Criamos um `@Injectable({ providedIn: 'root' })` (Singleton).
  *   O estado é mantido por SIGNALS (`signal()`), que oferecem reatividade granular
@@ -52,14 +52,14 @@ export class AuthService {
   }
 
   /**
-   * GET /api/auth/me — Busca os dados da sessão ativa no Spring Security
+   * GET /api/auth/me - Busca os dados da sessão ativa no Spring Security
    */
   public obterUsuarioAtual(): Observable<Usuario> {
     return this.http.get<Usuario>(`${this.baseUrl}/me`);
   }
 
   /**
-   * POST /api/auth/login — Efetua login com credenciais
+   * POST /api/auth/login - Efetua login com credenciais
    * Após a validação das credenciais pelo Spring (que grava o cookie HTTP-Only AUTH_TOKEN),
    * atualiza o Signal `_currentUser` com os dados do usuário.
    */
@@ -77,14 +77,14 @@ export class AuthService {
   }
 
   /**
-   * POST /api/auth/register — Cadastro de nova conta
+   * POST /api/auth/register - Cadastro de nova conta
    */
   public register(dados: RegisterRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/register`, dados);
   }
 
   /**
-   * POST /api/auth/visitor-session — Cria uma sessão temporária de visitante
+   * POST /api/auth/visitor-session - Cria uma sessão temporária de visitante
    */
   public visitorSession(): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/visitor-session`, {}).pipe(
@@ -100,7 +100,20 @@ export class AuthService {
   }
 
   /**
-   * POST /api/auth/logout — Invalida sessão e zera o estado local
+   * POST /api/usuarios/me/avatar - Upload de nova foto de perfil
+   */
+  public uploadAvatar(file: File): Observable<Usuario> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<Usuario>('/api/usuarios/me/avatar', formData).pipe(
+      tap((usuarioAtualizado) => {
+        this._currentUser.set(usuarioAtualizado);
+      })
+    );
+  }
+
+  /**
+   * POST /api/auth/logout - Invalida sessão e zera o estado local
    */
   public logout(): void {
     this.http.post(`${this.baseUrl}/logout`, {}).pipe(

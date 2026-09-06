@@ -1,0 +1,175 @@
+<div class="auth-layout blueprint-grid">
+  <!-- Painel Decorativo Editorial (Visível em Desktop) -->
+  <aside class="auth-sidebar">
+    <div class="sidebar-header">
+      <div class="logo-badge">
+        <span class="simbolo-integral">∫</span>
+      </div>
+      <div class="logo-text">
+        <span class="brand-name">PROBEND</span>
+        <span class="brand-sub">Sistema de Questões</span>
+      </div>
+    </div>
+
+    <div class="sidebar-body">
+      <h1 class="sidebar-title">
+        Junte-se à comunidade.<br />
+        <span class="text-amber">Evolua seu raciocínio.</span>
+      </h1>
+      <p class="sidebar-desc">
+        Compartilhe resoluções em KaTeX, discuta passagens matemáticas e colabore em um acervo técnico de excelência.
+      </p>
+
+      <div class="feature-badges">
+        <span class="badge badge-facil">Fórmulas em KaTeX</span>
+        <span class="badge badge-tag">Resoluções Verificadas</span>
+        <span class="badge badge-media">Sistema de Upvotes</span>
+      </div>
+    </div>
+
+    <footer class="sidebar-footer">
+      <p>© {{ 2026 }} PROBEND · Plataforma de Estudos Avançados</p>
+    </footer>
+  </aside>
+
+  <!-- Painel Principal do Formulário -->
+  <main class="auth-main">
+    <div class="auth-card editorial-card">
+      <!-- Mobile Logo Header -->
+      <div class="mobile-brand">
+        <div class="logo-badge">
+          <span class="simbolo-integral">∫</span>
+        </div>
+        <span class="brand-name">PROBEND</span>
+      </div>
+
+      <div class="form-header">
+        <h2 class="form-title">Criar nova conta</h2>
+        <p class="form-subtitle">Preencha seus dados para começar a estudar e compartilhar</p>
+      </div>
+
+      <!-- Alerta de Erro -->
+      @if (errorMessage()) {
+        <div class="alert-error" role="alert">
+          <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <!-- Formulário Reativo de Cadastro -->
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="form-body">
+        <!-- Campo: Nome Completo -->
+        <div class="form-group">
+          <label for="nome" class="form-label">Nome Completo</label>
+          <input
+            id="nome"
+            type="text"
+            formControlName="nome"
+            class="input-field"
+            placeholder="Ex: João Silva"
+            [class.input-error]="registerForm.get('nome')?.invalid && registerForm.get('nome')?.touched"
+            autocomplete="name"
+          />
+          @if (registerForm.get('nome')?.invalid && registerForm.get('nome')?.touched) {
+            <span class="field-error">O nome completo é obrigatório.</span>
+          }
+        </div>
+
+        <!-- Campo: E-mail -->
+        <div class="form-group">
+          <label for="email" class="form-label">E-mail Institucional ou Pessoal</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="input-field"
+            placeholder="seu.email@exemplo.com"
+            [class.input-error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+            autocomplete="email"
+          />
+          @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
+            <span class="field-error">Informe um e-mail válido.</span>
+          }
+        </div>
+
+        <!-- Campo: Usuário -->
+        <div class="form-group">
+          <label for="username" class="form-label">Nome de Usuário</label>
+          <input
+            id="username"
+            type="text"
+            formControlName="username"
+            class="input-field font-mono"
+            placeholder="ex: joaosilva"
+            [class.input-error]="registerForm.get('username')?.invalid && registerForm.get('username')?.touched"
+            autocomplete="username"
+          />
+          @if (registerForm.get('username')?.invalid && registerForm.get('username')?.touched) {
+            <span class="field-error">O nome de usuário deve ter no mínimo 3 caracteres.</span>
+          }
+        </div>
+
+        <!-- Campo: Senha -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="password" class="form-label">Senha</label>
+          </div>
+          <div class="password-wrapper">
+            <input
+              id="password"
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              class="input-field password-input"
+              placeholder="••••••••"
+              [class.input-error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
+              autocomplete="new-password"
+            />
+            <button
+              type="button"
+              class="toggle-password-btn"
+              (click)="alternarVisibilidadeSenha()"
+              [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Exibir senha'"
+            >
+              @if (showPassword()) {
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                  <line x1="1" y1="1" x2="23" y2="23"></line>
+                </svg>
+              } @else {
+                <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              }
+            </button>
+          </div>
+          @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+            <span class="field-error">A senha deve ter no mínimo 6 caracteres.</span>
+          }
+        </div>
+
+        <!-- Botão Principal de Cadastro -->
+        <button
+          type="submit"
+          class="btn btn-primary btn-submit"
+          [disabled]="isSubmitting() || registerForm.invalid"
+        >
+          @if (isSubmitting()) {
+            <span class="spinner"></span>
+            <span>Cadastrando conta...</span>
+          } @else {
+            <span>Concluir Cadastro</span>
+          }
+        </button>
+      </form>
+
+      <div class="form-footer">
+        <p>Já possui uma conta? <a routerLink="/login" class="link-destaque">Faça login</a></p>
+      </div>
+    </div>
+  </main>
+</div>
