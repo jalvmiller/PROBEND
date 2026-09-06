@@ -1,0 +1,248 @@
+<div class="form-container">
+  <div class="form-topo">
+    <a routerLink="/" class="link-voltar">Voltar ao Repositório</a>
+    <h1 class="page-title">{{ id ? 'Editar Questão #' + id : 'Nova Questão Técnica' }}</h1>
+    <p class="page-desc">Cadastre ou edite problemas com suporte a fórmulas em KaTeX, blocos de código e diagramas.</p>
+  </div>
+
+  <!-- Copiloto Gemini IA (apenas em modo de criação) -->
+  @if (!id) {
+    <div class="card-copiloto">
+      <div class="copiloto-header">
+        <span class="copiloto-badge">Copiloto Gemini AI</span>
+        <span class="copiloto-sub">Assistente de Elaboração de Questões</span>
+      </div>
+      <p class="copiloto-text">
+        Digite sua ideia ou tema (ex: <em>"Crie uma questão de Álgebra Linear sobre autovalores com matriz 2x2"</em>) e acelere seu fluxo de trabalho:
+      </p>
+      <textarea
+        class="input-field copiloto-textarea"
+        rows="2"
+        placeholder="Descreva a questão técnica que você deseja formular..."
+        [ngModel]="promptIA()"
+        (ngModelChange)="promptIA.set($event)"
+        [disabled]="gerandoIA()"
+      ></textarea>
+      <div class="copiloto-acoes">
+        <button
+          type="button"
+          class="btn btn-copiloto-esboco"
+          (click)="gerarEsbocoIA()"
+          [disabled]="gerandoIA()"
+        >
+          @if (gerandoIA()) {
+            <span class="spinner-sm"></span>
+            <span>Gerando com IA...</span>
+          } @else {
+            <span>Preencher Esboço</span>
+          }
+        </button>
+        <button
+          type="button"
+          class="btn btn-copiloto-publicar"
+          (click)="criarTotalIA()"
+          [disabled]="gerandoIA()"
+        >
+          @if (gerandoIA()) {
+            <span class="spinner-sm"></span>
+            <span>Publicando...</span>
+          } @else {
+            <span>Publicar Direto</span>
+          }
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Formulário Principal -->
+  <form (ngSubmit)="salvarQuestao()" class="card-form">
+    <!-- Linha 1: Título -->
+    <div class="form-group">
+      <label class="form-label" for="titulo">Título da Questão (Opcional)</label>
+      <input
+        id="titulo"
+        type="text"
+        class="input-field"
+        placeholder="Ex: Teorema Fundamental do Cálculo em Coordenadas Polares"
+        [ngModel]="titulo()"
+        (ngModelChange)="titulo.set($event)"
+        name="titulo"
+      />
+    </div>
+
+    <!-- Linha 2: Matéria, Assunto, Dificuldade e Fonte -->
+    <div class="grid-campos">
+      <div class="form-group">
+        <label class="form-label" for="materia">Matéria / Área *</label>
+        <input
+          id="materia"
+          type="text"
+          class="input-field"
+          placeholder="Ex: Cálculo 1, Física, Java"
+          [ngModel]="materia()"
+          (ngModelChange)="materia.set($event)"
+          name="materia"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="assunto">Assunto Específico</label>
+        <input
+          id="assunto"
+          type="text"
+          class="input-field"
+          placeholder="Ex: Derivadas Parciais, Polimorfismo"
+          [ngModel]="assunto()"
+          (ngModelChange)="assunto.set($event)"
+          name="assunto"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="dificuldade">Dificuldade</label>
+        <select
+          id="dificuldade"
+          class="input-field select-field"
+          [ngModel]="dificuldade()"
+          (ngModelChange)="dificuldade.set(+$event)"
+          name="dificuldade"
+        >
+          <option [value]="0">Fácil</option>
+          <option [value]="1">Médio</option>
+          <option [value]="2">Difícil</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="fonte">Fonte / Exame</label>
+        <input
+          id="fonte"
+          type="text"
+          class="input-field"
+          placeholder="Ex: ITA 2024, Halliday Vol. 1, ENADE"
+          [ngModel]="fonte()"
+          (ngModelChange)="fonte.set($event)"
+          name="fonte"
+        />
+      </div>
+    </div>
+
+    <!-- Linha 3: Enunciado (com Preview KaTeX) -->
+    <div class="form-group">
+      <div class="label-com-dica">
+        <label class="form-label" for="enunciado">Enunciado da Questão *</label>
+        <span class="dica-katex">Fórmulas: <code>$...$</code> para inline e <code>$$...$$</code> para bloco</span>
+      </div>
+      <textarea
+        id="enunciado"
+        class="input-field enunciado-textarea"
+        rows="6"
+        placeholder="Digite o enunciado detalhado da questão. Você pode incluir fórmulas em LaTeX: $x^2 + y^2 = r^2$..."
+        [ngModel]="enunciado()"
+        (ngModelChange)="enunciado.set($event)"
+        name="enunciado"
+        required
+      ></textarea>
+    </div>
+
+    <!-- Preview ao Vivo em KaTeX do Enunciado -->
+    @if (enunciado()) {
+      <div class="preview-katex-box">
+        <div class="preview-header">
+          <span class="preview-tag">Prévia de Renderização KaTeX</span>
+        </div>
+        <div class="preview-corpo" [appKatex]="enunciado()"></div>
+      </div>
+    }
+
+    <!-- Linha 4: Código Técnico Opcional -->
+    <div class="grid-codigo">
+      <div class="form-group campo-linguagem">
+        <label class="form-label" for="linguagemCodigo">Linguagem de Programação</label>
+        <select
+          id="linguagemCodigo"
+          class="input-field select-field"
+          [ngModel]="linguagemCodigo()"
+          (ngModelChange)="linguagemCodigo.set($event)"
+          name="linguagemCodigo"
+        >
+          <option value="">Nenhuma (Apenas texto)</option>
+          <option value="java">Java</option>
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript / TypeScript</option>
+          <option value="cpp">C / C++</option>
+          <option value="csharp">C#</option>
+          <option value="sql">SQL</option>
+        </select>
+      </div>
+
+      <div class="form-group campo-trecho">
+        <label class="form-label" for="trechoCodigo">Trecho de Código (Opcional)</label>
+        <textarea
+          id="trechoCodigo"
+          class="input-field font-mono"
+          rows="4"
+          placeholder="Cole aqui o trecho de código ou pseudocódigo relevante..."
+          [ngModel]="trechoCodigo()"
+          (ngModelChange)="trechoCodigo.set($event)"
+          name="trechoCodigo"
+        ></textarea>
+      </div>
+    </div>
+
+    <!-- Linha 5: Upload de Diagrama / Imagem da Questão -->
+    <div class="form-group secao-upload">
+      <label class="form-label">Diagrama ou Imagem Ilustrativa (Opcional)</label>
+      <div class="upload-area">
+        <input
+          type="file"
+          id="arquivo-imagem"
+          accept="image/*"
+          (change)="onFileSelected($event)"
+          [disabled]="enviandoImagem()"
+          class="input-file"
+        />
+        <label for="arquivo-imagem" class="btn btn-secondary btn-escolher-arquivo">
+          @if (enviandoImagem()) {
+            <span class="spinner-sm"></span>
+            <span>Enviando imagem...</span>
+          } @else {
+            <span>Selecionar Arquivo de Imagem</span>
+          }
+        </label>
+      </div>
+
+      @if (imagemUrl()) {
+        <div class="preview-imagem-container">
+          <img [src]="imagemUrl()" alt="Diagrama da questão" class="img-preview" />
+          <button
+            type="button"
+            class="btn-remover-img"
+            (click)="removerImagem()"
+            title="Remover imagem"
+          >
+            Remover
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Botões Finais de Ação -->
+    <div class="form-acoes">
+      <a routerLink="/" class="btn btn-secondary">Cancelar</a>
+      <button
+        type="submit"
+        class="btn btn-primary btn-salvar"
+        [disabled]="salvando() || enviandoImagem() || !enunciado()"
+      >
+        @if (salvando()) {
+          <span class="spinner-sm"></span>
+          <span>Gravando...</span>
+        } @else {
+          <span>{{ id ? 'Salvar Alterações' : 'Publicar Questão' }}</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>
