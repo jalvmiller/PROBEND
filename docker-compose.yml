@@ -1,14 +1,20 @@
 services:
+  # ============================================================================
+  # INFRAESTRUTURA (profiles: infra, full)
+  # Usado no desenvolvimento local híbrido ou no stack completo de produção
+  # ============================================================================
   db:
     image: mysql:8.0
     container_name: probend-db
     restart: unless-stopped
+    profiles: ["infra", "full"]
     environment:
       MYSQL_DATABASE: probend_db
       MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-root1234}"
       MYSQL_ROOT_HOST: "%"
     ports:
-      - "127.0.0.1:3307:3306"
+      # Bind local seguro por padrão; no PC mapeia para 3307 evitando conflitos com MySQL local
+      - "${DB_BIND:-127.0.0.1}:${DB_PORT:-3307}:3306"
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
@@ -21,16 +27,18 @@ services:
     image: redis:7-alpine
     container_name: probend-redis
     restart: unless-stopped
+    profiles: ["infra", "full"]
     ports:
-      - "127.0.0.1:6379:6379"
+      - "${REDIS_BIND:-127.0.0.1}:${REDIS_PORT:-6379}:6379"
 
   minio:
     image: minio/minio
     container_name: probend-minio
     restart: unless-stopped
+    profiles: ["infra", "full"]
     ports:
-      - "127.0.0.1:9000:9000"
-      - "127.0.0.1:9001:9001"
+      - "${MINIO_BIND:-127.0.0.1}:${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_BIND:-127.0.0.1}:${MINIO_CONSOLE_PORT:-9001}:9001"
     environment:
       MINIO_ROOT_USER: "${MINIO_ROOT_USER:-minioadmin}"
       MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD:-minioadminpassword}"
@@ -42,32 +50,35 @@ services:
     image: axllent/mailpit:latest
     container_name: probend-mailpit
     restart: unless-stopped
+    profiles: ["infra", "full"]
     ports:
-      - "127.0.0.1:1025:1025" # SMTP
-      - "127.0.0.1:8025:8025" # Web interface
+      - "${MAILPIT_SMTP_BIND:-127.0.0.1}:${MAILPIT_SMTP_PORT:-1025}:1025" # SMTP
+      - "${MAILPIT_WEB_BIND:-127.0.0.1}:${MAILPIT_WEB_PORT:-8025}:8025" # Web interface
 
   rabbitmq:
     image: rabbitmq:3.12-management
     container_name: probend-rabbitmq
     restart: unless-stopped
+    profiles: ["infra", "full"]
     ports:
-      - "127.0.0.1:5672:5672" # AMQP (mensageria)
-      - "127.0.0.1:15672:15672" # Interface web do RabbitMQ (RabbitMQ Management)
+      - "${RABBITMQ_AMQP_BIND:-127.0.0.1}:${RABBITMQ_AMQP_PORT:-5672}:5672" # AMQP
+      - "${RABBITMQ_WEB_BIND:-127.0.0.1}:${RABBITMQ_WEB_PORT:-15672}:15672" # Management UI
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER:-guest}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS:-guest}
 
+  # ============================================================================
+  # APLICAÇÃO (profiles: full)
+  # Executado no EC2 ou para testes completos do contêiner localmente
+  # ============================================================================
   backend:
+    profiles: ["full"]
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: probend-backend
     working_dir: /app
-    # Modo de produção: usa a imagem compilada (Dockerfile) com app.jar
-    # command: sh -c "./mvnw spring-boot:run"
-    # volumes:
-    #   - ./backend:/app
-    #   - ~/.m2/repository:/root/.m2/repository
+    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
@@ -80,49 +91,53 @@ services:
       redis:
         condition: service_started
     ports:
-      - "127.0.0.1:8080:8080"
+      - "${BACKEND_BIND:-127.0.0.1}:${BACKEND_PORT:-8080}:8080"
     environment:
+      # Ativa perfil de produção (conecta em db:3306, rabbitmq, redis, etc.)
+      SPRING_PROFILES_ACTIVE: "${SPRING_PROFILES_ACTIVE:-prod}"
       SPRING_DATASOURCE_URL: "jdbc:mysql://db:3306/probend_db?useSSL=${DB_USE_SSL:-false}&serverTimezone=America/Sao_Paulo&allowPublicKeyRetrieval=true"
-      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_USERNAME: "${DB_USER:-root}"
       SPRING_DATASOURCE_PASSWORD: "${MYSQL_ROOT_PASSWORD:-root1234}"
       JWT_SECRET: "${JWT_SECRET:-ChavePadraoParaDesenvolvimentoApenas}"
       # MinIO (S3)
       MINIO_ENDPOINT: "http://minio:9000"
       MINIO_ACCESS_KEY: "${MINIO_ROOT_USER:-minioadmin}"
       MINIO_SECRET_KEY: "${MINIO_ROOT_PASSWORD:-minioadminpassword}"
-      GEMINI_API_KEY: "${GEMINI_API_KEY}"
+      GEMINI_API_KEY: "${GEMINI_API_KEY:-}"
       RABBITMQ_HOST: rabbitmq
-      # credenciais mail pit
+      # Credenciais de e-mail
       SPRING_MAIL_HOST: "${SPRING_MAIL_HOST:-mailpit}"
       SPRING_MAIL_PORT: "${SPRING_MAIL_PORT:-1025}"
       SPRING_MAIL_USERNAME: "${SPRING_MAIL_USERNAME:-}"
       SPRING_MAIL_PASSWORD: "${SPRING_MAIL_PASSWORD:-}"
       SPRING_MAIL_AUTH: "${SPRING_MAIL_AUTH:-false}"
       SPRING_MAIL_STARTTLS: "${SPRING_MAIL_STARTTLS:-false}"
-      # credenciais redis
+      # Redis
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
-      # segurança / HTTPS
+      # Segurança / Origens CORS (suporte a Angular :4200 e Docker Nginx :8081)
       APP_SECURITY_ALLOWED_ORIGINS: "${APP_SECURITY_ALLOWED_ORIGINS:-http://localhost:8081,http://localhost:4200}"
-      APP_SECURITY_COOKIE_SECURE: "${APP_SECURITY_COOKIE_SECURE:-false}"
-      # debug (desabilitado em produção)
-      SPRING_DEVTOOLS_ENABLED: "${SPRING_DEVTOOLS_ENABLED:-true}"
-      JPA_SHOW_SQL: "${JPA_SHOW_SQL:-true}"
-    restart: unless-stopped
-
+      APP_SECURITY_COOKIE_SECURE: "${APP_SECURITY_COOKIE_SECURE:-true}"
+      # Otimização
+      SPRING_DEVTOOLS_ENABLED: "${SPRING_DEVTOOLS_ENABLED:-false}"
+      JPA_SHOW_SQL: "${JPA_SHOW_SQL:-false}"
 
   frontend:
+    profiles: ["full"]
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: probend-frontend
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8081:80"
+      # No PC local usa 127.0.0.1:8081; no EC2 pode ser configurado via .env (ex: FRONTEND_BIND=0.0.0.0 FRONTEND_PORT=80)
+      - "${FRONTEND_BIND:-127.0.0.1}:${FRONTEND_PORT:-8081}:80"
     depends_on:
       - backend
 
-# Persistencia dos dados -> Volume
+# ============================================================================
+# VOLUMES PERSISTENTES
+# ============================================================================
 volumes:
   db_data:
   minio_data:

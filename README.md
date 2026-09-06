@@ -49,7 +49,7 @@ Após subir via docker compose, utilize os links abaixo para acessar as interfac
 
 | Serviço | Porta | URL de Acesso | Credenciais Padrão |
 | :--- | :---: | :--- | :--- |
-| **Frontend App** | `5173` | [localhost:5173](http://localhost:5173) | *N/A* |
+| **Frontend App (Angular)** | `4200` | [localhost:4200](http://localhost:4200) | *N/A* |
 | **Backend API & Swagger UI** | `8080` | [localhost:8080/api/swagger-ui/index.html](http://localhost:8080/api/swagger-ui/index.html) | *Acesso público* |
 | **MinIO Console** | `9001` | [localhost:9001](http://localhost:9001) | `minioadmin` / `minioadminpassword` |
 | **MinIO API (S3 Endpoint)** | `9000` | [localhost:9000](http://localhost:9000) | *Definidas via SDK / .env* |
@@ -60,18 +60,34 @@ Após subir via docker compose, utilize os links abaixo para acessar as interfac
 
 ### 🔧 Passos para Executar (pré-requisitos: Docker e **Docker Compose** instalados);
 
-### 
+#### ⚡ 1. Modo Híbrido (Recomendado para Desenvolvimento Local)
+Neste modo, o Docker gerencia apenas bancos e mensageria em segundo plano, enquanto Backend e Frontend rodam diretamente no host com recarregamento instantâneo:
+
 ```bash
-# 1. Clone o repositório
-git clone [https://github.com/joaomu/probend.git](https://github.com/joaomu/probend.git)
+# 1. Copie o arquivo de variáveis de ambiente
+cp .env.example .env
 
-# 2. Acesse o diretório do projeto
-cd probend
-
-# 3. Suba o ecossistema completo de containers
+# 2. Suba apenas a infraestrutura (MySQL, Redis, RabbitMQ, MinIO, Mailpit)
 docker compose up -d
+# (ou explicitamente: docker compose --profile infra up -d)
 
+# 3. Em um terminal, inicie o Backend (Spring Boot com profile 'dev'):
+cd backend
+./mvnw spring-boot:run
+
+# 4. Em outro terminal, inicie o Frontend (Angular):
+cd frontend
+npm start
+# (ou ng serve, acessível em http://localhost:4200)
 ```
+
+#### 🐳 2. Modo Full Stack / Produção (EC2 ou Teste Completo em Contêineres)
+Para subir todos os serviços encapsulados em contêineres Docker (incluindo build do backend e frontend):
+
+```bash
+docker compose --profile full up -d --build
+```
+*(caso esteja no EC2, basta definir `COMPOSE_PROFILES=full` no arquivo `.env` para rodar diretamente com `docker compose up -d`).*
 ### 📁 Estrutura de Diretórios
 ```text
 PROBEND/
