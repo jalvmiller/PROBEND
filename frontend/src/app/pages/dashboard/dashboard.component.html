@@ -17,7 +17,7 @@
         type="text" 
         [ngModel]="termoBusca()"
         (ngModelChange)="aoDigitarBusca($event)"
-        placeholder="Buscar questões por título, tag ou conceito..." 
+        placeholder="Buscar questões por título, matéria, assunto ou fórmula..." 
         class="input-busca"
       />
     </div>
@@ -52,6 +52,10 @@
         Difícil
       </button>
     </div>
+
+    <a routerLink="/questoes/nova" class="btn-criar-hero">
+      <span>+ Nova Questão</span>
+    </a>
   </div>
 
   <!-- Feed de Questões -->
@@ -63,32 +67,74 @@
   } @else if (questoesFiltradas.length === 0) {
     <div class="estado-vazio">
       <p>Nenhuma questão encontrada no repositório.</p>
+      <a routerLink="/questoes/nova" class="btn-criar-vazio">Seja o primeiro a publicar</a>
     </div>
   } @else {
     <div class="grid-questoes">
       @for (q of questoesFiltradas; track q.id) {
-        <article class="card-questao">
+        <article 
+          class="card-questao"
+          [ngClass]="getDificuldadeCardClasse(q.dificuldade)"
+          (click)="toggleExpandirCard(q.id)"
+          title="Clique no card para expandir ou recolher o enunciado"
+        >
           <div class="card-topo">
-            <span class="badge" [ngClass]="'badge-' + q.dificuldade.toLowerCase()">
-              {{ q.dificuldade }}
-            </span>
+            <div class="tags-esquerda">
+              <span class="badge" [ngClass]="getDificuldadeClasse(q.dificuldade)">
+                {{ getDificuldadeTexto(q.dificuldade) }}
+              </span>
+              @if (q.materia) {
+                <span class="badge badge-tag">{{ q.materia }}</span>
+              }
+              @if (q.assunto) {
+                <span class="badge badge-tag badge-assunto-tag">{{ q.assunto }}</span>
+              }
+              @if (q.solucionada) {
+                <span class="badge-solucionada-mini" title="Questão solucionada">Solucionada</span>
+              } @else {
+                <span class="badge-pendente-mini" title="Questão pendente de solução">Pendente</span>
+              }
+            </div>
+
             <div class="estatisticas">
-              <span>▲ {{ q.upvotesCount || 0 }} upvotes</span>
-              <span>💬 {{ q.resolucoesCount || 0 }} respostas</span>
+              <button
+                type="button"
+                class="btn-upvote-card"
+                [class.upvoted]="isUpvoted(q.id)"
+                (click)="alternarUpvote(q, $event)"
+                title="Curtir esta questão"
+              >
+                {{ q.upvotesCount ?? q.upvotes ?? 0 }}
+              </button>
+              <span class="respostas-info">{{ q.resolucoesCount ?? q.numeroResolucoes ?? (q.resolucoes?.length || 0) }} resoluções</span>
             </div>
           </div>
 
-          <!-- Título renderizado com KaTeX -->
-          <h2 class="questao-titulo" [routerLink]="['/questoes', q.id]">
-            <span [appKatex]="q.titulo"></span>
-          </h2>
+          <!-- Enunciado com formatação em KaTeX: 2 linhas por padrão, até 12 linhas ao expandir -->
+          <div 
+            class="questao-enunciado"
+            [class.expandido]="isCardExpandido(q.id)"
+            [appKatex]="q.titulo || q.enunciado"
+          ></div>
 
-          <!-- Enunciado resumido com KaTeX -->
-          <div class="questao-enunciado" [appKatex]="q.enunciado"></div>
+          <div class="expandir-indicador">
+            @if (isCardExpandido(q.id)) {
+              <span class="indicador-texto recolher">Clique para recolher</span>
+            } @else {
+              <span class="indicador-texto expandir">[...] Clique para expandir enunciado</span>
+            }
+          </div>
 
           <div class="card-rodape">
-            <span class="autor">Por {{ q.autor?.nome || 'Autor Anônimo' }}</span>
-            <a [routerLink]="['/questoes', q.id]" class="btn-ver">Ver Questão →</a>
+            <span class="autor">Por <strong>{{ q.autor?.nome || q.autor?.username || 'Autor Anônimo' }}</strong></span>
+            <a 
+              [routerLink]="['/questoes', q.id]" 
+              (click)="$event.stopPropagation()"
+              class="btn-ver"
+              title="Acessar página completa da questão"
+            >
+              Ver Questão
+            </a>
           </div>
         </article>
       }
