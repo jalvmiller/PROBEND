@@ -1,0 +1,195 @@
+<div class="config-container">
+  <div class="config-header">
+    <a routerLink="/" class="link-voltar">Voltar ao Repositório</a>
+    <h1 class="page-title">Configurações & Perfil</h1>
+    <p class="page-desc">Gerencie seus dados de usuário, preferências visuais e atalhos do sistema.</p>
+  </div>
+
+  @if (mensagemSucesso()) {
+    <div class="alert alert-sucesso">
+      <span>{{ mensagemSucesso() }}</span>
+    </div>
+  }
+
+  @if (mensagemErro()) {
+    <div class="alert alert-erro">
+      <span>{{ mensagemErro() }}</span>
+    </div>
+  }
+
+  <!-- CARD 1: Dados do Perfil do Usuário -->
+  <section class="card-config">
+    <div class="perfil-topo">
+      <!-- Avatar Clicável com Upload -->
+      <div class="avatar-wrapper" (click)="avatarInput.click()" title="Clique para alterar a foto de perfil">
+        @if (getAvatarUrl()) {
+          <img [src]="getAvatarUrl()!" alt="Foto de perfil" class="avatar-img" />
+        } @else {
+          <div class="avatar-placeholder">
+            <span>{{ (authService.currentUser()?.nome || authService.currentUser()?.username || 'U')[0].toUpperCase() }}</span>
+          </div>
+        }
+
+        <div class="avatar-overlay">
+          <svg class="overlay-icone" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          <span class="overlay-texto">Editar</span>
+        </div>
+
+        <input
+          #avatarInput
+          type="file"
+          accept="image/*"
+          (change)="onAvatarFileSelected($event)"
+          class="hidden-input"
+          [disabled]="enviandoAvatar()"
+        />
+      </div>
+
+      <div class="perfil-info">
+        <h2 class="perfil-nome">{{ authService.currentUser()?.nome || authService.currentUser()?.username }}</h2>
+        <p class="perfil-dica">
+          @if (enviandoAvatar()) {
+            <span class="text-amber">Atualizando foto...</span>
+          } @else {
+            <span>Clique no avatar para selecionar uma nova foto</span>
+          }
+        </p>
+      </div>
+    </div>
+
+    <!-- Grid de Atributos do Usuário -->
+    <div class="perfil-grid">
+      <div class="dado-item">
+        <span class="dado-label">Nome Completo</span>
+        <span class="dado-valor">{{ authService.currentUser()?.nome || 'Não informado' }}</span>
+      </div>
+
+      <div class="dado-item">
+        <span class="dado-label">Nome de Usuário</span>
+        <span class="dado-valor font-mono">@{{ authService.currentUser()?.username }}</span>
+      </div>
+
+      <div class="dado-item">
+        <span class="dado-label">E-mail</span>
+        <span class="dado-valor">{{ authService.currentUser()?.email || 'Não informado' }}</span>
+      </div>
+
+      <div class="dado-item">
+        <span class="dado-label">Pontuação Acumulada</span>
+        <span class="dado-valor valor-destaque">{{ authService.currentUser()?.pontos ?? 0 }} pontos</span>
+      </div>
+
+      <div class="dado-item">
+        <span class="dado-label">Perfil de Acesso (Role)</span>
+        <span class="badge-role" [ngClass]="{
+          'role-admin': authService.currentUser()?.administrador,
+          'role-especialista': authService.currentUser()?.especialista,
+          'role-comum': !authService.currentUser()?.administrador && !authService.currentUser()?.especialista
+        }">
+          {{ obterRoleLabel() }}
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARD 2: Preferências Visuais (Tema) -->
+  <section class="card-config">
+    <div class="card-titulo-row">
+      <div class="icone-box">
+        @if (temaEscuro()) {
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        } @else {
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        }
+      </div>
+      <div>
+        <h3 class="card-titulo">Preferências Visuais</h3>
+        <p class="card-sub">Ajuste o esquema de cores conforme sua iluminação ambiente</p>
+      </div>
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-texto">
+        <span class="toggle-nome">Modo Escuro (Deep Slate / Thermal Paper)</span>
+        <span class="toggle-desc">Ativa paleta escura de alto contraste para conforto em sessões prolongadas de estudo.</span>
+      </div>
+
+      <button
+        type="button"
+        class="switch-btn"
+        [class.switch-ativo]="temaEscuro()"
+        (click)="alternarTema()"
+        aria-label="Alternar tema escuro"
+      >
+        <span class="switch-trilho">
+          <span class="switch-bolinha"></span>
+        </span>
+      </button>
+    </div>
+  </section>
+
+  <!-- CARD 3: Acessibilidade & Produtividade -->
+  <section class="card-config">
+    <div class="card-titulo-row">
+      <div class="icone-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+          <line x1="6" y1="8" x2="6.01" y2="8"></line>
+          <line x1="10" y1="8" x2="10.01" y2="8"></line>
+          <line x1="14" y1="8" x2="14.01" y2="8"></line>
+          <line x1="18" y1="8" x2="18.01" y2="8"></line>
+          <line x1="8" y1="12" x2="8.01" y2="12"></line>
+          <line x1="12" y1="12" x2="12.01" y2="12"></line>
+          <line x1="16" y1="12" x2="16.01" y2="12"></line>
+          <line x1="7" y1="16" x2="17" y2="16"></line>
+        </svg>
+      </div>
+      <div>
+        <h3 class="card-titulo">Acessibilidade & Teclado</h3>
+        <p class="card-sub">Atalhos rápidos para navegação veloz entre questões e resoluções</p>
+      </div>
+    </div>
+
+    <div class="toggle-row">
+      <div class="toggle-texto">
+        <span class="toggle-nome">Navegação por Teclado Estilo Vim</span>
+        <span class="toggle-desc">
+          Utilize <kbd>J</kbd> e <kbd>K</kbd> para navegar pela lista de questões, <kbd>Enter</kbd> para inspecionar e <kbd>N</kbd> para nova questão.
+        </span>
+      </div>
+
+      <button
+        type="button"
+        class="switch-btn"
+        [class.switch-ativo]="vimAtivo()"
+        (click)="alternarVim()"
+        aria-label="Alternar navegação estilo Vim"
+      >
+        <span class="switch-trilho">
+          <span class="switch-bolinha"></span>
+        </span>
+      </button>
+    </div>
+
+    @if (vimAtivo()) {
+      <div class="dica-vim">
+        <span>Modo Vim ativado. Pressione <strong>Esc</strong> a qualquer momento para liberar o cursor de campos de texto.</span>
+      </div>
+    }
+  </section>
+</div>

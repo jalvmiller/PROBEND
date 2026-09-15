@@ -115,8 +115,8 @@ services:
       # Redis
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
-      # Segurança / Origens CORS
-      APP_SECURITY_ALLOWED_ORIGINS: "${APP_SECURITY_ALLOWED_ORIGINS:-http://localhost:5173}"
+      # Segurança / Origens CORS (suporte a Angular :4200 e Docker Nginx :8081)
+      APP_SECURITY_ALLOWED_ORIGINS: "${APP_SECURITY_ALLOWED_ORIGINS:-http://localhost:8081,http://localhost:4200}"
       APP_SECURITY_COOKIE_SECURE: "${APP_SECURITY_COOKIE_SECURE:-true}"
       # Otimização
       SPRING_DEVTOOLS_ENABLED: "${SPRING_DEVTOOLS_ENABLED:-false}"

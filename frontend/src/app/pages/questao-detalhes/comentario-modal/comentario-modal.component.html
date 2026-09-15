@@ -1,0 +1,68 @@
+<div class="modal-backdrop" (click)="onBackdropClick($event)">
+  <div class="modal-card">
+    <!-- Cabeçalho -->
+    <div class="modal-header">
+      <div class="header-info">
+        <span class="titulo">Comentários · Resolução de <strong>{{ nomeAutorResolucao }}</strong></span>
+      </div>
+      <button type="button" class="btn-fechar" (click)="fechar.emit()" aria-label="Fechar">&times;</button>
+    </div>
+
+    <!-- Lista de Comentários -->
+    <div class="comentarios-lista">
+      @if (carregando()) {
+        <div class="estado-centro">
+          <span class="spinner">∫</span>
+          <p>Carregando comentários...</p>
+        </div>
+      } @else if (erro()) {
+        <div class="estado-erro">
+          <p>{{ erro() }}</p>
+        </div>
+      } @else if (comentarios().length === 0) {
+        <div class="estado-vazio">
+          <p>Nenhum comentário ainda. Seja o primeiro a comentar esta demonstração!</p>
+        </div>
+      } @else {
+        @for (c of comentarios(); track c.id) {
+          <div class="item-comentario">
+            <div class="autor-row">
+              <span class="avatar-badge">{{ (c.autor.nome || c.autor.username || 'A')[0].toUpperCase() }}</span>
+              <span class="nome-autor">{{ c.autor.nome || c.autor.username }}</span>
+            </div>
+            <div class="texto-comentario" [appKatex]="c.conteudo"></div>
+          </div>
+        }
+      }
+    </div>
+
+    <!-- Formulário de Envio de Comentário -->
+    <div class="modal-footer">
+      @if (authService.isAuthenticated()) {
+        <form (ngSubmit)="enviarComentario()" class="form-comentario">
+          <input 
+            type="text"
+            [ngModel]="novoComentario()"
+            (ngModelChange)="novoComentario.set($event)"
+            name="conteudo"
+            placeholder="Adicione uma observação técnica ou dúvida (suporta LaTeX)..."
+            class="input-comentario"
+            [disabled]="enviando()"
+            required
+          />
+          <button type="submit" class="btn-enviar" [disabled]="!novoComentario().trim() || enviando()">
+            @if (enviando()) {
+              Enviando...
+            } @else {
+              Enviar
+            }
+          </button>
+        </form>
+      } @else {
+        <div class="aviso-login">
+          <span>Você precisa estar autenticado para comentar nesta resolução.</span>
+        </div>
+      }
+    </div>
+  </div>
+</div>
