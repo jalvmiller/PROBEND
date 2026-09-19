@@ -4,21 +4,16 @@
 
 ![Java](https://img.shields.io/badge/Java%2021-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot%203-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
-![React](https://img.shields.io/badge/React%2018-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL%208.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 </div>
 
-# Nota sobre a Live Demo
-A Digital Ocean saiu da iniciativa do Student Developer Pack oferecido pelo Github, consequentemente, os créditos que ela oferecia "expiraram".
-Desativei a Live Demo temporariamente, peço desculpas.
-Irei fazer uma transição para o Microsoft Azure nos próximos dias.
-
 ### 📌 Sobre o Projeto + Stack Completa
 <div align="center">
-É uma plataforma voltada para a criação, compartilhamento e renderização de questões  de matemática e de algoritmos de diferentes linguagens de programação.
+É uma plataforma voltada para a criação, compartilhamento e renderização de questões de matemática e de algoritmos de diferentes linguagens de programação.
 <br><br>
-Está sendo um projeto pessoal que uso para aprender tecnologias e conceitos que podem ser aplicados em uma Stack com Java Spring Boot e React. Por conta disso, existem vários comentários pelos arquivos do projeto.<br><br>
+Aplicação full stack moderna com foco em arquitetura limpa, segurança, mensageria e boas práticas de engenharia de software.<br><br>
 
 [![Kanban & Backlog](https://img.shields.io/badge/GitHub_Projects-Kanban_%26_Backlog-238636?style=for-the-badge&logo=github&logoColor=white)](https://github.com/users/jalvmiller/projects/3/views/1)
 [![Decisões de Arquitetura](https://img.shields.io/badge/Arquitetura-Decis%C3%B5es-0052CC?style=for-the-badge&logo=architecture&logoColor=white)](#decisoes-de-arquitetura)
@@ -38,9 +33,10 @@ Está sendo um projeto pessoal que uso para aprender tecnologias e conceitos que
  ![Mailpit](https://img.shields.io/badge/-Spring%20Mail%20%2B%20Mailpit-00828A?style=flat-square&logo=mail.ru&logoColor=white) **Mailpit** — Servidor local para captura e visualização de e-mails de teste
 
 ### **📚Frontend & Interface**
- ![React](https://img.shields.io/badge/-React%2018-61DAFB?style=flat-square&logo=react&logoColor=black) **React 18 & Vite** — Interface reativa com compilação e HMR\
- ![Axios](https://img.shields.io/badge/-Axios-5A29E4?style=flat-square&logo=axios&logoColor=white) **Axios** — Cliente HTTP para integração com as APIs\
- ![KaTeX](https://img.shields.io/badge/-KaTeX%20%2F%20MathJax-000000?style=flat-square&logo=latex&logoColor=white) **KaTeX / MathJax** — Engine para renderização de fórmulas matemáticas em LaTeX\
+ ![Angular](https://img.shields.io/badge/-Angular-DD0031?style=flat-square&logo=angular&logoColor=white) **Angular & TypeScript** — Interface SPA moderna com componentes standalone e arquitetura modular\
+ ![RxJS](https://img.shields.io/badge/-RxJS-B7178C?style=flat-square&logo=reactivex&logoColor=white) **RxJS & HttpClient** — Comunicação reativa e interceptores HTTP com a API REST\
+ ![KaTeX](https://img.shields.io/badge/-KaTeX%20%2F%20MathJax-000000?style=flat-square&logo=latex&logoColor=white) **KaTeX** — Renderização de fórmulas matemáticas em LaTeX\
+ ![PrismJS](https://img.shields.io/badge/-PrismJS-2D79C7?style=flat-square&logo=javascript&logoColor=white) **PrismJS** — Realce de sintaxe de código para diferentes linguagens\
  ![CSS](https://img.shields.io/badge/-CSS3%20Customizado-1572B6?style=flat-square&logo=css3&logoColor=white) **CSS Customizado** — Layout responsivo e estilização modular
 
 ### 🚀 Painéis e Serviços Locais;
@@ -88,6 +84,7 @@ Para subir todos os serviços encapsulados em contêineres Docker (incluindo bui
 docker compose --profile full up -d --build
 ```
 *(caso esteja no EC2, basta definir `COMPOSE_PROFILES=full` no arquivo `.env` para rodar diretamente com `docker compose up -d`).*
+
 ### 📁 Estrutura de Diretórios
 ```text
 PROBEND/
@@ -95,41 +92,45 @@ PROBEND/
 │   ├── src/
 │   │   └── main/
 │   │       ├── java/br/com/joaomu/
-│   │       │   ├── config/                  # Configurações de serviços (MinIO, Mail; etc)
-│   │       │   ├── controller/              # Endpoints REST (Auth, Usuários, Questões, etc)
-│   │       │   ├── dto/                     # Data Transfer Objects
-│   │       │   ├── listener/                # Listeners de mensageria (RabbitMQ)
-│   │       │   ├── model/                   # Entidades JPA
-│   │       │   ├── repo/                    # Repositórios JPA
-│   │       │   ├── security/                # Filtros e configurações de segurança JWT
-│   │       │   └── service/                 # Regras de negócio e integração
+│   │       │   ├── config/                  # Configurações de infraestrutura (MinIO, Mail, Cors, Seeder)
+│   │       │   ├── controller/              # Endpoints REST (Auth, Questões, Resoluções, Comentários, IA)
+│   │       │   ├── dto/                     # Data Transfer Objects (Request e Response com validação)
+│   │       │   ├── entity/                  # Entidades JPA de domínio
+│   │       │   ├── listener/                # Listeners de mensageria assíncrona (RabbitMQ)
+│   │       │   ├── repository/              # Interfaces Spring Data JPA
+│   │       │   ├── security/                # Filtros, JWT e regras do Spring Security
+│   │       │   └── service/                 # Regras de negócio e integrações
 │   │       └── resources/
-│   │           ├── db/migration/            # Migrações SQL do Flyway (V1__, V2__, etc.)
+│   │           ├── db/migration/            # Migrações versionadas do Flyway (V1__ até V7__)
 │   │           └── application.properties   # Propriedades da aplicação
-│   ├── Dockerfile            # Dockerfile do backend Spring Boot
-│   ├── docker-compose.yml    # Orquestração (MySQL, MinIO, RabbitMQ, Mailpit, Backend)
-│   └── pom.xml               # Arquivo de dependências Maven
+│   ├── Dockerfile            # Dockerfile multi-stage do backend
+│   └── pom.xml               # Dependências Maven e plugins de build
 │
-├── frontend/                 ### Código fonte React (Vite)
+├── frontend/                 ### Código fonte Angular (TypeScript)
 │   ├── src/
-│   │   ├── assets/           # Arquivos estáticos (imagens, ícones, etc)
-│   │   ├── components/       # Componentes reutilizáveis
-│   │   ├── contexts/         # Contextos globais (ex: AuthContext)
-│   │   ├── hooks/            # Hooks customizados (ex: useUser)
-│   │   ├── pages/            # Telas da aplicação (Login, Perfil, Configurações)
-│   │   ├── services/         # Serviços de integração com a API REST (api.js)
-│   │   └── utils/            # Utilitários (ex: renderizadores LaTeX)
-│   ├── package.json          # Dependências frontend
-│   └── vite.config.js        # Configuração do Vite
+│   │   ├── app/
+│   │   │   ├── directives/   # Diretivas customizadas (ex: renderização KaTeX)
+│   │   │   ├── guards/       # Guards de rota para controle de acesso/autenticação
+│   │   │   ├── header/       # Componentes estruturais de navegação
+│   │   │   ├── interceptors/ # Interceptores HTTP (injeção de CSRF e tokens)
+│   │   │   ├── models/       # Interfaces e modelos TypeScript de domínio
+│   │   │   ├── pages/        # Telas da aplicação (Login, Questões, Perfil)
+│   │   │   └── services/     # Serviços de comunicação HTTP com a API REST
+│   │   ├── main.ts           # Ponto de entrada da aplicação Angular
+│   │   └── styles.css        # Folha de estilos globais
+│   ├── angular.json          # Configurações do Angular CLI
+│   ├── Dockerfile            # Dockerfile multi-stage com Nginx
+│   └── package.json          # Dependências do frontend e scripts
 │
-└── README.md                 # Instruções e documentação geral do projeto
+├── docker-compose.yml        # Orquestração completa (MySQL, Redis, MinIO, RabbitMQ, Mailpit, etc.)
+└── README.md                 # Documentação geral do projeto
 ```
 
 ### 🔎 Diagrama Sequencial em Mermaid (Criação de Questão)
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Cliente as Frontend (React + Tailwind)
+    actor Cliente as Frontend (Angular)
     participant API as Backend (Spring Boot + JWT)
     participant Gemini as Gemini AI API
     participant MinIO as MinIO (Imagens)
@@ -175,7 +176,7 @@ e o Spring Boot é o framework mais utilizado para criação de APIs REST escal�
 Achei interessante implementar uma camada de segurança,
 já que o objetivo é desenvolver algo próximo de uma aplicação web completa. 
 Sinto que implementar JWT me acrescentou conhecimento em autenticação no geral;
-além disso, essa é a mais indicada para APIs consumidas por SPA como o React.
+além disso, essa é a mais indicada para APIs consumidas por SPA como o Angular.
 
 🗄️ MySQL 8.0 + Flyway
 - O MySQL é o banco de dados relacional que eu tinha mais familiaridade em utilizar.
@@ -198,8 +199,9 @@ sobre armazenamento de mídia e contato com o S3.
 (envio para endereço real de email). Enfrentei alguns obstáculos quando tentei usar SMTP externamente,
 então optei usar o Mailpit, por enquanto.
 
-⚛️ React + Vite + KaTeX
-- O Vite é bem leve, oferece compilação ultrarrápida e Hot Module Replacement (HMR);
-quesitos necessários para lidar com o React. O KaTeX foi integrado para renderizar fórmulas matemáticas
-em LaTeX e cumprir com a proposição do projeto de ter uma boa experiência visual.
+🅰️ Angular + KaTeX + PrismJS
+- O Angular foi adotado para estruturar o frontend com uma arquitetura robusta e tipada em TypeScript,
+utilizando componentes standalone, injeção de dependência e interceptores HTTP para tokens e CSRF.
+O KaTeX foi integrado para renderizar fórmulas matemáticas em LaTeX e o PrismJS para realce de sintaxe
+de trechos de código, garantindo uma experiência técnica rica para o usuário.
 ```
