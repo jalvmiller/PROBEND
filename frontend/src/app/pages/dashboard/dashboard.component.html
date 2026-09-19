@@ -22,40 +22,78 @@
       />
     </div>
 
-    <div class="filtros-dificuldade">
-      <button 
-        class="filtro-btn" 
-        [class.ativo]="filtroDificuldade() === 'TODAS'"
-        (click)="alterarFiltroDificuldade('TODAS')"
-      >
-        Todas
-      </button>
-      <button 
-        class="filtro-btn facil" 
-        [class.ativo]="filtroDificuldade() === 'FACIL'"
-        (click)="alterarFiltroDificuldade('FACIL')"
-      >
-        Fácil
-      </button>
-      <button 
-        class="filtro-btn media" 
-        [class.ativo]="filtroDificuldade() === 'MEDIA'"
-        (click)="alterarFiltroDificuldade('MEDIA')"
-      >
-        Média
-      </button>
-      <button 
-        class="filtro-btn dificil" 
-        [class.ativo]="filtroDificuldade() === 'DIFICIL'"
-        (click)="alterarFiltroDificuldade('DIFICIL')"
-      >
-        Difícil
-      </button>
-    </div>
+    <div class="linha-filtros">
+      <!-- Filtros por Dificuldade -->
+      <div class="grupo-filtros">
+        <span class="filtro-label">Dificuldade:</span>
+        <div class="filtros-botoes">
+          <button 
+            class="filtro-btn" 
+            [class.ativo]="filtroDificuldade() === 'TODAS'"
+            (click)="alterarFiltroDificuldade('TODAS')"
+          >Todas</button>
+          <button 
+            class="filtro-btn facil" 
+            [class.ativo]="filtroDificuldade() === 'FACIL'"
+            (click)="alterarFiltroDificuldade('FACIL')"
+          >Fácil</button>
+          <button 
+            class="filtro-btn media" 
+            [class.ativo]="filtroDificuldade() === 'MEDIA'"
+            (click)="alterarFiltroDificuldade('MEDIA')"
+          >Média</button>
+          <button 
+            class="filtro-btn dificil" 
+            [class.ativo]="filtroDificuldade() === 'DIFICIL'"
+            (click)="alterarFiltroDificuldade('DIFICIL')"
+          >Difícil</button>
+        </div>
+      </div>
 
-    <a routerLink="/questoes/nova" class="btn-criar-hero">
-      <span>+ Nova Questão</span>
-    </a>
+      <!-- Filtros por Status -->
+      <div class="grupo-filtros">
+        <span class="filtro-label">Status:</span>
+        <div class="filtros-botoes">
+          <button 
+            class="filtro-btn" 
+            [class.ativo]="filtroStatus() === 'TODAS'"
+            (click)="alterarFiltroStatus('TODAS')"
+          >Todas</button>
+          <button 
+            class="filtro-btn" 
+            [class.ativo]="filtroStatus() === 'PENDENTES'"
+            (click)="alterarFiltroStatus('PENDENTES')"
+          >Pendentes</button>
+          <button 
+            class="filtro-btn" 
+            [class.ativo]="filtroStatus() === 'SOLUCIONADAS'"
+            (click)="alterarFiltroStatus('SOLUCIONADAS')"
+          >Solucionadas</button>
+        </div>
+      </div>
+
+      <!-- Seletor de Quantidade por Página -->
+      <div class="grupo-filtros limite-pagina">
+        <span class="filtro-label">Exibir:</span>
+        <div class="filtros-botoes">
+          <button 
+            class="filtro-btn btn-qtd" 
+            [class.ativo]="itensPorPagina() === 5"
+            (click)="alterarItensPorPagina(5)"
+          >5</button>
+          <button 
+            class="filtro-btn btn-qtd" 
+            [class.ativo]="itensPorPagina() === 10"
+            (click)="alterarItensPorPagina(10)"
+          >10</button>
+          <button 
+            class="filtro-btn btn-qtd" 
+            [class.ativo]="itensPorPagina() === 30"
+            (click)="alterarItensPorPagina(30)"
+          >30</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Feed de Questões -->
@@ -71,7 +109,7 @@
     </div>
   } @else {
     <div class="grid-questoes">
-      @for (q of questoesFiltradas; track q.id) {
+      @for (q of questoesPaginadas; track q.id) {
         <article 
           class="card-questao"
           [ngClass]="getDificuldadeCardClasse(q.dificuldade)"
@@ -104,7 +142,11 @@
                 (click)="alternarUpvote(q, $event)"
                 title="Curtir esta questão"
               >
-                {{ q.upvotesCount ?? q.upvotes ?? 0 }}
+                <!-- Ícone de upvote ▲ -->
+                <svg class="icone-upvote" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+                <span>{{ q.upvotesCount ?? q.upvotes ?? 0 }}</span>
               </button>
               <span class="respostas-info">{{ q.resolucoesCount ?? q.numeroResolucoes ?? (q.resolucoes?.length || 0) }} resoluções</span>
             </div>
@@ -139,5 +181,47 @@
         </article>
       }
     </div>
+
+    <!-- Barra de Paginação -->
+    @if (totalPaginas > 1) {
+      <div class="paginacao-container">
+        <span class="paginacao-resumo">
+          Exibindo <strong>{{ indiceInicio + 1 }}–{{ indiceFim }}</strong> de <strong>{{ questoesFiltradas.length }}</strong> questões
+        </span>
+
+        <div class="paginacao-acoes">
+          <button
+            type="button"
+            class="btn-pag-nav"
+            (click)="paginaAnterior()"
+            [disabled]="paginaAtual() === 1"
+          >
+            &larr; Anterior
+          </button>
+
+          <div class="paginacao-numeros">
+            @for (p of paginasArray; track p) {
+              <button
+                type="button"
+                class="btn-num-pag"
+                [class.ativo]="p === paginaAtual()"
+                (click)="irParaPagina(p)"
+              >
+                {{ p }}
+              </button>
+            }
+          </div>
+
+          <button
+            type="button"
+            class="btn-pag-nav"
+            (click)="proximaPagina()"
+            [disabled]="paginaAtual() >= totalPaginas"
+          >
+            Próxima &rarr;
+          </button>
+        </div>
+      </div>
+    }
   }
 </div>

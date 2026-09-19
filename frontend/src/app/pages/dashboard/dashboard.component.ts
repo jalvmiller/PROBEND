@@ -24,6 +24,9 @@ export class DashboardComponent implements OnInit {
   public loading = signal<boolean>(true);
   public termoBusca = signal<string>('');
   public filtroDificuldade = signal<string>('TODAS');
+  public filtroStatus = signal<'TODAS' | 'PENDENTES' | 'SOLUCIONADAS'>('TODAS');
+  public itensPorPagina = signal<number>(10);
+  public paginaAtual = signal<number>(1);
   public meusUpvotes = signal<number[]>([]);
 
   // Conjunto de IDs de cards expandidos
@@ -59,11 +62,38 @@ export class DashboardComponent implements OnInit {
 
   public aoDigitarBusca(novoTermo: string): void {
     this.termoBusca.set(novoTermo);
+    this.paginaAtual.set(1);
     this.carregarQuestoes();
   }
 
   public alterarFiltroDificuldade(dificuldade: string): void {
     this.filtroDificuldade.set(dificuldade);
+    this.paginaAtual.set(1);
+  }
+
+  public alterarFiltroStatus(status: 'TODAS' | 'PENDENTES' | 'SOLUCIONADAS'): void {
+    this.filtroStatus.set(status);
+    this.paginaAtual.set(1);
+  }
+
+  public alterarItensPorPagina(qtd: number): void {
+    this.itensPorPagina.set(qtd);
+    this.paginaAtual.set(1);
+  }
+
+  public irParaPagina(p: number): void {
+    if (p >= 1 && p <= this.totalPaginas) {
+      this.paginaAtual.set(p);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  public paginaAnterior(): void {
+    this.irParaPagina(this.paginaAtual() - 1);
+  }
+
+  public proximaPagina(): void {
+    this.irParaPagina(this.paginaAtual() + 1);
   }
 
   public alternarUpvote(q: Questao, event: Event): void {
@@ -111,14 +141,47 @@ export class DashboardComponent implements OnInit {
 
   public get questoesFiltradas(): Questao[] {
     const dif = this.filtroDificuldade();
-    const lista = this.questoes();
-    if (dif === 'TODAS') return lista;
-    return lista.filter(q => {
-      const qDif = String(q.dificuldade);
-      if (dif === 'FACIL') return qDif === '0' || qDif === 'FACIL';
-      if (dif === 'MEDIA') return qDif === '1' || qDif === 'MEDIA' || qDif === 'MEDIO';
-      if (dif === 'DIFICIL') return qDif === '2' || qDif === 'DIFICIL';
-      return true;
-    });
+    const st = this.filtroStatus();
+    let lista = this.questoes();
+
+    // Filtro por Dificuldade
+    if (dif !== 'TODAS') {
+      lista = lista.filter(q => {
+        const qDif = String(q.dificuldade);
+        if (dif === 'FACIL') return qDif === '0' || qDif === 'FACIL';
+        if (dif === 'MEDIA') return qDif === '1' || qDif === 'MEDIA' || qDif === 'MEDIO';
+        if (dif === 'DIFICIL') return qDif === '2' || qDif === 'DIFICIL';
+        return true;
+      });
+    }
+
+    // Filtro por Status
+    if (st === 'PENDENTES') {
+      lista = lista.filter(q => !q.solucionada);
+    } else if (st === 'SOLUCIONADAS') {
+      lista = lista.filter(q => q.solucionada);
+    }
+
+    return lista;
+  }
+
+  public get totalPaginas(): number {
+    return Math.ceil(this.questoesFiltradas.length / this.itensPorPagina()) || 1;
+  }
+
+  public get paginasArray(): number[] {
+    return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
+  }
+
+  public get indiceInicio(): number {
+    return (this.paginaAtual() - 1) * this.itensPorPagina();
+  }
+
+  public get indiceFim(): number {
+    return Math.min(this.indiceInicio + this.itensPorPagina(), this.questoesFiltradas.length);
+  }
+
+  public get questoesPaginadas(): Questao[] {
+    return this.questoesFiltradas.slice(this.indiceInicio, this.indiceFim);
   }
 }
