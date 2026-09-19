@@ -26,3 +26,6 @@ uml/DIAGCASO.drawio
 # Backup files
 probend_backup.tar.gz
 *.tar.gz
+
+# AGENTS
+AGENTS.md
