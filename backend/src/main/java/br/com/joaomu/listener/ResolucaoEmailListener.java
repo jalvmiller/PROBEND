@@ -14,6 +14,9 @@ public class ResolucaoEmailListener {
 
     // API padrão definida pelo SLF4J, SIMPLE LOGGING FACADE FOR JAVA
     // é estruturada com base em níveis INFO DEBUG WARN ERROR
+    // log.info(...): Eventos normais do ciclo de vida (ex: "Email enviado com sucesso")
+    // log.warn(...): Situações incomuns que não quebram o sistema (ex: "MinIO indisponível no startup, usando fallback")
+    // log.error(...): Falhas e exceções não esperadas (ex: falha após todas as tentativas na DLQ)
     //
     private static final Logger log = LoggerFactory.getLogger(ResolucaoEmailListener.class);
 

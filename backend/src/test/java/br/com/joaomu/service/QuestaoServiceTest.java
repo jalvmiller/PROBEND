@@ -151,39 +151,4 @@ public class QuestaoServiceTest {
         assertEquals("https://exemplo.com", resultado.getFonte());
     }
 
-    @Test
-    void deveAjustarDificuldadeInvalida() {
-        // Arrange
-        questao.setDificuldade(-1);
-
-        // Act
-        questaoService.validarDificuldade(questao);
-
-        // Assert
-        assertEquals(0, questao.getDificuldade());
-    }
-
-    @Test
-    void deveAjustarDificuldadeAcimaDoMaximo() {
-        // Arrange
-        questao.setDificuldade(3);
-
-        // Act
-        questaoService.validarDificuldade(questao);
-
-        // Assert
-        assertEquals(0, questao.getDificuldade());
-    }
-
-    @Test
-    void naoDeveMudarDificuldadeValida() {
-        // Arrange
-        questao.setDificuldade(1);
-
-        // Act
-        questaoService.validarDificuldade(questao);
-
-        // Assert
-        assertEquals(1, questao.getDificuldade());
-    }
 }

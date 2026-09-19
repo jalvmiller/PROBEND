@@ -46,14 +46,6 @@ public class QuestaoService implements CrudService<Questao, Long> {
         return usuarioRepository.findByUsername(auth.getName()).orElse(null);
     }
 
-    public void validarDificuldade(Questao questao) {
-        if (questao.getDificuldade() == null || questao.getDificuldade() < 0 || questao.getDificuldade() > 2) {
-            System.out.println("\nDificuldade inválida, a dificuldade será fácil por padrão.\n");
-
-            questao.setDificuldade(0);
-        }
-    }
-
     // Cadastrar nova questão com as regras de negócio, exceções
     @Transactional
     public Questao validarQuestao(Questao questao) {
@@ -79,15 +71,7 @@ public class QuestaoService implements CrudService<Questao, Long> {
 
         // Atribuir autor logado se não estiver explicitado
         if (questao.getAutor() == null) {
-            // Uso getAuthentication() para pegar o usuário logado
-            // o "anonymousUser" é um usuário padrão do Spring Security que representa um
-            // usuário não logado Se o usuário for diferente disso, ele está logado e
-            // pega-se o autor por username
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
-                Usuario loggedInUser = usuarioRepository.findByUsername(auth.getName()).orElse(null);
-                questao.setAutor(loggedInUser);
-            }
+            questao.setAutor(resolverUsuarioAtual());
         }
 
         // Se passou todas as validações, salva
@@ -98,15 +82,12 @@ public class QuestaoService implements CrudService<Questao, Long> {
     public Questao marcarComoSolucionada(Long id, boolean status) {
         Questao questao = buscarPorId(id);
 
-        // Pegar contexto do usuário autenticado (JWT)
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
+        Usuario usuarioLogado = resolverUsuarioAtual();
+        if (usuarioLogado == null) {
             throw new IllegalArgumentException("Usuário não autenticado");
         }
 
-        // auth.getName() = nome que vem pelo JWT, é igual ao que está no banco
-        if (questao.getAutor() == null || !questao.getAutor().getUsername().equals(auth.getName())) {
+        if (questao.getAutor() == null || !questao.getAutor().getUsername().equals(usuarioLogado.getUsername())) {
             throw new IllegalArgumentException("Usuário não autorizado!");
         }
 
@@ -119,12 +100,12 @@ public class QuestaoService implements CrudService<Questao, Long> {
         Questao existente = repository.findById(questao.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Questão não encontrada com ID: " + questao.getId()));
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
+        Usuario usuarioLogado = resolverUsuarioAtual();
+        if (usuarioLogado == null) {
             throw new SecurityException("Usuário não autenticado");
         }
 
-        if (existente.getAutor() == null || !existente.getAutor().getUsername().equals(auth.getName())) {
+        if (existente.getAutor() == null || !existente.getAutor().getUsername().equals(usuarioLogado.getUsername())) {
             throw new SecurityException("Você não tem permissão para alterar esta questão");
         }
 
@@ -178,15 +159,14 @@ public class QuestaoService implements CrudService<Questao, Long> {
     public void remover(Long id) {
         Questao questao = buscarPorId(id);
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getName())) {
+        Usuario usuarioLogado = resolverUsuarioAtual();
+        if (usuarioLogado == null) {
             throw new SecurityException("Usuário não autenticado");
         }
 
-        boolean isAdmin = auth.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+        boolean isAdmin = usuarioLogado.isAdministrador();
 
-        if (!isAdmin && (questao.getAutor() == null || !questao.getAutor().getUsername().equals(auth.getName()))) {
+        if (!isAdmin && (questao.getAutor() == null || !questao.getAutor().getUsername().equals(usuarioLogado.getUsername()))) {
             throw new SecurityException("Você não tem permissão para remover esta questão");
         }
 
@@ -270,13 +250,7 @@ public class QuestaoService implements CrudService<Questao, Long> {
         // SEGURANÇA: nunca confiar no seederContent vindo do cliente.
         resolucao.setSeederContent(false);
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
-            Usuario loggedInUser = usuarioRepository.findByUsername(auth.getName()).orElse(null);
-
-            resolucao.setAutor(loggedInUser);
-        }
+        resolucao.setAutor(resolverUsuarioAtual());
 
         Resolucao resolucaoSalva = resolucaoRepository.save(resolucao);
 
