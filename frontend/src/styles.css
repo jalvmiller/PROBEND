@@ -113,12 +113,21 @@ body {
   min-height: 100vh;
   width: 100%;
   min-width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
   font-family: var(--font-sans);
   background-color: var(--bg-app);
   color: var(--text-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Proteção global de overflow para blocos KaTeX */
+.katex-display {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  max-width: 100% !important;
 }
 
 /* Grid de Blueprint de Fundo sutil */

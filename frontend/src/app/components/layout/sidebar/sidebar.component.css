@@ -1,0 +1,4 @@
+/* Sidebar temporariamente oculta / vazia */
+.sidebar-container {
+  display: none;
+}
