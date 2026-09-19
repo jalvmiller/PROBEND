@@ -1,9 +1,16 @@
-<div class="layout-app">
-  <!-- Barra de Navegação Superior Fixa -->
-  <app-header></app-header>
+<div class="layout-app" [class.com-sidebar]="authService.isAuthenticated()">
+  <!-- Barra Lateral Retrátil (quando autenticado) -->
+  @if (authService.isAuthenticated()) {
+    <app-sidebar></app-sidebar>
+  }
 
-  <!-- Janela de Roteamento SPA: Aqui o Angular renderiza a página da rota ativa (Dashboard ou QuestaoDetalhes) -->
-  <main class="conteudo-principal">
-    <router-outlet></router-outlet>
-  </main>
+  <div class="layout-conteudo-wrapper">
+    <!-- Barra de Navegação Superior Fixa -->
+    <app-header></app-header>
+
+    <!-- Janela de Roteamento SPA -->
+    <main class="conteudo-principal">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
 </div>
