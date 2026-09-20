@@ -1,0 +1,417 @@
+<div class="editor-fullscreen-overlay">
+  <!-- Barra de Topo Fixa (Header do Editor) -->
+  <header class="editor-topo">
+    <div class="topo-esquerda">
+      <button
+        type="button"
+        class="btn-fechar"
+        (click)="minimizarEFechar()"
+        title="Minimizar e voltar à questão (preserva o que você digitou)"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <div class="info-questao">
+        <div class="titulo-linha">
+          <span class="badge-questao-id">#{{ questao.id }}</span>
+          <h1 class="titulo-questao-truncado" [title]="questao.titulo || questao.enunciado">
+            {{ questao.titulo || 'Demonstração Técnica' }}
+          </h1>
+        </div>
+        <div class="metadados-chips">
+          <span class="chip-materia">{{ questao.materia || 'Geral' }}</span>
+          <span class="chip-dificuldade" [ngClass]="getDificuldadeClasse(questao.dificuldade)">
+            {{ getDificuldadeTexto(questao.dificuldade) }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seletor de Modo (Matemática x Algoritmo) -->
+    <div class="seletor-modos">
+      <button
+        type="button"
+        class="btn-modo"
+        [class.ativo]="modoAtivo() === 'MATEMATICA'"
+        (click)="alternarModo('MATEMATICA')"
+      >
+        <span class="modo-icone">📐</span>
+        <span class="modo-label">Modo Matemática</span>
+      </button>
+      <button
+        type="button"
+        class="btn-modo"
+        [class.ativo]="modoAtivo() === 'ALGORITMO'"
+        (click)="alternarModo('ALGORITMO')"
+      >
+        <span class="modo-icone">💻</span>
+        <span class="modo-label">Modo Algoritmo</span>
+      </button>
+    </div>
+
+    <!-- Ações à Direita -->
+    <div class="topo-direita">
+      <button
+        type="button"
+        class="btn-toggle-enunciado"
+        [class.ativo]="enunciadoAberto()"
+        (click)="toggleEnunciado()"
+        title="Consultar enunciado original da questão"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+        </svg>
+        <span>{{ enunciadoAberto() ? 'Ocultar Enunciado' : 'Ver Enunciado' }}</span>
+      </button>
+
+      <div class="stats-contadores">
+        <span class="stat-item">{{ totalLinhas() }} lin</span>
+        <span class="stat-div">·</span>
+        <span class="stat-item">{{ totalCaracteres() }} carac</span>
+      </div>
+
+      <button
+        type="button"
+        class="btn-publicar-topo"
+        (click)="submeter()"
+        [disabled]="submetendo() || (!conteudo().trim() && !trechoCodigo().trim())"
+      >
+        @if (submetendo()) {
+          <span class="spinner-sm"></span>
+          <span>Submetendo...</span>
+        } @else {
+          <span>Submeter</span>
+        }
+      </button>
+    </div>
+  </header>
+
+  <!-- Drawer Deslizante de Enunciado -->
+  @if (enunciadoAberto()) {
+    <section class="drawer-enunciado">
+      <div class="drawer-conteudo">
+        <div class="drawer-header">
+          <span class="drawer-tag">Enunciado da Questão Original</span>
+          <button type="button" class="btn-fechar-drawer" (click)="enunciadoAberto.set(false)">✕</button>
+        </div>
+        <div class="drawer-corpo" [appKatex]="questao.enunciado"></div>
+        @if (questao.trechoCodigo) {
+          <div class="drawer-codigo">
+            <pre class="codigo-pre"><code>{{ questao.trechoCodigo }}</code></pre>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  <!-- Corpo Principal: Split-Screen Lado a Lado -->
+  <main class="editor-workspace">
+    <!-- ==================================================== -->
+    <!-- MODO MATEMÁTICA (LaTeX)                              -->
+    <!-- ==================================================== -->
+    @if (modoAtivo() === 'MATEMATICA') {
+      <div class="split-screen">
+        <!-- Coluna Esquerda: Edição e Barra de Símbolos -->
+        <div class="coluna-painel painel-editor">
+          <!-- Barra de Atalhos Rápidos + Toggle do Compositor -->
+          <div class="toolbar-matematica">
+            <div class="toolbar-secao">
+              <span class="toolbar-titulo">Atalhos:</span>
+              <div class="botoes-simbolos">
+                @for (sim of simbolosCalculo; track sim.rotulo) {
+                  <button
+                    type="button"
+                    class="btn-simbolo"
+                    (click)="inserirSimbolo(sim.latex)"
+                    [title]="sim.dica || sim.rotulo"
+                  >
+                    {{ sim.rotulo }}
+                  </button>
+                }
+                @for (sim of simbolosOperadores; track sim.rotulo) {
+                  <button
+                    type="button"
+                    class="btn-simbolo"
+                    (click)="inserirSimbolo(sim.latex)"
+                    [title]="sim.dica || sim.rotulo"
+                  >
+                    {{ sim.rotulo }}
+                  </button>
+                }
+                @for (sim of simbolosGregos; track sim.rotulo) {
+                  <button
+                    type="button"
+                    class="btn-simbolo grego"
+                    (click)="inserirSimbolo(sim.latex)"
+                  >
+                    {{ sim.rotulo }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Botão Toggle do Compositor Visual -->
+            <button
+              type="button"
+              class="btn-compositor-toggle"
+              [class.ativo]="compositorAberto()"
+              (click)="toggleCompositor()"
+              title="Abrir compositor visual de fórmulas (estilo Wolfram/MathLive)"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+              <span>{{ compositorAberto() ? 'Fechar Compositor' : 'Compositor Visual' }}</span>
+            </button>
+          </div>
+
+          <!-- Painel Compositor MathLive (Colapsável) -->
+          @if (compositorAberto()) {
+            <div class="compositor-painel">
+              <!-- Abas do Teclado Matemático -->
+              <div class="compositor-abas">
+                @for (aba of abasCompositor; track aba.id) {
+                  <button
+                    type="button"
+                    class="compositor-aba"
+                    [class.ativa]="abaCompositorAtiva() === aba.id"
+                    (click)="abaCompositorAtiva.set(aba.id)"
+                  >
+                    <span class="aba-icone">{{ aba.icone }}</span>
+                    <span class="aba-rotulo">{{ aba.rotulo }}</span>
+                  </button>
+                }
+              </div>
+
+              <!-- Teclado por Abas -->
+              <div class="compositor-teclado">
+                @if (abaCompositorAtiva() === 'basico') {
+                  <div class="teclado-grid">
+                    @for (t of teclasBasico; track t.visual) {
+                      <button type="button" class="tecla" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
+                        <span class="tecla-visual">{{ t.visual }}</span>
+                      </button>
+                    }
+                  </div>
+                }
+
+                @if (abaCompositorAtiva() === 'calculo') {
+                  <div class="teclado-grid">
+                    @for (t of teclasCalculo; track t.visual) {
+                      <button type="button" class="tecla" [class.tecla-larga]="t.largo" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
+                        <span class="tecla-visual">{{ t.visual }}</span>
+                      </button>
+                    }
+                  </div>
+                }
+
+                @if (abaCompositorAtiva() === 'gregas') {
+                  <div class="teclado-grid gregas-grid">
+                    @for (t of teclasGregas; track t.visual) {
+                      <button type="button" class="tecla" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
+                        <span class="tecla-visual grega">{{ t.visual }}</span>
+                      </button>
+                    }
+                  </div>
+                }
+
+                @if (abaCompositorAtiva() === 'matrizes') {
+                  <div class="teclado-grid">
+                    @for (t of teclasMatrizes; track t.visual) {
+                      <button type="button" class="tecla tecla-xl" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
+                        <span class="tecla-visual">{{ t.visual }}</span>
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+
+              <!-- Math-Field WYSIWYG + Ações de Inserção -->
+              <div class="compositor-campo">
+                <div class="compositor-mathfield-wrapper">
+                  <math-field
+                    #mathFieldComposer
+                    class="compositor-mathfield"
+                  ></math-field>
+                </div>
+                <div class="compositor-acoes">
+                  <button
+                    type="button"
+                    class="btn-compositor-limpar"
+                    (click)="limparCompositor()"
+                    title="Limpar campo do compositor"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="3 6 5 6 21 6"></polyline>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                  </button>
+                  <span class="compositor-latex-preview">{{ compositorLatex() || 'Vazio' }}</span>
+                  <div class="compositor-botoes-inserir">
+                    <button
+                      type="button"
+                      class="btn-inserir-inline"
+                      (click)="inserirDoCompositor()"
+                      [disabled]="!compositorLatex().trim()"
+                      title="Inserir como fórmula inline ($...$)"
+                    >
+                      Inserir Inline
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-inserir-bloco"
+                      (click)="inserirDoCompositorBloco()"
+                      [disabled]="!compositorLatex().trim()"
+                      title="Inserir como equação em bloco ($$...$$)"
+                    >
+                      Inserir Bloco
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- Textarea Matemática com Régua IDE -->
+          <div class="campo-edicao-wrapper">
+            <div class="editor-ide-container">
+              <div #gutterMatematica class="editor-gutter gutter-math" aria-hidden="true">
+                @for (num of linhasMatematica(); track num) {
+                  <div class="gutter-numero">{{ num }}</div>
+                }
+              </div>
+              <textarea
+                #textareaMatematica
+                class="textarea-fullscreen textarea-math"
+                [placeholder]="placeholderMatematica"
+                [ngModel]="conteudo()"
+                (ngModelChange)="conteudo.set($event)"
+                (scroll)="sincronizarScroll(textareaMatematica, gutterMatematica)"
+                spellcheck="false"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Coluna Direita: Live Preview KaTeX -->
+        <div class="coluna-painel painel-preview">
+          <div class="preview-barra-topo">
+            <span class="preview-rotulo">Renderização</span>
+          </div>
+
+          <div class="preview-conteudo-scroll">
+            @if (conteudo().trim()) {
+              <div class="preview-renderizado" [appKatex]="conteudo()"></div>
+            } @else {
+              <div class="preview-vazio">
+                <span class="icone-vazio">📐</span>
+                <p class="titulo-vazio">Prévia</p>
+                <p class="sub-vazio">
+                  À medida que você digitar ou clicar nos atalhos à esquerda, as equações serão renderizadas nesta janela
+                </p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- ==================================================== -->
+    <!-- MODO ALGORITMO / CÓDIGO                              -->
+    <!-- ==================================================== -->
+    @if (modoAtivo() === 'ALGORITMO') {
+      <div class="split-screen">
+        <!-- Coluna Esquerda: Editor de Código com Seletor e Suporte a Tab -->
+        <div class="coluna-painel painel-editor">
+          <!-- Barra de Configuração de Código -->
+          <div class="toolbar-codigo">
+            <div class="grupo-linguagem">
+              <label for="seletorLinguagem" class="label-linguagem">Linguagem:</label>
+              <select
+                id="seletorLinguagem"
+                class="select-linguagem"
+                [ngModel]="linguagemCodigo()"
+                (ngModelChange)="linguagemCodigo.set($event)"
+              >
+                @for (lang of linguagens; track lang.valor) {
+                  <option [value]="lang.valor">{{ lang.rotulo }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <!-- Textarea Código com Régua IDE -->
+          <div class="campo-edicao-wrapper codigo-wrapper">
+            <div class="editor-ide-container">
+              <div #gutterCodigo class="editor-gutter gutter-code" aria-hidden="true">
+                @for (num of linhasCodigo(); track num) {
+                  <div class="gutter-numero">{{ num }}</div>
+                }
+              </div>
+              <textarea
+                #textareaCodigo
+                class="textarea-fullscreen textarea-code"
+                [placeholder]="placeholderCodigo"
+                [ngModel]="trechoCodigo()"
+                (ngModelChange)="trechoCodigo.set($event)"
+                (keydown)="tratarTab($event)"
+                (scroll)="sincronizarScroll(textareaCodigo, gutterCodigo)"
+                spellcheck="false"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Explicação Teórica Opcional do Algoritmo -->
+          <div class="secao-explicacao-algoritmo">
+            <div class="sub-header-explicacao">
+              <span class="sub-rotulo">Explicação Conceitual / Anotações (Opcional):</span>
+              <span class="dica-katex-sm">Suporta fórmulas KaTeX</span>
+            </div>
+            <textarea
+              class="textarea-explicacao"
+              rows="3"
+              placeholder="Explique a lógica do algoritmo ou a complexidade de tempo e espaço..."
+              [ngModel]="conteudo()"
+              (ngModelChange)="conteudo.set($event)"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Coluna Direita: Live Code Preview PrismJS + Explicação KaTeX -->
+        <div class="coluna-painel painel-preview">
+          <div class="preview-barra-topo">
+            <span class="preview-rotulo">Realce de Sintaxe ({{ linguagemCodigo().toUpperCase() }})</span>
+            <span class="preview-status code">PrismJS</span>
+          </div>
+
+          <div class="preview-conteudo-scroll">
+            @if (trechoCodigo().trim()) {
+              <div class="bloco-codigo-preview">
+                <pre class="codigo-pre"><code [innerHTML]="codigoDestacado()"></code></pre>
+              </div>
+            } @else {
+              <div class="preview-vazio">
+                <span class="icone-vazio">💻</span>
+                <p class="titulo-vazio">Prévia</p>
+                <p class="sub-vazio">Digite sua implementação no painel à esquerda para ver o realce de sintaxe em tempo real.</p>
+              </div>
+            }
+
+            @if (conteudo().trim()) {
+              <div class="preview-explicacao-box">
+                <span class="tag-explicacao">Análise & Explicação:</span>
+                <div class="corpo-explicacao" [appKatex]="conteudo()"></div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  </main>
+</div>

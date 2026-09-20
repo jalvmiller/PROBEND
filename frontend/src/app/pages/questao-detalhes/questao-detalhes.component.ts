@@ -7,11 +7,19 @@ import { AuthService } from '../../services/auth.service';
 import { Questao, Resolucao, getDificuldadeTexto, getDificuldadeClasse } from '../../models/questao.model';
 import { KatexDirective } from '../../directives/katex.directive';
 import { ComentarioModalComponent } from './comentario-modal/comentario-modal.component';
+import { EditorFullscreenComponent, RespostaEditorFullscreen } from './editor-fullscreen/editor-fullscreen.component';
 
 @Component({
   selector: 'app-questao-detalhes',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, KatexDirective, ComentarioModalComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    KatexDirective,
+    ComentarioModalComponent,
+    EditorFullscreenComponent
+  ],
   templateUrl: './questao-detalhes.component.html',
   styleUrl: './questao-detalhes.component.css'
 })
@@ -51,7 +59,10 @@ export class QuestaoDetalhesComponent implements OnInit {
 
   // Formulário de submissão de resolução
   public novaResolucao = signal<string>('');
+  public codigoResolucao = signal<string>('');
+  public linguagemResolucao = signal<string>('java');
   public submetendo = signal<boolean>(false);
+  public editorFullscreenAberto = signal<boolean>(false);
 
   // Modal de comentários
   public modalResolucaoId = signal<number | null>(null);
@@ -400,15 +411,59 @@ export class QuestaoDetalhesComponent implements OnInit {
     }
 
     this.submetendo.set(true);
-    this.questaoService.enviarResolucao(this.id, { conteudo: texto }).subscribe({
+    this.questaoService.enviarResolucao(this.id, {
+      conteudo: texto,
+      trechoCodigo: this.codigoResolucao().trim() || undefined,
+      linguagemCodigo: this.codigoResolucao().trim() ? this.linguagemResolucao() : undefined
+    }).subscribe({
       next: (nova) => {
         this.resolucoes.update(atuais => [nova, ...atuais]);
         this.novaResolucao.set('');
+        this.codigoResolucao.set('');
         this.submetendo.set(false);
       },
       error: () => {
         alert('Erro ao enviar resolução. Tente novamente.');
         this.submetendo.set(false);
+      }
+    });
+  }
+
+  public abrirEditorFullscreen(): void {
+    if (!this.authService.isAuthenticated()) {
+      alert('Você precisa estar logado para abrir o editor e submeter uma resolução.');
+      return;
+    }
+    this.editorFullscreenAberto.set(true);
+  }
+
+  public fecharEditorFullscreen(dados: RespostaEditorFullscreen): void {
+    if (dados) {
+      this.novaResolucao.set(dados.conteudo || '');
+      this.codigoResolucao.set(dados.trechoCodigo || '');
+      if (dados.linguagemCodigo) {
+        this.linguagemResolucao.set(dados.linguagemCodigo);
+      }
+    }
+    this.editorFullscreenAberto.set(false);
+  }
+
+  public publicarPeloFullscreen(dados: RespostaEditorFullscreen): void {
+    if (!dados?.conteudo?.trim()) return;
+
+    this.questaoService.enviarResolucao(this.id, {
+      conteudo: dados.conteudo,
+      trechoCodigo: dados.trechoCodigo,
+      linguagemCodigo: dados.linguagemCodigo
+    }).subscribe({
+      next: (nova) => {
+        this.resolucoes.update(atuais => [nova, ...atuais]);
+        this.novaResolucao.set('');
+        this.codigoResolucao.set('');
+        this.editorFullscreenAberto.set(false);
+      },
+      error: () => {
+        alert('Erro ao enviar resolução. Tente novamente.');
       }
     });
   }

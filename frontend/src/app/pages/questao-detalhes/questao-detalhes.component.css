@@ -726,12 +726,42 @@
   gap: 1rem;
 }
 
+.envio-cabecalho-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-abrir-fullscreen {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  background-color: var(--bg-surface-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm, 6px);
+  color: var(--accent-amber);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-abrir-fullscreen:hover {
+  background-color: var(--accent-amber-subtle);
+  border-color: var(--accent-amber);
+  transform: translateY(-1px);
+}
+
 .subtitulo-envio {
   font-family: var(--font-serif);
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin: 0 0 0.25rem 0;
+  margin: 0;
 }
 
 .instrucao-latex {
