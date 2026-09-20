@@ -1,0 +1,143 @@
+<!-- Trigger compacto: sempre visível -->
+<button
+  type="button"
+  class="copiloto-trigger"
+  [class.copiloto-trigger--ativo]="copilotoAberto()"
+  (click)="toggleCopiloto()"
+>
+  <span class="copiloto-trigger-icone">
+    <svg
+      class="gemini-sparkle-icon"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient
+          id="gemini-sparkle-grad"
+          x1="2"
+          y1="2"
+          x2="22"
+          y2="22"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop
+            offset="0%"
+            stop-color="#a855f7"
+          />
+          <stop
+            offset="50%"
+            stop-color="#818cf8"
+          />
+          <stop
+            offset="100%"
+            stop-color="#38bdf8"
+          />
+        </linearGradient>
+      </defs>
+      <!-- Estrela principal curvada do Google Gemini -->
+      <path
+        d="M11 2C11 7 7 11 2 11C7 11 11 15 11 20C11 15 15 11 20 11C15 11 11 7 11 2Z"
+        fill="url(#gemini-sparkle-grad)"
+      />
+      <!-- Estrela satélite superior direita -->
+      <path
+        d="M19 2C19 3.8 17.8 5 16 5C17.8 5 19 6.2 19 8C19 6.2 20.2 5 22 5C20.2 5 19 3.8 19 2Z"
+        fill="url(#gemini-sparkle-grad)"
+        opacity="0.85"
+      />
+    </svg>
+  </span>
+  <span class="copiloto-trigger-texto">
+    @if (gerandoIA()) {
+      <span class="spinner-sm spinner-purple"></span>
+      <span>Gerando com Gemini AI...</span>
+    } @else {
+      Gemini AI
+    }
+  </span>
+  <span
+    class="copiloto-trigger-chevron"
+    [class.rotacionado]="copilotoAberto()"
+  >
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+    >
+      <path
+        d="M4 6l4 4 4-4"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </span>
+</button>
+
+<!-- Painel expansível -->
+@if (copilotoAberto() || gerandoIA()) {
+  <div
+    class="card-copiloto"
+    id="painel-copiloto"
+  >
+    <div class="copiloto-header">
+      <span class="copiloto-sub">Assistente de Elaboração de Questões</span>
+      <button
+        type="button"
+        class="copiloto-btn-fechar"
+        (click)="fecharCopiloto()"
+        title="Fechar painel"
+        [disabled]="gerandoIA()"
+      >
+        ✕
+      </button>
+    </div>
+    <p class="copiloto-text">
+      Descreva sua ideia ou tema (ex:
+      <em>"Crie uma questão de Álgebra Linear sobre autovalores com matriz 2x2"</em>) e o Gemini
+      elaborará o enunciado completo:
+    </p>
+    <textarea
+      class="input-field copiloto-textarea"
+      rows="3"
+      placeholder="Descreva a questão técnica que você deseja formular..."
+      [ngModel]="promptIA()"
+      (ngModelChange)="promptIA.set($event)"
+      [disabled]="gerandoIA()"
+    ></textarea>
+    <div class="copiloto-acoes">
+      <button
+        type="button"
+        class="btn btn-copiloto-esboco"
+        (click)="gerarEsbocoIA()"
+        [disabled]="gerandoIA()"
+      >
+        @if (gerandoIA()) {
+          <span class="spinner-sm"></span>
+          <span>Gerando com IA...</span>
+        } @else {
+          <span>✏️ Preencher Esboço</span>
+        }
+      </button>
+      <button
+        type="button"
+        class="btn btn-copiloto-publicar"
+        (click)="criarTotalIA()"
+        [disabled]="gerandoIA()"
+      >
+        @if (gerandoIA()) {
+          <span class="spinner-sm"></span>
+          <span>Publicando...</span>
+        } @else {
+          <span>🚀 Publicar Direto</span>
+        }
+      </button>
+    </div>
+  </div>
+}

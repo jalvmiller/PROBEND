@@ -3,15 +3,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { QuestaoService } from '../../services/questao.service';
-import { Dificuldade } from '../../models/questao.model';
+import { Dificuldade, Questao } from '../../models/questao.model';
 import { KatexDirective } from '../../directives/katex.directive';
+import { CopilotoGeminiComponent } from './copiloto-gemini/copiloto-gemini.component';
 
 @Component({
   selector: 'app-questao-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, KatexDirective],
+  imports: [CommonModule, FormsModule, RouterLink, KatexDirective, CopilotoGeminiComponent],
   templateUrl: './questao-form.component.html',
-  styleUrl: './questao-form.component.css'
+  styleUrl: './questao-form.component.css',
 })
 export class QuestaoFormComponent implements OnInit {
   @Input() id?: string;
@@ -30,9 +31,7 @@ export class QuestaoFormComponent implements OnInit {
   public linguagemCodigo = signal<string>('');
   public imagemUrl = signal<string>('');
 
-  // Estados de IA e Upload
-  public promptIA = signal<string>('');
-  public gerandoIA = signal<boolean>(false);
+  // Estados de Upload e Salvamento
   public enviandoImagem = signal<boolean>(false);
   public salvando = signal<boolean>(false);
   public erro = signal<string>('');
@@ -56,7 +55,7 @@ export class QuestaoFormComponent implements OnInit {
         this.linguagemCodigo.set(q.linguagemCodigo || '');
         this.imagemUrl.set(q.imagemUrl || '');
       },
-      error: () => this.erro.set('Erro ao carregar dados da questão para edição.')
+      error: () => this.erro.set('Erro ao carregar dados da questão para edição.'),
     });
   }
 
@@ -74,57 +73,24 @@ export class QuestaoFormComponent implements OnInit {
       error: () => {
         alert('Erro ao fazer upload da imagem.');
         this.enviandoImagem.set(false);
-      }
+      },
     });
   }
 
-  public gerarEsbocoIA(): void {
-    const prompt = (this.promptIA() || '').trim();
-    if (!prompt) {
-      alert('Digite uma descrição ou ideia para o Copiloto Gemini.');
-      return;
-    }
-
-    this.gerandoIA.set(true);
-    this.questaoService.iaSugerir(prompt, this.enunciado() || '').subscribe({
-      next: (dados) => {
-        if (dados) {
-          if (dados.titulo) this.titulo.set(dados.titulo);
-          if (dados.enunciado) this.enunciado.set(dados.enunciado);
-          if (dados.materia) this.materia.set(dados.materia);
-          if (dados.assunto) this.assunto.set(dados.assunto);
-          if (dados.dificuldade !== undefined) this.dificuldade.set(Number(dados.dificuldade) || 0);
-          if (dados.trechoCodigo) this.trechoCodigo.set(dados.trechoCodigo);
-          if (dados.linguagemCodigo) this.linguagemCodigo.set(dados.linguagemCodigo);
-          if (dados.fonte) this.fonte.set(dados.fonte);
-        }
-        this.gerandoIA.set(false);
-      },
-      error: () => {
-        alert('Erro ao obter sugestão da IA. Verifique as credenciais da API Gemini.');
-        this.gerandoIA.set(false);
-      }
-    });
+  public aplicarSugestaoIA(dados: any): void {
+    if (!dados) return;
+    if (dados.titulo) this.titulo.set(dados.titulo);
+    if (dados.enunciado) this.enunciado.set(dados.enunciado);
+    if (dados.materia) this.materia.set(dados.materia);
+    if (dados.assunto) this.assunto.set(dados.assunto);
+    if (dados.dificuldade !== undefined) this.dificuldade.set(Number(dados.dificuldade) || 0);
+    if (dados.trechoCodigo) this.trechoCodigo.set(dados.trechoCodigo);
+    if (dados.linguagemCodigo) this.linguagemCodigo.set(dados.linguagemCodigo);
+    if (dados.fonte) this.fonte.set(dados.fonte);
   }
 
-  public criarTotalIA(): void {
-    const prompt = (this.promptIA() || '').trim();
-    if (!prompt) {
-      alert('Digite uma descrição ou ideia para o Copiloto Gemini.');
-      return;
-    }
-
-    this.gerandoIA.set(true);
-    this.questaoService.iaCriarTotal(prompt).subscribe({
-      next: (q) => {
-        this.gerandoIA.set(false);
-        this.router.navigate(['/questoes', q.id]);
-      },
-      error: () => {
-        alert('Erro ao publicar questão com IA. Verifique as credenciais da API Gemini.');
-        this.gerandoIA.set(false);
-      }
-    });
+  public onQuestaoPublicadaDireto(q: Questao): void {
+    this.router.navigate(['/questoes', q.id]);
   }
 
   public removerImagem(): void {
@@ -143,7 +109,7 @@ export class QuestaoFormComponent implements OnInit {
 
     this.salvando.set(true);
     const payload = {
-      titulo: tit || (enun.substring(0, 45) + '...'),
+      titulo: tit || enun.substring(0, 45) + '...',
       enunciado: enun,
       materia: mat || 'Geral',
       assunto: (this.assunto() || '').trim() || 'Outros',
@@ -151,7 +117,7 @@ export class QuestaoFormComponent implements OnInit {
       fonte: (this.fonte() || '').trim(),
       trechoCodigo: (this.trechoCodigo() || '').trim(),
       linguagemCodigo: (this.linguagemCodigo() || '').trim(),
-      imagemUrl: (this.imagemUrl() || '').trim()
+      imagemUrl: (this.imagemUrl() || '').trim(),
     };
 
     if (this.id) {
@@ -163,7 +129,7 @@ export class QuestaoFormComponent implements OnInit {
         error: () => {
           alert('Erro ao atualizar questão.');
           this.salvando.set(false);
-        }
+        },
       });
     } else {
       this.questaoService.salvar(payload).subscribe({
@@ -174,7 +140,7 @@ export class QuestaoFormComponent implements OnInit {
         error: () => {
           alert('Erro ao cadastrar questão.');
           this.salvando.set(false);
-        }
+        },
       });
     }
   }

@@ -1,64 +1,37 @@
 <div class="form-container">
   <div class="form-topo">
-    <a routerLink="/" class="link-voltar">Voltar ao Repositório</a>
+    <a
+      routerLink="/"
+      class="link-voltar"
+      >Voltar ao Repositório</a
+    >
     <h1 class="page-title">{{ id ? 'Editar Questão #' + id : 'Nova Questão Técnica' }}</h1>
-    <p class="page-desc">Cadastre ou edite problemas com suporte a fórmulas em KaTeX, blocos de código e diagramas.</p>
+    <p class="page-desc">
+      Cadastre ou edite problemas com suporte a fórmulas em KaTeX, blocos de código e diagramas.
+    </p>
   </div>
 
-  <!-- Copiloto Gemini IA (apenas em modo de criação) -->
+  <!-- Copiloto Gemini IA — Componente Especialista (apenas em modo de criação) -->
   @if (!id) {
-    <div class="card-copiloto">
-      <div class="copiloto-header">
-        <span class="copiloto-badge">Copiloto Gemini AI</span>
-        <span class="copiloto-sub">Assistente de Elaboração de Questões</span>
-      </div>
-      <p class="copiloto-text">
-        Digite sua ideia ou tema (ex: <em>"Crie uma questão de Álgebra Linear sobre autovalores com matriz 2x2"</em>) e acelere seu fluxo de trabalho:
-      </p>
-      <textarea
-        class="input-field copiloto-textarea"
-        rows="2"
-        placeholder="Descreva a questão técnica que você deseja formular..."
-        [ngModel]="promptIA()"
-        (ngModelChange)="promptIA.set($event)"
-        [disabled]="gerandoIA()"
-      ></textarea>
-      <div class="copiloto-acoes">
-        <button
-          type="button"
-          class="btn btn-copiloto-esboco"
-          (click)="gerarEsbocoIA()"
-          [disabled]="gerandoIA()"
-        >
-          @if (gerandoIA()) {
-            <span class="spinner-sm"></span>
-            <span>Gerando com IA...</span>
-          } @else {
-            <span>Preencher Esboço</span>
-          }
-        </button>
-        <button
-          type="button"
-          class="btn btn-copiloto-publicar"
-          (click)="criarTotalIA()"
-          [disabled]="gerandoIA()"
-        >
-          @if (gerandoIA()) {
-            <span class="spinner-sm"></span>
-            <span>Publicando...</span>
-          } @else {
-            <span>Publicar Direto</span>
-          }
-        </button>
-      </div>
-    </div>
+    <app-copiloto-gemini
+      [rascunhoAtual]="enunciado()"
+      (sugestaoGerada)="aplicarSugestaoIA($event)"
+      (publicadaDireto)="onQuestaoPublicadaDireto($event)"
+    ></app-copiloto-gemini>
   }
 
   <!-- Formulário Principal -->
-  <form (ngSubmit)="salvarQuestao()" class="card-form">
+  <form
+    (ngSubmit)="salvarQuestao()"
+    class="card-form"
+  >
     <!-- Linha 1: Título -->
     <div class="form-group">
-      <label class="form-label" for="titulo">Título da Questão (Opcional)</label>
+      <label
+        class="form-label"
+        for="titulo"
+        >Título da Questão (Opcional)</label
+      >
       <input
         id="titulo"
         type="text"
@@ -73,7 +46,11 @@
     <!-- Linha 2: Matéria, Assunto, Dificuldade e Fonte -->
     <div class="grid-campos">
       <div class="form-group">
-        <label class="form-label" for="materia">Matéria / Área *</label>
+        <label
+          class="form-label"
+          for="materia"
+          >Matéria / Área *</label
+        >
         <input
           id="materia"
           type="text"
@@ -87,7 +64,11 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="assunto">Assunto Específico</label>
+        <label
+          class="form-label"
+          for="assunto"
+          >Assunto Específico</label
+        >
         <input
           id="assunto"
           type="text"
@@ -100,7 +81,11 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="dificuldade">Dificuldade</label>
+        <label
+          class="form-label"
+          for="dificuldade"
+          >Dificuldade</label
+        >
         <select
           id="dificuldade"
           class="input-field select-field"
@@ -115,7 +100,11 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="fonte">Fonte / Exame</label>
+        <label
+          class="form-label"
+          for="fonte"
+          >Fonte / Exame</label
+        >
         <input
           id="fonte"
           type="text"
@@ -131,8 +120,14 @@
     <!-- Linha 3: Enunciado (com Preview KaTeX) -->
     <div class="form-group">
       <div class="label-com-dica">
-        <label class="form-label" for="enunciado">Enunciado da Questão *</label>
-        <span class="dica-katex">Fórmulas: <code>$...$</code> para inline e <code>$$...$$</code> para bloco</span>
+        <label
+          class="form-label"
+          for="enunciado"
+          >Enunciado da Questão *</label
+        >
+        <span class="dica-katex"
+          >Fórmulas: <code>$...$</code> para inline e <code>$$...$$</code> para bloco</span
+        >
       </div>
       <textarea
         id="enunciado"
@@ -152,14 +147,21 @@
         <div class="preview-header">
           <span class="preview-tag">Prévia de Renderização KaTeX</span>
         </div>
-        <div class="preview-corpo" [appKatex]="enunciado()"></div>
+        <div
+          class="preview-corpo"
+          [appKatex]="enunciado()"
+        ></div>
       </div>
     }
 
     <!-- Linha 4: Código Técnico Opcional -->
     <div class="grid-codigo">
       <div class="form-group campo-linguagem">
-        <label class="form-label" for="linguagemCodigo">Linguagem de Programação</label>
+        <label
+          class="form-label"
+          for="linguagemCodigo"
+          >Linguagem de Programação</label
+        >
         <select
           id="linguagemCodigo"
           class="input-field select-field"
@@ -178,7 +180,11 @@
       </div>
 
       <div class="form-group campo-trecho">
-        <label class="form-label" for="trechoCodigo">Trecho de Código (Opcional)</label>
+        <label
+          class="form-label"
+          for="trechoCodigo"
+          >Trecho de Código (Opcional)</label
+        >
         <textarea
           id="trechoCodigo"
           class="input-field font-mono"
@@ -203,7 +209,10 @@
           [disabled]="enviandoImagem()"
           class="input-file"
         />
-        <label for="arquivo-imagem" class="btn btn-secondary btn-escolher-arquivo">
+        <label
+          for="arquivo-imagem"
+          class="btn btn-secondary btn-escolher-arquivo"
+        >
           @if (enviandoImagem()) {
             <span class="spinner-sm"></span>
             <span>Enviando imagem...</span>
@@ -215,7 +224,11 @@
 
       @if (imagemUrl()) {
         <div class="preview-imagem-container">
-          <img [src]="imagemUrl()" alt="Diagrama da questão" class="img-preview" />
+          <img
+            [src]="imagemUrl()"
+            alt="Diagrama da questão"
+            class="img-preview"
+          />
           <button
             type="button"
             class="btn-remover-img"
@@ -230,7 +243,11 @@
 
     <!-- Botões Finais de Ação -->
     <div class="form-acoes">
-      <a routerLink="/" class="btn btn-secondary">Cancelar</a>
+      <a
+        routerLink="/"
+        class="btn btn-secondary"
+        >Cancelar</a
+      >
       <button
         type="submit"
         class="btn btn-primary btn-salvar"
