@@ -1,0 +1,210 @@
+@if (isOpen) {
+  <div class="modal-overlay" (click)="fecharModal()" role="dialog" aria-modal="true">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <!-- Cabeçalho do Modal -->
+      <div class="modal-header">
+        <div class="modal-titulo-wrapper">
+          <span class="modal-badge-tag">EDIÇÃO RÁPIDA</span>
+          <h2 class="modal-titulo">Editar Questão</h2>
+        </div>
+        <button type="button" class="btn-fechar" (click)="fecharModal()" title="Fechar modal" [disabled]="salvando()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Feedback de status (se houver) -->
+      @if (mensagemFeedback(); as fb) {
+        <div class="feedback-box" [ngClass]="'feedback-' + fb.tipo">
+          <span>{{ fb.texto }}</span>
+        </div>
+      }
+
+      <form (ngSubmit)="salvar()" class="modal-form">
+        <!-- Campo: Enunciado com botão IA -->
+        <div class="campo-grupo">
+          <div class="linha-label-ia">
+            <label class="campo-label" for="enunciado-input">
+              Enunciado da Questão <span class="obrigatorio">*</span>
+            </label>
+            <button
+              type="button"
+              class="btn-ia-aprimorar"
+              (click)="handleMelhorarEnunciadoIA()"
+              [disabled]="melhorandoIA() || salvando()"
+              title="Aprimora expressões matemáticas em LaTeX e clareza do enunciado com IA"
+            >
+              @if (melhorandoIA()) {
+                <span class="ia-spinner">∫</span> Aprimorando com IA...
+              } @else {
+                <span class="ia-icone">🪄</span> Melhorar com IA
+              }
+            </button>
+          </div>
+          <textarea
+            id="enunciado-input"
+            class="input-textarea"
+            rows="4"
+            [ngModel]="enunciado()"
+            (ngModelChange)="enunciado.set($event)"
+            name="enunciado"
+            placeholder="Digite o enunciado ou problema técnico (suporta LaTeX com $...$ ou $$...$$)..."
+            required
+          ></textarea>
+        </div>
+
+        <!-- Linha: Matéria, Assunto e Dificuldade -->
+        <div class="grid-tres-colunas">
+          <div class="campo-grupo">
+            <label class="campo-label" for="materia-input">Matéria <span class="obrigatorio">*</span></label>
+            <input
+              type="text"
+              id="materia-input"
+              class="input-texto"
+              [ngModel]="materia()"
+              (ngModelChange)="materia.set($event)"
+              name="materia"
+              placeholder="Ex: Cálculo, Algoritmos, Álgebra"
+              required
+            />
+          </div>
+
+          <div class="campo-grupo">
+            <label class="campo-label" for="assunto-input">Assunto</label>
+            <input
+              type="text"
+              id="assunto-input"
+              class="input-texto"
+              [ngModel]="assunto()"
+              (ngModelChange)="assunto.set($event)"
+              name="assunto"
+              placeholder="Ex: Integrais, Grafos, Matrizes"
+            />
+          </div>
+
+          <div class="campo-grupo">
+            <label class="campo-label" for="dificuldade-select">Dificuldade</label>
+            <select
+              id="dificuldade-select"
+              class="select-campo"
+              [ngModel]="dificuldade()"
+              (ngModelChange)="dificuldade.set(+$event)"
+              name="dificuldade"
+            >
+              <option [value]="0">Fácil</option>
+              <option [value]="1">Médio</option>
+              <option [value]="2">Difícil</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Linha: Fonte e Upload de Imagem -->
+        <div class="grid-duas-colunas">
+          <div class="campo-grupo">
+            <label class="campo-label" for="fonte-input">Fonte / Origem</label>
+            <input
+              type="text"
+              id="fonte-input"
+              class="input-texto"
+              [ngModel]="fonte()"
+              (ngModelChange)="fonte.set($event)"
+              name="fonte"
+              placeholder="Ex: Autoral, Livro Apostol, Prova 2024"
+            />
+          </div>
+
+          <div class="campo-grupo">
+            <label class="campo-label">Imagem Ilustrativa (Diagrama)</label>
+            <div class="upload-wrapper">
+              <input
+                type="file"
+                id="file-imagem"
+                accept="image/*"
+                (change)="onFileSelected($event)"
+                [disabled]="enviandoImagem()"
+                class="input-file-oculto"
+              />
+              <label for="file-imagem" class="btn-upload-file">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <span>{{ enviandoImagem() ? 'Enviando ao storage...' : 'Escolher Imagem' }}</span>
+              </label>
+
+              @if (imagemUrl()) {
+                <div class="imagem-anexada-preview">
+                  <span class="preview-check">✓ Anexada</span>
+                  <button type="button" class="btn-remover-img" (click)="removerImagem()" title="Remover imagem anexada">&times;</button>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Campo: Trecho de Código (Opcional) -->
+        <div class="campo-grupo">
+          <label class="campo-label" for="codigo-input">Trecho de Código (Opcional)</label>
+          <textarea
+            id="codigo-input"
+            class="input-textarea input-codigo"
+            rows="3"
+            [ngModel]="trechoCodigo()"
+            (ngModelChange)="trechoCodigo.set($event)"
+            name="trechoCodigo"
+            placeholder="Cole trechos de algoritmos ou scripts em formato texto puro..."
+          ></textarea>
+        </div>
+
+        <!-- Campo: Linguagem do Código -->
+        <div class="campo-grupo">
+          <label class="campo-label" for="linguagem-select">Linguagem do Código</label>
+          <select
+            id="linguagem-select"
+            class="select-campo"
+            [ngModel]="linguagemCodigo()"
+            (ngModelChange)="linguagemCodigo.set($event)"
+            name="linguagemCodigo"
+          >
+            <option value="">Texto Simples / Pseudocódigo</option>
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="java">Java</option>
+            <option value="c">C</option>
+            <option value="cpp">C++</option>
+            <option value="csharp">C#</option>
+            <option value="sql">SQL</option>
+            <option value="rust">Rust</option>
+            <option value="go">Go</option>
+          </select>
+        </div>
+
+        <!-- Rodapé com Botões de Ação -->
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn-cancelar"
+            (click)="fecharModal()"
+            [disabled]="salvando()"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="btn-salvar"
+            [disabled]="salvando()"
+          >
+            @if (salvando()) {
+              Salvando alterações...
+            } @else {
+              Salvar Alterações
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

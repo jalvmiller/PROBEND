@@ -1,0 +1,397 @@
+.card-questao {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg-surface, #151b23);
+  border: 1px solid var(--border-subtle, #212836);
+  border-radius: var(--radius-md, 6px);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+  box-shadow: var(--shadow-subtle, 0 1px 3px rgba(0, 0, 0, 0.4));
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Spotlight Glow por Dificuldade */
+.spotlight-glow {
+  position: absolute;
+  top: -4rem;
+  right: -4rem;
+  width: 11rem;
+  height: 11rem;
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+  opacity: 0.45;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+  z-index: 0;
+}
+
+.glow-facil {
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.35) 0%, rgba(16, 185, 129, 0.05) 70%, transparent 100%);
+}
+
+.glow-media {
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.35) 0%, rgba(245, 158, 11, 0.05) 70%, transparent 100%);
+}
+
+.glow-dificil {
+  background: radial-gradient(circle, rgba(244, 63, 94, 0.35) 0%, rgba(244, 63, 94, 0.05) 70%, transparent 100%);
+}
+
+/* Hover de Borda e Glow Dinâmico */
+.card-questao:hover .spotlight-glow {
+  transform: scale(1.35);
+  opacity: 0.85;
+}
+
+.card-questao.card-dif-facil:hover {
+  border-color: rgba(16, 185, 129, 0.6);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.12);
+  transform: translateY(-2px);
+}
+
+.card-questao.card-dif-media:hover {
+  border-color: rgba(245, 158, 11, 0.6);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.12);
+  transform: translateY(-2px);
+}
+
+.card-questao.card-dif-dificil:hover {
+  border-color: rgba(244, 63, 94, 0.6);
+  box-shadow: 0 6px 20px rgba(244, 63, 94, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Topo do Card */
+.card-topo {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.tags-esquerda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.badge-materia {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-primary, #f0f6fc);
+  background-color: var(--bg-surface-raised, #1c2430);
+  border: 1px solid var(--border-default, #2d3748);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm, 4px);
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge-assunto {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-secondary, #94a3b8);
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle, #212836);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm, 4px);
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge-dificuldade {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.18rem 0.5rem;
+  border-radius: var(--radius-sm, 4px);
+  border: 1px solid transparent;
+}
+
+.badge-facil {
+  background-color: var(--accent-emerald-subtle, rgba(16, 185, 129, 0.12));
+  color: var(--accent-emerald, #10b981);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.badge-media {
+  background-color: var(--accent-amber-subtle, rgba(245, 158, 11, 0.12));
+  color: var(--accent-amber, #f59e0b);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.badge-dificil {
+  background-color: var(--accent-rose-subtle, rgba(244, 63, 94, 0.12));
+  color: var(--accent-rose, #f43f5e);
+  border-color: rgba(244, 63, 94, 0.3);
+}
+
+/* Status: Solucionada vs Pendente */
+.status-wrapper {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.725rem;
+  font-weight: 700;
+  padding: 0.18rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  user-select: none;
+}
+
+.status-icon {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.status-solucionada {
+  background-color: var(--accent-emerald-subtle, rgba(16, 185, 129, 0.12));
+  color: var(--accent-emerald, #10b981);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.status-pendente {
+  background-color: var(--accent-amber-subtle, rgba(245, 158, 11, 0.12));
+  color: var(--accent-amber, #f59e0b);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+/* Enunciado KaTeX */
+.questao-enunciado {
+  position: relative;
+  z-index: 1;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary, #f0f6fc);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.6;
+  transition: all 0.25s ease;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.questao-enunciado.expandido {
+  -webkit-line-clamp: 14;
+  font-weight: 500;
+}
+
+.questao-enunciado .katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+  padding: 0.25rem 0;
+}
+
+.expandir-indicador {
+  position: relative;
+  z-index: 1;
+  margin-top: -0.35rem;
+}
+
+.indicador-texto {
+  font-size: 0.725rem;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-muted, #64748b);
+  transition: color 0.15s ease;
+}
+
+.card-questao:hover .indicador-texto.expandir {
+  color: var(--accent-amber, #f59e0b);
+}
+
+.indicador-texto.recolher {
+  color: var(--accent-amber, #f59e0b);
+}
+
+/* Linha de Metadados */
+.metadados-linha {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem 1.4rem;
+  border-top: 1px solid var(--border-subtle, #212836);
+  padding-top: 0.85rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.autor-meta {
+  gap: 0.45rem;
+}
+
+.meta-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted, #64748b);
+  flex-shrink: 0;
+}
+
+.meta-destaque {
+  color: var(--text-primary, #f0f6fc);
+  font-weight: 600;
+}
+
+/* Ações no Rodapé */
+.acoes-rodape {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border-subtle, #212836);
+  padding-top: 0.95rem;
+  margin-top: 0.15rem;
+  gap: 0.75rem;
+}
+
+.acoes-esquerda {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Botão de Upvote */
+.btn-upvote {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm, 4px);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 700;
+  background-color: var(--bg-surface-raised, #1c2430);
+  border: 1px solid var(--border-default, #2d3748);
+  color: var(--text-secondary, #94a3b8);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.icone-thumbs {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s ease;
+}
+
+.btn-upvote:hover {
+  border-color: var(--accent-blue, #38bdf8);
+  color: var(--accent-blue, #38bdf8);
+}
+
+.btn-upvote:hover .icone-thumbs {
+  transform: scale(1.15) rotate(-6deg);
+}
+
+.btn-upvote.upvoted {
+  background-color: var(--accent-blue-subtle, rgba(56, 189, 248, 0.12));
+  border-color: var(--accent-blue, #38bdf8);
+  color: var(--accent-blue, #38bdf8);
+}
+
+/* Botões de Ação do Autor */
+.btn-acao-autor {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-sm, 4px);
+  font-size: 0.725rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.btn-editar {
+  background-color: var(--bg-surface-raised, #1c2430);
+  border: 1px solid var(--border-default, #2d3748);
+  color: var(--text-primary, #f0f6fc);
+}
+
+.btn-editar:hover {
+  background-color: var(--bg-surface-hover, #232d3d);
+  border-color: var(--border-strong, #4a5568);
+  color: #ffffff;
+}
+
+.btn-excluir {
+  background-color: var(--accent-rose-subtle, rgba(244, 63, 94, 0.12));
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  color: var(--accent-rose, #f43f5e);
+}
+
+.btn-excluir:hover:not(:disabled) {
+  background-color: rgba(244, 63, 94, 0.25);
+  border-color: rgba(244, 63, 94, 0.5);
+}
+
+.btn-excluir:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Botão de Responder / Ver Questão */
+.btn-responder {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-sm, 4px);
+  font-size: 0.825rem;
+  font-weight: 700;
+  background-color: var(--accent-amber, #f59e0b);
+  border: 1px solid var(--accent-amber, #f59e0b);
+  color: #0f172a;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.2);
+  white-space: nowrap;
+}
+
+.btn-responder:hover {
+  background-color: var(--accent-amber-hover, #d97706);
+  border-color: var(--accent-amber-hover, #d97706);
+  transform: translateX(2px);
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+}

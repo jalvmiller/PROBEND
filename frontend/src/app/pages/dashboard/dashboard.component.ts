@@ -4,12 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { QuestaoService } from '../../services/questao.service';
 import { Questao, Dificuldade, UpvoteResponse, getDificuldadeTexto, getDificuldadeClasse } from '../../models/questao.model';
-import { KatexDirective } from '../../directives/katex.directive';
+import { QuestaoCardComponent } from '../../components/questao-card/questao-card.component';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, KatexDirective],
+  imports: [CommonModule, FormsModule, RouterLink, QuestaoCardComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -183,5 +183,15 @@ export class DashboardComponent implements OnInit {
 
   public get questoesPaginadas(): Questao[] {
     return this.questoesFiltradas.slice(this.indiceInicio, this.indiceFim);
+  }
+
+  public onQuestaoExcluida(id: number): void {
+    this.questoes.update(lista => lista.filter(q => q.id !== id));
+  }
+
+  public onQuestaoEditada(questaoAtualizada: Questao): void {
+    this.questoes.update(lista =>
+      lista.map(q => q.id === questaoAtualizada.id ? { ...q, ...questaoAtualizada } : q)
+    );
   }
 }

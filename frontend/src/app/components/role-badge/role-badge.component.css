@@ -1,0 +1,60 @@
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.12rem 0.45rem;
+  border-radius: 9999px;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.role-icon {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+/* Administrador: Púrpura sutil e elegante */
+.role-admin {
+  background-color: var(--accent-purple-subtle, rgba(168, 85, 247, 0.12));
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.35);
+}
+
+[data-theme="light"] .role-admin {
+  background-color: rgba(168, 85, 247, 0.12);
+  color: #7e22ce;
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+/* Especialista: Esmeralda sutil */
+.role-especialista {
+  background-color: var(--accent-emerald-subtle, rgba(16, 185, 129, 0.12));
+  color: var(--accent-emerald, #10b981);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+[data-theme="light"] .role-especialista {
+  background-color: rgba(16, 185, 129, 0.12);
+  color: #047857;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* Usuário Comum: Slate sutil */
+.role-comum {
+  background-color: var(--bg-surface-raised, #1c2430);
+  color: var(--text-secondary, #94a3b8);
+  border: 1px solid var(--border-subtle, #212836);
+}
+
+[data-theme="light"] .role-comum {
+  background-color: var(--bg-surface-raised, #f1f4f8);
+  color: var(--text-secondary, #475569);
+  border-color: var(--border-subtle, #e2e8f0);
+}

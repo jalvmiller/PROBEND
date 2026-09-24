@@ -110,75 +110,15 @@
   } @else {
     <div class="grid-questoes">
       @for (q of questoesPaginadas; track q.id) {
-        <article 
-          class="card-questao"
-          [ngClass]="getDificuldadeCardClasse(q.dificuldade)"
-          (click)="toggleExpandirCard(q.id)"
-          title="Clique no card para expandir ou recolher o enunciado"
-        >
-          <div class="card-topo">
-            <div class="tags-esquerda">
-              <span class="badge" [ngClass]="getDificuldadeClasse(q.dificuldade)">
-                {{ getDificuldadeTexto(q.dificuldade) }}
-              </span>
-              @if (q.materia) {
-                <span class="badge badge-tag">{{ q.materia }}</span>
-              }
-              @if (q.assunto) {
-                <span class="badge badge-tag badge-assunto-tag">{{ q.assunto }}</span>
-              }
-              @if (q.solucionada) {
-                <span class="badge-solucionada-mini" title="Questão solucionada">Solucionada</span>
-              } @else {
-                <span class="badge-pendente-mini" title="Questão pendente de solução">Pendente</span>
-              }
-            </div>
-
-            <div class="estatisticas">
-              <button
-                type="button"
-                class="btn-upvote-card"
-                [class.upvoted]="isUpvoted(q.id)"
-                (click)="alternarUpvote(q, $event)"
-                title="Curtir esta questão"
-              >
-                <!-- Ícone de upvote ▲ -->
-                <svg class="icone-upvote" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="18 15 12 9 6 15"></polyline>
-                </svg>
-                <span>{{ q.upvotesCount ?? q.upvotes ?? 0 }}</span>
-              </button>
-              <span class="respostas-info">{{ q.resolucoesCount ?? q.numeroResolucoes ?? (q.resolucoes?.length || 0) }} resoluções</span>
-            </div>
-          </div>
-
-          <!-- Enunciado com formatação em KaTeX: 2 linhas por padrão, até 12 linhas ao expandir -->
-          <div 
-            class="questao-enunciado"
-            [class.expandido]="isCardExpandido(q.id)"
-            [appKatex]="q.titulo || q.enunciado"
-          ></div>
-
-          <div class="expandir-indicador">
-            @if (isCardExpandido(q.id)) {
-              <span class="indicador-texto recolher">Clique para recolher</span>
-            } @else {
-              <span class="indicador-texto expandir">[...] Clique para expandir enunciado</span>
-            }
-          </div>
-
-          <div class="card-rodape">
-            <span class="autor">Por <strong>{{ q.autor?.nome || q.autor?.username || 'Autor Anônimo' }}</strong></span>
-            <a 
-              [routerLink]="['/questoes', q.id]" 
-              (click)="$event.stopPropagation()"
-              class="btn-ver"
-              title="Acessar página completa da questão"
-            >
-              Ver Questão
-            </a>
-          </div>
-        </article>
+        <app-questao-card
+          [questao]="q"
+          [isUpvoted]="isUpvoted(q.id)"
+          [isExpandido]="isCardExpandido(q.id)"
+          (toggleExpandir)="toggleExpandirCard(q.id)"
+          (upvote)="alternarUpvote(q, $event)"
+          (questaoExcluida)="onQuestaoExcluida($event)"
+          (questaoEditada)="onQuestaoEditada($event)"
+        ></app-questao-card>
       }
     </div>
 
