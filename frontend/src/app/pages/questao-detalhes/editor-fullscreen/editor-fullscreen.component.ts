@@ -3,6 +3,7 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   ElementRef,
   EventEmitter,
+  HostListener,
   Input,
   OnInit,
   Output,
@@ -63,6 +64,7 @@ export class EditorFullscreenComponent implements OnInit, AfterViewInit, OnDestr
   @ViewChild('textareaMatematica') textareaMatematica?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('textareaCodigo') textareaCodigo?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('mathFieldComposer') mathFieldComposer?: ElementRef<MathfieldElement>;
+  @ViewChild('gutterMatematica') gutterMatematica?: ElementRef<HTMLElement>;
 
   public readonly getDificuldadeTexto = getDificuldadeTexto;
   public readonly getDificuldadeClasse = getDificuldadeClasse;
@@ -86,10 +88,21 @@ export class EditorFullscreenComponent implements OnInit, AfterViewInit, OnDestr
     return Array.from({ length: Math.max(total, 1) }, (_, i) => i + 1);
   });
 
-  // Compositor MathLive
-  public compositorAberto = signal<boolean>(false);
+  // Compositor MathLive (sempre ativo no modo matemática)
   public compositorLatex = signal<string>('');
   private _mathFieldConfigurado = false;
+  private _sincronizandoCompositor = false;
+
+  // Linha Ativa e Posicionamento do Destaque
+  public linhaAtiva = signal<number>(1);
+  public scrollMatematicaTop = signal<number>(0);
+
+  public readonly alturaLinhaPx = 24;
+  public readonly paddingTopoPx = 14;
+
+  public posicaoTopLinhaAtiva = computed(() => {
+    return this.paddingTopoPx + (this.linhaAtiva() - 1) * this.alturaLinhaPx - this.scrollMatematicaTop();
+  });
 
   // Abas do compositor
   public readonly abasCompositor = [
@@ -326,10 +339,27 @@ public class Solucao {
       mf.style.setProperty('--_text-font-family', 'var(--font-serif)');
 
       mf.addEventListener('input', () => {
-        this.compositorLatex.set(mf.value);
+        if (this._sincronizandoCompositor) return;
+        const val = mf.value;
+        this.compositorLatex.set(val);
+        this.atualizarLinhaAtivaEmTempoReal(val);
       });
 
+      // Intercepta atalhos globais também a partir do mathfield
+      mf.addEventListener('keydown', (event: KeyboardEvent) => {
+        if (this.tratarKeyDownMatematica(event)) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      }, { capture: true });
+
       this._mathFieldConfigurado = true;
+
+      // Inicializa com a expressão da linha ativa
+      const linhas = this.conteudo().split('\n');
+      if (linhas.length > 0) {
+        this.carregarLinhaNoCompositor(linhas[this.linhaAtiva() - 1] || '');
+      }
     }, 100);
   }
 
@@ -346,41 +376,12 @@ public class Solucao {
     this.enunciadoAberto.update(aberto => !aberto);
   }
 
-  public toggleCompositor(): void {
-    this.compositorAberto.update(aberto => !aberto);
-    if (this.compositorAberto()) {
-      this._mathFieldConfigurado = false;
-      this._configurarMathField();
-    }
-  }
-
   public inserirDoCompositor(): void {
-    const latex = this.compositorLatex();
-    if (!latex.trim()) return;
-
-    // Insere envolvido em $...$ para ficar inline no texto
-    this.inserirSimbolo(latex);
-
-    // Limpa o compositor
-    const mf = this.mathFieldComposer?.nativeElement;
-    if (mf) {
-      mf.value = '';
-      this.compositorLatex.set('');
-    }
+    this.aplicarCompositorComoInline();
   }
 
   public inserirDoCompositorBloco(): void {
-    const latex = this.compositorLatex();
-    if (!latex.trim()) return;
-
-    // Insere como equação em bloco $$...$$
-    this.inserirSimbolo('$$\n' + latex + '\n$$');
-
-    const mf = this.mathFieldComposer?.nativeElement;
-    if (mf) {
-      mf.value = '';
-      this.compositorLatex.set('');
-    }
+    this.aplicarCompositorComoBloco();
   }
 
   public inserirNoCompositor(latex: string): void {
@@ -388,7 +389,9 @@ public class Solucao {
     if (!mf) return;
     mf.executeCommand(['insert', latex, { feedback: true }]);
     mf.focus();
-    this.compositorLatex.set(mf.value);
+    const val = mf.value;
+    this.compositorLatex.set(val);
+    this.atualizarLinhaAtivaEmTempoReal(val);
   }
 
   public limparCompositor(): void {
@@ -396,6 +399,7 @@ public class Solucao {
     if (mf) {
       mf.value = '';
       this.compositorLatex.set('');
+      this.atualizarLinhaAtivaEmTempoReal('');
       MathfieldElement.playSound('delete');
       mf.focus();
     }
@@ -427,6 +431,312 @@ public class Solucao {
     }, 0);
   }
 
+  // =========================================================================
+  // GESTÃO DE LINHAS, CURSOR E NAVEGAÇÃO INTERLIGADA COM O COMPOSITOR
+  // =========================================================================
+
+  /**
+   * Captura os atalhos de navegação e inserção a nível global da janela,
+   * garantindo funcionamento imediato quer o foco esteja no textarea, no compositor ou botões.
+   */
+  @HostListener('window:keydown', ['$event'])
+  public onWindowKeyDown(event: KeyboardEvent): void {
+    if (this.modoAtivo() !== 'MATEMATICA') return;
+    this.tratarKeyDownMatematica(event);
+  }
+
+  /**
+   * Processa os atalhos de teclado principais:
+   * - Ctrl + Seta Baixo: Desce linha ativa e carrega no compositor
+   * - Ctrl + Seta Cima: Sobe linha ativa e carrega no compositor
+   * - Alt + Seta Cima: Pega conteúdo do compositor e insere como inline ($...$) na linha ativa
+   * - Alt + Seta Baixo: Pega conteúdo do compositor e insere como bloco ($$...$$) na linha ativa
+   */
+  public tratarKeyDownMatematica(event: KeyboardEvent): boolean {
+    if (this.modoAtivo() !== 'MATEMATICA') return false;
+
+    const isCtrlOrCmd = event.ctrlKey || event.metaKey;
+    const isAlt = event.altKey;
+    const isDown = event.key === 'ArrowDown' || event.code === 'ArrowDown';
+    const isUp = event.key === 'ArrowUp' || event.code === 'ArrowUp';
+
+    // Ctrl + Seta para Baixo -> linha inferior
+    if (isCtrlOrCmd && !isAlt && isDown) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.descerLinhaAtiva();
+      return true;
+    }
+
+    // Ctrl + Seta para Cima -> linha superior
+    if (isCtrlOrCmd && !isAlt && isUp) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.subirLinhaAtiva();
+      return true;
+    }
+
+    // Alt + Seta para Cima -> insere/transforma linha como inline ($...$) com conteúdo do compositor
+    if (isAlt && !isCtrlOrCmd && isUp) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.aplicarCompositorComoInline();
+      return true;
+    }
+
+    // Alt + Seta para Baixo -> insere/transforma linha como bloco ($$...$$) com conteúdo do compositor
+    if (isAlt && !isCtrlOrCmd && isDown) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.aplicarCompositorComoBloco();
+      return true;
+    }
+
+    return false;
+  }
+
+  public descerLinhaAtiva(): void {
+    const texto = this.conteudo();
+    let linhas = texto.split('\n');
+    const proximaLinha = this.linhaAtiva() + 1;
+
+    // Se estiver na última linha, cria uma nova linha vazia para continuar a demonstração
+    if (proximaLinha > linhas.length) {
+      linhas.push('');
+      this.conteudo.set(linhas.join('\n'));
+    }
+
+    this.navegarParaLinha(proximaLinha);
+  }
+
+  public subirLinhaAtiva(): void {
+    const proximaLinha = Math.max(1, this.linhaAtiva() - 1);
+    this.navegarParaLinha(proximaLinha);
+  }
+
+  public extrairExpressaoParaCompositor(linha: string): string {
+    const trim = linha.trim();
+    if (trim.startsWith('$$') && trim.endsWith('$$') && trim.length >= 4) {
+      return trim.slice(2, -2).trim();
+    }
+    if (trim.startsWith('$') && trim.endsWith('$') && trim.length >= 2) {
+      return trim.slice(1, -1).trim();
+    }
+    const match = trim.match(/\$(.+?)\$/);
+    if (match) {
+      return match[1].trim();
+    }
+    return trim.replace(/\$/g, '').trim();
+  }
+
+  public carregarLinhaNoCompositor(conteudoLinha: string): void {
+    const expr = this.extrairExpressaoParaCompositor(conteudoLinha);
+    this.compositorLatex.set(expr);
+    const mf = this.mathFieldComposer?.nativeElement;
+    if (mf) {
+      this._sincronizandoCompositor = true;
+      try {
+        mf.value = expr;
+      } finally {
+        setTimeout(() => {
+          this._sincronizandoCompositor = false;
+        }, 50);
+      }
+    }
+  }
+
+  public obterLatexDoCompositor(): string {
+    const mf = this.mathFieldComposer?.nativeElement;
+    let val = (mf?.value ?? this.compositorLatex() ?? '').trim();
+    if (!val) {
+      const linhas = this.conteudo().split('\n');
+      const linha = linhas[this.linhaAtiva() - 1] || '';
+      val = this.extrairExpressaoParaCompositor(linha);
+    }
+    return val.replace(/\$/g, '').trim();
+  }
+
+  public aplicarCompositorComoInline(): void {
+    const latex = this.obterLatexDoCompositor();
+    const formato = latex ? `$${latex}$` : '$ $';
+    this.inserirOuAtualizarLinhaAtiva(formato);
+    this.carregarLinhaNoCompositor(formato);
+    MathfieldElement.playSound('keypress');
+  }
+
+  public aplicarCompositorComoBloco(): void {
+    const latex = this.obterLatexDoCompositor();
+    const formato = latex ? `$$${latex}$$` : '$$ $$';
+    this.inserirOuAtualizarLinhaAtiva(formato);
+    this.carregarLinhaNoCompositor(formato);
+    MathfieldElement.playSound('keypress');
+  }
+
+  public aplicarCompositorNaLinhaAtual(tipo: 'inline' | 'bloco'): void {
+    if (tipo === 'inline') {
+      this.aplicarCompositorComoInline();
+    } else {
+      this.aplicarCompositorComoBloco();
+    }
+  }
+
+  public inserirOuAtualizarLinhaAtiva(conteudoFormatado: string): void {
+    let linhas = this.conteudo().split('\n');
+    const idx = this.linhaAtiva() - 1;
+
+    while (linhas.length <= idx) {
+      linhas.push('');
+    }
+
+    linhas[idx] = conteudoFormatado;
+    this.conteudo.set(linhas.join('\n'));
+
+    const el = this.textareaMatematica?.nativeElement;
+    const mf = this.mathFieldComposer?.nativeElement;
+    const focoNoCompositor = mf && (document.activeElement === mf || mf.contains(document.activeElement));
+
+    if (el) {
+      let pos = 0;
+      for (let i = 0; i < idx; i++) {
+        pos += linhas[i].length + 1;
+      }
+      pos += conteudoFormatado.length;
+      setTimeout(() => {
+        if (!focoNoCompositor) {
+          el.focus();
+        }
+        el.setSelectionRange(pos, pos);
+      }, 0);
+    }
+  }
+
+  /**
+   * Reflete em tempo real qualquer alteração feita no compositor diretamente
+   * na linha destacada do textarea, preservando o formato (bloco ou inline).
+   */
+  public atualizarLinhaAtivaEmTempoReal(latexCru: string): void {
+    const limpo = latexCru.replace(/\$/g, '').trim();
+    let linhas = this.conteudo().split('\n');
+    const idx = this.linhaAtiva() - 1;
+    if (idx < 0) return;
+
+    while (linhas.length <= idx) {
+      linhas.push('');
+    }
+
+    const linhaAtual = linhas[idx].trim();
+    let novaLinha: string;
+
+    if (!limpo) {
+      novaLinha = '';
+    } else if (linhaAtual.startsWith('$$') && linhaAtual.endsWith('$$')) {
+      novaLinha = `$$${limpo}$$`;
+    } else if (linhaAtual.startsWith('$') && linhaAtual.endsWith('$')) {
+      novaLinha = `$${limpo}$`;
+    } else if (linhaAtual === '') {
+      novaLinha = `$${limpo}$`;
+    } else if (/\$(.+?)\$/.test(linhaAtual)) {
+      novaLinha = linhaAtual.replace(/\$(.+?)\$/, `$${limpo}$`);
+    } else {
+      novaLinha = `$${limpo}$`;
+    }
+
+    linhas[idx] = novaLinha;
+    this.conteudo.set(linhas.join('\n'));
+  }
+
+  public calcularLinhaCursor(texto: string, posCursor: number): number {
+    const trechoAteCursor = texto.substring(0, posCursor);
+    return (trechoAteCursor.match(/\n/g) || []).length + 1;
+  }
+
+  public navegarParaLinha(indiceAlvo: number): void {
+    const el = this.textareaMatematica?.nativeElement;
+    let linhas = this.conteudo().split('\n');
+    if (indiceAlvo < 1) indiceAlvo = 1;
+
+    while (linhas.length < indiceAlvo) {
+      linhas.push('');
+      this.conteudo.set(linhas.join('\n'));
+    }
+
+    this.linhaAtiva.set(indiceAlvo);
+
+    let pos = 0;
+    for (let i = 0; i < indiceAlvo - 1; i++) {
+      pos += linhas[i].length + 1;
+    }
+
+    const mf = this.mathFieldComposer?.nativeElement;
+    const focoNoCompositor = mf && (document.activeElement === mf || mf.contains(document.activeElement));
+
+    if (el) {
+      if (!focoNoCompositor) {
+        el.focus();
+      }
+      el.setSelectionRange(pos, pos);
+      this._manterLinhaVisivel(indiceAlvo);
+    }
+
+    const conteudoLinha = linhas[indiceAlvo - 1] || '';
+    this.carregarLinhaNoCompositor(conteudoLinha);
+    MathfieldElement.playSound('keypress');
+  }
+
+  public onInteracaoTextareaMatematica(): void {
+    const el = this.textareaMatematica?.nativeElement;
+    if (!el) return;
+    const linha = this.calcularLinhaCursor(el.value, el.selectionStart);
+    if (linha !== this.linhaAtiva()) {
+      this.linhaAtiva.set(linha);
+      const linhas = this.conteudo().split('\n');
+      const conteudoLinha = linhas[linha - 1] || '';
+      this.carregarLinhaNoCompositor(conteudoLinha);
+    }
+  }
+
+  public onInputTextareaMatematica(): void {
+    const el = this.textareaMatematica?.nativeElement;
+    if (!el) return;
+    const linha = this.calcularLinhaCursor(el.value, el.selectionStart);
+    this.linhaAtiva.set(linha);
+    const linhas = this.conteudo().split('\n');
+    const conteudoLinha = linhas[linha - 1] || '';
+    const expr = this.extrairExpressaoParaCompositor(conteudoLinha);
+    this.compositorLatex.set(expr);
+    const mf = this.mathFieldComposer?.nativeElement;
+    if (mf && mf.value !== expr) {
+      this._sincronizandoCompositor = true;
+      try {
+        mf.value = expr;
+      } finally {
+        setTimeout(() => {
+          this._sincronizandoCompositor = false;
+        }, 50);
+      }
+    }
+  }
+
+  private _manterLinhaVisivel(linha: number): void {
+    const el = this.textareaMatematica?.nativeElement;
+    if (!el) return;
+    const linhaTop = (linha - 1) * this.alturaLinhaPx;
+    const linhaBottom = linhaTop + this.alturaLinhaPx;
+    const visivelTop = el.scrollTop;
+    const visivelBottom = el.scrollTop + el.clientHeight - (this.paddingTopoPx * 2);
+
+    if (linhaTop < visivelTop) {
+      el.scrollTop = linhaTop;
+    } else if (linhaBottom > visivelBottom) {
+      el.scrollTop = linhaBottom - el.clientHeight + (this.paddingTopoPx * 2);
+    }
+    this.scrollMatematicaTop.set(el.scrollTop);
+    const gutter = this.gutterMatematica?.nativeElement;
+    if (gutter) {
+      gutter.scrollTop = el.scrollTop;
+    }
+  }
+
   public tratarTab(event: KeyboardEvent): void {
     if (event.key === 'Tab') {
       event.preventDefault();
@@ -447,6 +757,7 @@ public class Solucao {
 
   public sincronizarScroll(origem: HTMLTextAreaElement, gutter: HTMLElement): void {
     gutter.scrollTop = origem.scrollTop;
+    this.scrollMatematicaTop.set(origem.scrollTop);
   }
 
   public minimizarEFechar(): void {

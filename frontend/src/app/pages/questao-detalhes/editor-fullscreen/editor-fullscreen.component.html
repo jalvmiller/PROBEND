@@ -117,173 +117,129 @@
       <div class="split-screen">
         <!-- Coluna Esquerda: Edição e Barra de Símbolos -->
         <div class="coluna-painel painel-editor">
-          <!-- Barra de Atalhos Rápidos + Toggle do Compositor -->
-          <div class="toolbar-matematica">
-            <div class="toolbar-secao">
-              <span class="toolbar-titulo">Atalhos:</span>
-              <div class="botoes-simbolos">
-                @for (sim of simbolosCalculo; track sim.rotulo) {
-                  <button
-                    type="button"
-                    class="btn-simbolo"
-                    (click)="inserirSimbolo(sim.latex)"
-                    [title]="sim.dica || sim.rotulo"
-                  >
-                    {{ sim.rotulo }}
-                  </button>
-                }
-                @for (sim of simbolosOperadores; track sim.rotulo) {
-                  <button
-                    type="button"
-                    class="btn-simbolo"
-                    (click)="inserirSimbolo(sim.latex)"
-                    [title]="sim.dica || sim.rotulo"
-                  >
-                    {{ sim.rotulo }}
-                  </button>
-                }
-                @for (sim of simbolosGregos; track sim.rotulo) {
-                  <button
-                    type="button"
-                    class="btn-simbolo grego"
-                    (click)="inserirSimbolo(sim.latex)"
-                  >
-                    {{ sim.rotulo }}
-                  </button>
-                }
-              </div>
+          <!-- Painel Compositor MathLive (Sempre Ativo no Modo Matemática) -->
+          <div class="compositor-painel">
+            <!-- Abas do Teclado Matemático -->
+            <div class="compositor-abas">
+              @for (aba of abasCompositor; track aba.id) {
+                <button
+                  type="button"
+                  class="compositor-aba"
+                  [class.ativa]="abaCompositorAtiva() === aba.id"
+                  (click)="abaCompositorAtiva.set(aba.id)"
+                >
+                  <span class="aba-icone">{{ aba.icone }}</span>
+                  <span class="aba-rotulo">{{ aba.rotulo }}</span>
+                </button>
+              }
             </div>
 
-            <!-- Botão Toggle do Compositor Visual -->
-            <button
-              type="button"
-              class="btn-compositor-toggle"
-              [class.ativo]="compositorAberto()"
-              (click)="toggleCompositor()"
-              title="Abrir compositor visual de fórmulas (estilo Wolfram/MathLive)"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                <line x1="8" y1="21" x2="16" y2="21"></line>
-                <line x1="12" y1="17" x2="12" y2="21"></line>
-              </svg>
-              <span>{{ compositorAberto() ? 'Fechar Compositor' : 'Compositor Visual' }}</span>
-            </button>
+            <!-- Teclado por Abas -->
+            <div class="compositor-teclado">
+              @if (abaCompositorAtiva() === 'basico') {
+                <div class="teclado-grid">
+                  @for (t of teclasBasico; track t.visual) {
+                    <button type="button" class="tecla" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
+                      <span class="tecla-visual">{{ t.visual }}</span>
+                    </button>
+                  }
+                </div>
+              }
+
+              @if (abaCompositorAtiva() === 'calculo') {
+                <div class="teclado-grid">
+                  @for (t of teclasCalculo; track t.visual) {
+                    <button type="button" class="tecla" [class.tecla-larga]="t.largo" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
+                      <span class="tecla-visual">{{ t.visual }}</span>
+                    </button>
+                  }
+                </div>
+              }
+
+              @if (abaCompositorAtiva() === 'gregas') {
+                <div class="teclado-grid gregas-grid">
+                  @for (t of teclasGregas; track t.visual) {
+                    <button type="button" class="tecla" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
+                      <span class="tecla-visual grega">{{ t.visual }}</span>
+                    </button>
+                  }
+                </div>
+              }
+
+              @if (abaCompositorAtiva() === 'matrizes') {
+                <div class="teclado-grid">
+                  @for (t of teclasMatrizes; track t.visual) {
+                    <button type="button" class="tecla tecla-xl" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
+                      <span class="tecla-visual">{{ t.visual }}</span>
+                    </button>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Math-Field WYSIWYG + Ações de Inserção / Aplicação -->
+            <div class="compositor-campo">
+              <div class="compositor-mathfield-wrapper">
+                <math-field
+                  #mathFieldComposer
+                  class="compositor-mathfield"
+                ></math-field>
+              </div>
+              <div class="compositor-acoes">
+                <button
+                  type="button"
+                  class="btn-compositor-limpar"
+                  (click)="limparCompositor()"
+                  title="Limpar campo do compositor"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+                <span class="compositor-latex-preview">{{ compositorLatex() || 'Vazio' }}</span>
+                <div class="compositor-botoes-inserir">
+                  <button
+                    type="button"
+                    class="btn-inserir-inline"
+                    (click)="aplicarCompositorNaLinhaAtual('inline')"
+                    [disabled]="!compositorLatex().trim()"
+                    title="Aplicar na linha atual como fórmula inline ($...$) [Alt + ↑]"
+                  >
+                    Aplicar Inline ($...$)
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-inserir-bloco"
+                    (click)="aplicarCompositorNaLinhaAtual('bloco')"
+                    [disabled]="!compositorLatex().trim()"
+                    title="Aplicar na linha atual como equação em bloco ($$...$$) [Alt + ↓]"
+                  >
+                    Aplicar Bloco ($$...$$)
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <!-- Painel Compositor MathLive (Colapsável) -->
-          @if (compositorAberto()) {
-            <div class="compositor-painel">
-              <!-- Abas do Teclado Matemático -->
-              <div class="compositor-abas">
-                @for (aba of abasCompositor; track aba.id) {
-                  <button
-                    type="button"
-                    class="compositor-aba"
-                    [class.ativa]="abaCompositorAtiva() === aba.id"
-                    (click)="abaCompositorAtiva.set(aba.id)"
-                  >
-                    <span class="aba-icone">{{ aba.icone }}</span>
-                    <span class="aba-rotulo">{{ aba.rotulo }}</span>
-                  </button>
-                }
-              </div>
-
-              <!-- Teclado por Abas -->
-              <div class="compositor-teclado">
-                @if (abaCompositorAtiva() === 'basico') {
-                  <div class="teclado-grid">
-                    @for (t of teclasBasico; track t.visual) {
-                      <button type="button" class="tecla" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
-                        <span class="tecla-visual">{{ t.visual }}</span>
-                      </button>
-                    }
-                  </div>
-                }
-
-                @if (abaCompositorAtiva() === 'calculo') {
-                  <div class="teclado-grid">
-                    @for (t of teclasCalculo; track t.visual) {
-                      <button type="button" class="tecla" [class.tecla-larga]="t.largo" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
-                        <span class="tecla-visual">{{ t.visual }}</span>
-                      </button>
-                    }
-                  </div>
-                }
-
-                @if (abaCompositorAtiva() === 'gregas') {
-                  <div class="teclado-grid gregas-grid">
-                    @for (t of teclasGregas; track t.visual) {
-                      <button type="button" class="tecla" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
-                        <span class="tecla-visual grega">{{ t.visual }}</span>
-                      </button>
-                    }
-                  </div>
-                }
-
-                @if (abaCompositorAtiva() === 'matrizes') {
-                  <div class="teclado-grid">
-                    @for (t of teclasMatrizes; track t.visual) {
-                      <button type="button" class="tecla tecla-xl" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
-                        <span class="tecla-visual">{{ t.visual }}</span>
-                      </button>
-                    }
-                  </div>
-                }
-              </div>
-
-              <!-- Math-Field WYSIWYG + Ações de Inserção -->
-              <div class="compositor-campo">
-                <div class="compositor-mathfield-wrapper">
-                  <math-field
-                    #mathFieldComposer
-                    class="compositor-mathfield"
-                  ></math-field>
-                </div>
-                <div class="compositor-acoes">
-                  <button
-                    type="button"
-                    class="btn-compositor-limpar"
-                    (click)="limparCompositor()"
-                    title="Limpar campo do compositor"
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="3 6 5 6 21 6"></polyline>
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
-                  </button>
-                  <span class="compositor-latex-preview">{{ compositorLatex() || 'Vazio' }}</span>
-                  <div class="compositor-botoes-inserir">
-                    <button
-                      type="button"
-                      class="btn-inserir-inline"
-                      (click)="inserirDoCompositor()"
-                      [disabled]="!compositorLatex().trim()"
-                      title="Inserir como fórmula inline ($...$)"
-                    >
-                      Inserir Inline
-                    </button>
-                    <button
-                      type="button"
-                      class="btn-inserir-bloco"
-                      (click)="inserirDoCompositorBloco()"
-                      [disabled]="!compositorLatex().trim()"
-                      title="Inserir como equação em bloco ($$...$$)"
-                    >
-                      Inserir Bloco
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          }
-
-          <!-- Textarea Matemática com Régua IDE -->
+          <!-- Textarea Matemática com Régua IDE e Destaque da Linha Ativa -->
           <div class="campo-edicao-wrapper">
             <div class="editor-ide-container">
+              <!-- Faixa Contínua de Destaque da Linha Ativa (Gutter + Textarea) -->
+              <div
+                class="faixa-linha-ativa"
+                [style.top.px]="posicaoTopLinhaAtiva()"
+              ></div>
+
               <div #gutterMatematica class="editor-gutter gutter-math" aria-hidden="true">
                 @for (num of linhasMatematica(); track num) {
-                  <div class="gutter-numero">{{ num }}</div>
+                  <div
+                    class="gutter-numero"
+                    [class.ativo]="linhaAtiva() === num"
+                    (click)="navegarParaLinha(num)"
+                  >
+                    {{ num }}
+                  </div>
                 }
               </div>
               <textarea
@@ -292,6 +248,11 @@
                 [placeholder]="placeholderMatematica"
                 [ngModel]="conteudo()"
                 (ngModelChange)="conteudo.set($event)"
+                (input)="onInputTextareaMatematica()"
+                (keydown)="tratarKeyDownMatematica($event)"
+                (click)="onInteracaoTextareaMatematica()"
+                (keyup)="onInteracaoTextareaMatematica()"
+                (select)="onInteracaoTextareaMatematica()"
                 (scroll)="sincronizarScroll(textareaMatematica, gutterMatematica)"
                 spellcheck="false"
               ></textarea>
