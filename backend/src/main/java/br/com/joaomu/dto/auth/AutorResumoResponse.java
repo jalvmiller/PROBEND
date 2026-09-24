@@ -15,7 +15,9 @@ public record AutorResumoResponse(
         // funções hashcode, equals e tostring() lidam com os dados de
         // entrada, os valores contidos aqui são imutáveis
         String username,
-        String avatar) {
+        String avatar,
+        boolean especialista,
+        boolean administrador) {
 
     public static AutorResumoResponse fromEntity(Usuario usuario) {
         // o from Entity implementa o padrão Static Factory Method
@@ -33,6 +35,8 @@ public record AutorResumoResponse(
 
         return new AutorResumoResponse(
                 usuario.getUsername(),
-                usuario.getAvatar());
+                usuario.getAvatar(),
+                usuario.isEspecialista(),
+                usuario.isAdministrador());
     }
 }
