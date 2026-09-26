@@ -5,11 +5,12 @@ import { QuestaoService } from '../../../services/questao.service';
 import { AuthService } from '../../../services/auth.service';
 import { Comentario } from '../../../models/questao.model';
 import { KatexDirective } from '../../../directives/katex.directive';
+import { ComentarioItemComponent } from './comentario-item.component';
 
 @Component({
   selector: 'app-comentario-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, KatexDirective],
+  imports: [CommonModule, FormsModule, KatexDirective, ComentarioItemComponent],
   templateUrl: './comentario-modal.component.html',
   styleUrl: './comentario-modal.component.css'
 })
@@ -45,21 +46,46 @@ export class ComentarioModalComponent implements OnInit {
     });
   }
 
-  public enviarComentario(): void {
-    const texto = (this.novoComentario() || '').trim();
+  public enviarComentario(conteudo?: string, paiId?: number | null): void {
+    const texto = (conteudo !== undefined ? conteudo : this.novoComentario() || '').trim();
     if (!texto || this.enviando()) return;
 
     this.enviando.set(true);
-    this.questaoService.postarComentario(this.resolucaoId, texto).subscribe({
+    this.questaoService.postarComentario(this.resolucaoId, texto, paiId).subscribe({
       next: (salvo) => {
-        this.comentarios.update(atuais => [...atuais, salvo]);
-        this.novoComentario.set('');
+        if (salvo.paiId) {
+          this.comentarios.update(atuais => this.inserirRespostaNaArvore(atuais, salvo));
+        } else {
+          this.comentarios.update(atuais => [...atuais, salvo]);
+          this.novoComentario.set('');
+        }
         this.enviando.set(false);
       },
       error: () => {
         alert('Erro ao enviar comentário.');
         this.enviando.set(false);
       }
+    });
+  }
+
+  /**
+   * Insere de forma imutável a nova resposta no nó pai correspondente da árvore.
+   */
+  private inserirRespostaNaArvore(lista: Comentario[], novaResposta: Comentario): Comentario[] {
+    return lista.map(c => {
+      if (c.id === novaResposta.paiId) {
+        return {
+          ...c,
+          respostas: [...(c.respostas || []), novaResposta]
+        };
+      }
+      if (c.respostas && c.respostas.length > 0) {
+        return {
+          ...c,
+          respostas: this.inserirRespostaNaArvore(c.respostas, novaResposta)
+        };
+      }
+      return c;
     });
   }
 

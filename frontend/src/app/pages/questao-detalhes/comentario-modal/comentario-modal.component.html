@@ -25,13 +25,11 @@
         </div>
       } @else {
         @for (c of comentarios(); track c.id) {
-          <div class="item-comentario">
-            <div class="autor-row">
-              <span class="avatar-badge">{{ (c.autor.nome || c.autor.username || 'A')[0].toUpperCase() }}</span>
-              <span class="nome-autor">{{ c.autor.nome || c.autor.username }}</span>
-            </div>
-            <div class="texto-comentario" [appKatex]="c.conteudo"></div>
-          </div>
+          <app-comentario-item 
+            [comentario]="c" 
+            [nivel]="0"
+            (responder)="enviarComentario($event.conteudo, $event.paiId)"
+          />
         }
       }
     </div>

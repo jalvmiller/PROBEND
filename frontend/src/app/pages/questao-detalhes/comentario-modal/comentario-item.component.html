@@ -1,0 +1,113 @@
+<div class="comentario-no" [class.no-aninhado]="nivel > 0">
+  @if (colapsado()) {
+    <!-- Estado Colapsado (Compacto estilo Reddit) -->
+    <div class="header-colapsado" (click)="alternarColapso()" role="button" tabindex="0">
+      <button type="button" class="btn-toggle" aria-label="Expandir comentário">[+]</button>
+      <span class="avatar-mini">{{ (comentario.autor.nome || comentario.autor.username || 'A')[0].toUpperCase() }}</span>
+      <span class="nome-autor">{{ comentario.autor.nome || comentario.autor.username }}</span>
+      <span class="badge-oculto">
+        {{ contarTotalRespostas(comentario) + 1 }} {{ (contarTotalRespostas(comentario) + 1) === 1 ? 'comentário oculto' : 'comentários ocultos' }}
+      </span>
+    </div>
+  } @else {
+    <!-- Estado Expandido Completo -->
+    <div class="comentario-conteiner">
+      <!-- Linha guia lateral estilo Reddit com hover highlight e clique para colapsar -->
+      <div 
+        class="linha-guia" 
+        (click)="alternarColapso()" 
+        title="Clique para recolher este comentário e suas respostas"
+      >
+        <span class="linha-traco"></span>
+      </div>
+
+      <div class="conteudo-bloco">
+        <!-- Cabeçalho -->
+        <div class="cabecalho-row">
+          <button 
+            type="button" 
+            class="btn-toggle" 
+            (click)="alternarColapso()" 
+            title="Recolher comentário"
+            aria-label="Recolher comentário"
+          >
+            [−]
+          </button>
+          <span class="avatar-badge">{{ (comentario.autor.nome || comentario.autor.username || 'A')[0].toUpperCase() }}</span>
+          <span class="nome-autor">{{ comentario.autor.nome || comentario.autor.username }}</span>
+          @if (comentario.dataCriacao) {
+            <span class="data-comentario">{{ comentario.dataCriacao | date:'dd/MM/yyyy HH:mm' }}</span>
+          }
+        </div>
+
+        <!-- Texto com suporte a LaTeX -->
+        <div class="texto-comentario" [appKatex]="comentario.conteudo"></div>
+
+        <!-- Ações do Comentário -->
+        <div class="acoes-row">
+          @if (authService.isAuthenticated()) {
+            @if (nivel < LIMITE_NIVEL) {
+              <button 
+                type="button" 
+                class="btn-acao-responder" 
+                (click)="abrirResposta()"
+                [disabled]="exibindoFormResposta()"
+              >
+                <span class="icone-resposta">↩</span> Responder
+              </button>
+            } @else {
+              <span class="badge-limite-aninhamento" title="Limite máximo de 6 níveis de aninhamento atingido">
+                Limite de respostas atingido
+              </span>
+            }
+          }
+        </div>
+
+        <!-- Formulário de Resposta em Linha (Inline Reply) -->
+        @if (exibindoFormResposta()) {
+          <div class="form-inline-resposta">
+            <input 
+              type="text"
+              class="input-inline"
+              [ngModel]="textoResposta()"
+              (ngModelChange)="textoResposta.set($event)"
+              placeholder="Responder a @{{ comentario.autor.nome || comentario.autor.username }} (suporta LaTeX)..."
+              (keydown.enter)="submeterResposta()"
+              autofocus
+            />
+            <div class="botoes-inline">
+              <button 
+                type="button" 
+                class="btn-inline-cancelar" 
+                (click)="cancelarResposta()"
+              >
+                Cancelar
+              </button>
+              <button 
+                type="button" 
+                class="btn-inline-enviar" 
+                (click)="submeterResposta()" 
+                [disabled]="!textoResposta().trim()"
+              >
+                Responder
+              </button>
+            </div>
+          </div>
+        }
+
+        <!-- Respostas Aninhadas Recursivas -->
+        @if (comentario.respostas && comentario.respostas.length > 0) {
+          <div class="respostas-aninhadas">
+            @for (resposta of comentario.respostas; track resposta.id) {
+              <app-comentario-item 
+                [comentario]="resposta" 
+                [nivel]="nivel + 1"
+                (responder)="onSubResposta($event)"
+              />
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

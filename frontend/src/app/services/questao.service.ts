@@ -110,10 +110,14 @@ export class QuestaoService {
   }
 
   /**
-   * Cria um comentário em uma resolução
+   * Cria um comentário em uma resolução (suporta comentário raiz ou resposta com paiId)
    */
-  public postarComentario(resolucaoId: number | string, conteudo: string): Observable<Comentario> {
-    return this.http.post<Comentario>(`${this.baseUrl}/resolucoes/${resolucaoId}/comentarios`, { conteudo });
+  public postarComentario(resolucaoId: number | string, conteudo: string, paiId?: number | null): Observable<Comentario> {
+    const payload: { conteudo: string; paiId?: number | null } = { conteudo };
+    if (paiId !== undefined && paiId !== null) {
+      payload.paiId = paiId;
+    }
+    return this.http.post<Comentario>(`${this.baseUrl}/resolucoes/${resolucaoId}/comentarios`, payload);
   }
 
   /**

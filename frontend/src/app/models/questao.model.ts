@@ -24,6 +24,8 @@ export interface Comentario {
   conteudo: string;
   autor: Usuario;
   dataCriacao?: string;
+  paiId?: number | null;
+  respostas?: Comentario[];
 }
 
 export interface Resolucao {
