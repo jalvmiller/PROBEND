@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 // RestController especializado na gestão de comentários em resoluções
-// Mantém as rotas originais compatíveis com o frontend React
 @RestController
 @RequestMapping("/questoes")
 public class ComentarioRestController {
@@ -28,24 +27,25 @@ public class ComentarioRestController {
     // ======== Comentários em Resoluções ===================
     // ======================================================
 
-    // GET público — qualquer pessoa pode ler os comentários
+    // GET público — retorna a árvore hierárquica de comentários da resolução
     @GetMapping("/resolucoes/{resolucaoId}/comentarios")
     public ResponseEntity<List<ComentarioResponse>> listarComentarios(@PathVariable Long resolucaoId) {
-        List<ComentarioResponse> comentarios = comentarioService.listarPorResolucao(resolucaoId).stream()
-                .map(ComentarioResponse::fromEntity)
-                .toList();
-        return ResponseEntity.ok(comentarios);
+        List<ComentarioResponse> arvore = comentarioService.listarArvorePorResolucao(resolucaoId);
+        return ResponseEntity.ok(arvore);
     }
 
-    // POST autenticado — apenas usuários logados podem comentar
+    // POST autenticado — apenas usuários logados podem comentar ou responder
     @PostMapping("/resolucoes/{resolucaoId}/comentarios")
     public ResponseEntity<?> criarComentario(@PathVariable Long resolucaoId,
-                                             @Valid @RequestBody ComentarioRequest dto) {
+            @Valid @RequestBody ComentarioRequest dto) {
         try {
-            Comentario salvo = comentarioService.salvarComentario(resolucaoId, dto.toEntity());
+            Comentario salvo = comentarioService.salvarComentario(resolucaoId, dto);
             return ResponseEntity.status(HttpStatus.CREATED).body(ComentarioResponse.fromEntity(salvo));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("erro", e.getMessage()));
+            HttpStatus status = e.getMessage() != null && e.getMessage().contains("não encontrada")
+                    ? HttpStatus.NOT_FOUND
+                    : HttpStatus.BAD_REQUEST;
+            return ResponseEntity.status(status).body(Map.of("erro", e.getMessage()));
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("erro", e.getMessage()));
         }

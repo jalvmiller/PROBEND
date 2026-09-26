@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "comentarios")
 public class Comentario {
@@ -26,6 +29,17 @@ public class Comentario {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario autor;
 
+    // Auto-relacionamento: comentário pai (se null, é um comentário raiz)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pai_id")
+    @JsonIgnore
+    private Comentario pai;
+
+    // Respostas filhas deste comentário
+    @OneToMany(mappedBy = "pai", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("dataCriacao ASC")
+    private List<Comentario> respostas = new ArrayList<>();
+
     @Column(name = "data_criacao")
     private java.time.LocalDateTime dataCriacao;
 
@@ -44,6 +58,13 @@ public class Comentario {
         this.autor = autor;
     }
 
+    public Comentario(String conteudo, Resolucao resolucao, Usuario autor, Comentario pai) {
+        this.conteudo = conteudo;
+        this.resolucao = resolucao;
+        this.autor = autor;
+        this.pai = pai;
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -59,6 +80,21 @@ public class Comentario {
 
     public Usuario getAutor() { return autor; }
     public void setAutor(Usuario autor) { this.autor = autor; }
+
+    @JsonIgnore
+    public Comentario getPai() { return pai; }
+    public void setPai(Comentario pai) { this.pai = pai; }
+
+    @JsonProperty("paiId")
+    public Long getPaiId() { return pai != null ? pai.getId() : null; }
+
+    public List<Comentario> getRespostas() { return respostas; }
+    public void setRespostas(List<Comentario> respostas) { this.respostas = respostas; }
+
+    public void adicionarResposta(Comentario resposta) {
+        this.respostas.add(resposta);
+        resposta.setPai(this);
+    }
 
     public java.time.LocalDateTime getDataCriacao() { return dataCriacao; }
     public void setDataCriacao(java.time.LocalDateTime dataCriacao) { this.dataCriacao = dataCriacao; }
