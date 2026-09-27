@@ -52,7 +52,7 @@
             <!-- Metadados do Autor e Ações -->
             <div class="meta-autor-linha">
               <div class="autor-info">
-                <span class="avatar-circulo">{{ (q.autor?.nome || q.autor?.username || 'A')[0].toUpperCase() }}</span>
+                <app-avatar [usuario]="q.autor" tamanho="circulo"></app-avatar>
                 <div class="autor-detalhes">
                   <span class="autor-nome">Por <strong>{{ q.autor?.nome || q.autor?.username || 'Anônimo' }}</strong></span>
                   @if (q.dataInsercao) {
@@ -187,7 +187,7 @@
                   <article class="card-resolucao">
                     <div class="res-topo">
                       <div class="res-autor-detalhes">
-                        <span class="avatar-mini">{{ (res.autor?.nome || res.autor?.username || 'A')[0].toUpperCase() }}</span>
+                        <app-avatar [usuario]="res.autor" tamanho="mini"></app-avatar>
                         <div class="res-nome-data">
                           <span class="res-nome">{{ res.autor?.nome || res.autor?.username }}</span>
                           @if (res.dataCriacao || res.criadoEm) {

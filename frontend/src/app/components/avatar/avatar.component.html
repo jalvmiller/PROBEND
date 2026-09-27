@@ -1,0 +1,12 @@
+<div class="avatar-container avatar-{{ tamanho }}" [attr.title]="descricaoAlt">
+  @if (urlAvatar) {
+    <img 
+      [src]="urlAvatar" 
+      [alt]="descricaoAlt"
+      class="avatar-imagem"
+      (error)="onImgError()" 
+    />
+  } @else {
+    <span class="avatar-fallback">{{ inicial }}</span>
+  }
+</div>

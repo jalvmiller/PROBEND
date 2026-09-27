@@ -8,6 +8,7 @@ import { Questao, Resolucao, getDificuldadeTexto, getDificuldadeClasse } from '.
 import { KatexDirective } from '../../directives/katex.directive';
 import { ComentarioModalComponent } from './comentario-modal/comentario-modal.component';
 import { EditorFullscreenComponent, RespostaEditorFullscreen } from './editor-fullscreen/editor-fullscreen.component';
+import { AvatarComponent } from '../../components/avatar/avatar.component';
 
 @Component({
   selector: 'app-questao-detalhes',
@@ -18,7 +19,8 @@ import { EditorFullscreenComponent, RespostaEditorFullscreen } from './editor-fu
     RouterLink,
     KatexDirective,
     ComentarioModalComponent,
-    EditorFullscreenComponent
+    EditorFullscreenComponent,
+    AvatarComponent
   ],
   templateUrl: './questao-detalhes.component.html',
   styleUrl: './questao-detalhes.component.css'

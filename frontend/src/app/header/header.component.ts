@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { SidebarService } from '../services/sidebar.service';
+import { AvatarComponent } from '../components/avatar/avatar.component';
 
 /**
  * HeaderComponent: Barra de navegação superior global
@@ -14,7 +15,7 @@ import { SidebarService } from '../services/sidebar.service';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, AvatarComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })

@@ -63,10 +63,7 @@
   <!-- Metadados com Ícones: Autor, Papel, Resoluções e Data de inserção -->
   <div class="metadados-linha">
     <div class="meta-item autor-meta">
-      <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-      </svg>
+      <app-avatar [usuario]="questao.autor" tamanho="circulo"></app-avatar>
       <span>Autor: <strong class="meta-destaque">{{ questao.autor?.nome || questao.autor?.username || 'Anônimo' }}</strong></span>
       <app-role-badge [usuario]="questao.autor"></app-role-badge>
     </div>

@@ -7,6 +7,7 @@ import { QuestaoService } from '../../services/questao.service';
 import { KatexDirective } from '../../directives/katex.directive';
 import { RoleBadgeComponent } from '../role-badge/role-badge.component';
 import { QuestaoEditModalComponent } from '../questao-edit-modal/questao-edit-modal.component';
+import { AvatarComponent } from '../avatar/avatar.component';
 
 @Component({
   selector: 'app-questao-card',
@@ -16,7 +17,8 @@ import { QuestaoEditModalComponent } from '../questao-edit-modal/questao-edit-mo
     RouterLink,
     KatexDirective,
     RoleBadgeComponent,
-    QuestaoEditModalComponent
+    QuestaoEditModalComponent,
+    AvatarComponent
   ],
   templateUrl: './questao-card.component.html',
   styleUrl: './questao-card.component.css',

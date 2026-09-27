@@ -4,10 +4,10 @@
  */
 
 export interface Usuario {
-  id: number;
+  id?: number;
   username: string;
-  nome: string;
-  email: string;
+  nome?: string;
+  email?: string;
   avatar?: string;
   pontos?: number;
   especialista?: boolean;

@@ -30,7 +30,7 @@
 
       <a routerLink="/configuracoes" class="user-pill-link" title="Configurações e Perfil">
         <div class="user-pill">
-          <span class="user-avatar-badge">{{ (authService.currentUser()?.nome || authService.currentUser()?.username || 'U')[0].toUpperCase() }}</span>
+          <app-avatar [usuario]="authService.currentUser()" tamanho="badge"></app-avatar>
           <span class="user-name">{{ authService.currentUser()?.nome || authService.currentUser()?.username }}</span>
           @if (authService.currentUser()?.pontos !== undefined) {
             <span class="user-pts">{{ authService.currentUser()?.pontos }} pts</span>
