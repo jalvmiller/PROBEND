@@ -38,7 +38,6 @@
         [class.ativo]="modoAtivo() === 'MATEMATICA'"
         (click)="alternarModo('MATEMATICA')"
       >
-        <span class="modo-icone">📐</span>
         <span class="modo-label">Modo Matemática</span>
       </button>
       <button
@@ -47,7 +46,6 @@
         [class.ativo]="modoAtivo() === 'ALGORITMO'"
         (click)="alternarModo('ALGORITMO')"
       >
-        <span class="modo-icone">💻</span>
         <span class="modo-label">Modo Algoritmo</span>
       </button>
     </div>
@@ -197,34 +195,73 @@
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                   </svg>
                 </button>
-                <span class="compositor-latex-preview">{{ compositorLatex() || 'Vazio' }}</span>
-                <div class="compositor-botoes-inserir">
-                  <button
-                    type="button"
-                    class="btn-inserir-inline"
-                    (click)="aplicarCompositorNaLinhaAtual('inline')"
-                    [disabled]="!compositorLatex().trim()"
-                    title="Aplicar na linha atual como fórmula inline ($...$) [Alt + ↑]"
-                  >
-                    Aplicar Inline ($...$)
-                  </button>
-                  <button
-                    type="button"
-                    class="btn-inserir-bloco"
-                    (click)="aplicarCompositorNaLinhaAtual('bloco')"
-                    [disabled]="!compositorLatex().trim()"
-                    title="Aplicar na linha atual como equação em bloco ($$...$$) [Alt + ↓]"
-                  >
-                    Aplicar Bloco ($$...$$)
-                  </button>
-                </div>
+                <input
+                  #inputArquivoImagem
+                  type="file"
+                  accept="image/*"
+                  (change)="onArquivoSelecionado($event)"
+                  style="display: none;"
+                />
+                <button
+                  type="button"
+                  class="btn-inserir-doc"
+                  (click)="acionarSelecaoImagem()"
+                  [disabled]="uploadingImagem()"
+                  title="Inserir imagem (suporta seleção, arrastar e soltar ou Ctrl + V)"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                  </svg>
+                  <span>{{ uploadingImagem() ? 'Enviando...' : 'Imagem' }}</span>
+                </button>
+                <button
+                  type="button"
+                  class="btn-inserir-doc"
+                  (click)="inserirQuebraPagina()"
+                  title="Inserir quebra de página"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                  </svg>
+                  <span>Nova Página</span>
+                </button>
+                <button
+                  type="button"
+                  class="btn-inserir-inline"
+                  (click)="aplicarCompositorNaLinhaAtual('inline')"
+                  [disabled]="!compositorLatex().trim()"
+                  title="Aplicar na linha atual como fórmula inline ($...$) [Alt + ↑]"
+                >
+                  Aplicar Inline ($...$)
+                </button>
+                <button
+                  type="button"
+                  class="btn-inserir-bloco"
+                  (click)="aplicarCompositorNaLinhaAtual('bloco')"
+                  [disabled]="!compositorLatex().trim()"
+                  title="Aplicar na linha atual como equação em bloco ($$...$$) [Alt + ↓]"
+                >
+                  Aplicar Bloco ($$...$$)
+                </button>
               </div>
             </div>
           </div>
 
+          <!-- Alerta de Erro no Upload de Imagens se houver -->
+          @if (erroUpload()) {
+            <div class="alerta-upload-erro">
+              <span>{{ erroUpload() }}</span>
+              <button type="button" class="btn-fechar-alerta" (click)="erroUpload.set('')">✕</button>
+            </div>
+          }
+
           <!-- Textarea Matemática com Régua IDE e Destaque da Linha Ativa -->
           <div class="campo-edicao-wrapper">
-            <div class="editor-ide-container">
+            <div class="editor-ide-container" [class.drag-over]="dragOver()">
               <!-- Faixa Contínua de Destaque da Linha Ativa (Gutter + Textarea) -->
               <div
                 class="faixa-linha-ativa"
@@ -253,6 +290,10 @@
                 (click)="onInteracaoTextareaMatematica()"
                 (keyup)="onInteracaoTextareaMatematica()"
                 (select)="onInteracaoTextareaMatematica()"
+                (paste)="onPasteEditor($event)"
+                (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event)"
+                (drop)="onDropEditor($event)"
                 (scroll)="sincronizarScroll(textareaMatematica, gutterMatematica)"
                 spellcheck="false"
               ></textarea>
@@ -260,25 +301,159 @@
           </div>
         </div>
 
-        <!-- Coluna Direita: Live Preview KaTeX -->
+        <!-- Coluna Direita: Live Preview (Documento Paginado x Página Corrida) -->
         <div class="coluna-painel painel-preview">
           <div class="preview-barra-topo">
-            <span class="preview-rotulo">Renderização</span>
+            <div class="preview-titulo-grupo">
+              <span class="preview-rotulo">Documento</span>
+              @if (modoVisualizacao() === 'DOCUMENTO') {
+                <span class="preview-badge-paginas">Página {{ paginaAtualIndex() + 1 }} de {{ totalPaginas() }}</span>
+              }
+            </div>
+
+            <!-- Seletor de Modo de Exibição -->
+            <div class="preview-seletor-modo">
+              <button
+                type="button"
+                class="btn-seletor-modo"
+                [class.ativo]="modoVisualizacao() === 'DOCUMENTO'"
+                (click)="alternarModoVisualizacao('DOCUMENTO')"
+                title="Visualizar em formato de documento paginado com folhas e navegação lateral"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+                <span>Paginado</span>
+              </button>
+              <button
+                type="button"
+                class="btn-seletor-modo"
+                [class.ativo]="modoVisualizacao() === 'CORRIDO'"
+                (click)="alternarModoVisualizacao('CORRIDO')"
+                title="Visualizar em formato de página contínua"
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="8" y1="6" x2="21" y2="6"></line>
+                  <line x1="8" y1="12" x2="21" y2="12"></line>
+                  <line x1="8" y1="18" x2="21" y2="18"></line>
+                  <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                  <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                  <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+                <span>Corrido</span>
+              </button>
+            </div>
           </div>
 
-          <div class="preview-conteudo-scroll">
-            @if (conteudo().trim()) {
-              <div class="preview-renderizado" [appKatex]="conteudo()"></div>
+          @if (conteudo().trim()) {
+            @if (modoVisualizacao() === 'DOCUMENTO') {
+              <!-- MODO DOCUMENTO PAGINADO COM NAVEGAÇÃO LATERAL -->
+              <div class="preview-documento-layout">
+                <!-- Seta Lateral Esquerda (Anterior) -->
+                <button
+                  type="button"
+                  class="btn-nav-lateral esquerda"
+                  [disabled]="paginaAtualIndex() === 0"
+                  (click)="paginaAnterior()"
+                  title="Página anterior (Alt + Seta Esquerda)"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                  </svg>
+                </button>
+
+                <!-- Folha de Papel do Documento -->
+                <div class="folha-container-scroll">
+                  <div class="folha-documento">
+                    <div class="folha-cabecalho-tecnico">
+                      <span class="folha-tag-doc">DOCUMENTO TÉCNICO</span>
+                      <span class="folha-numero-pagina">Pág. {{ paginaAtualIndex() + 1 }} / {{ totalPaginas() }}</span>
+                    </div>
+
+                    <div class="folha-corpo-renderizado" [appKatex]="conteudoPaginaAtiva()"></div>
+                  </div>
+                </div>
+
+                <!-- Seta Lateral Direita (Próxima) -->
+                <button
+                  type="button"
+                  class="btn-nav-lateral direita"
+                  [disabled]="paginaAtualIndex() >= totalPaginas() - 1"
+                  (click)="proximaPagina()"
+                  title="Próxima página (Alt + Seta Direita)"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Barra de Paginação Inferior -->
+              <div class="preview-paginacao-rodape">
+                <button
+                  type="button"
+                  class="btn-paginacao-acao"
+                  [disabled]="paginaAtualIndex() === 0"
+                  (click)="paginaAnterior()"
+                >
+                  Anterior
+                </button>
+
+                <div class="paginacao-indicadores">
+                  @for (pag of paginas(); track $index) {
+                    <button
+                      type="button"
+                      class="btn-pagina-pills"
+                      [class.ativo]="paginaAtualIndex() === $index"
+                      (click)="irParaPagina($index)"
+                    >
+                      {{ $index + 1 }}
+                    </button>
+                  }
+                </div>
+
+                <button
+                  type="button"
+                  class="btn-paginacao-acao"
+                  [disabled]="paginaAtualIndex() >= totalPaginas() - 1"
+                  (click)="proximaPagina()"
+                >
+                  Próxima
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-adicionar-pagina"
+                  (click)="inserirQuebraPagina()"
+                  title="Adicionar nova folha ao documento"
+                >
+                  + Nova Folha
+                </button>
+              </div>
             } @else {
-              <div class="preview-vazio">
-                <span class="icone-vazio">📐</span>
-                <p class="titulo-vazio">Prévia</p>
-                <p class="sub-vazio">
-                  À medida que você digitar ou clicar nos atalhos à esquerda, as equações serão renderizadas nesta janela
-                </p>
+              <!-- MODO PÁGINA CORRIDA -->
+              <div class="preview-conteudo-scroll">
+                <div class="preview-renderizado" [appKatex]="conteudo()"></div>
               </div>
             }
-          </div>
+          } @else {
+            <div class="preview-vazio">
+              <div class="icone-vazio-svg">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+              </div>
+              <p class="titulo-vazio">Documento Vazio</p>
+              <p class="sub-vazio">
+                Digite sua demonstração, insira fórmulas LaTeX, imagens ou quebras de página para visualizar o documento renderizado.
+              </p>
+            </div>
+          }
         </div>
       </div>
     }
@@ -358,8 +533,13 @@
               </div>
             } @else {
               <div class="preview-vazio">
-                <span class="icone-vazio">💻</span>
-                <p class="titulo-vazio">Prévia</p>
+                <div class="icone-vazio-svg">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 18 22 12 16 6"></polyline>
+                    <polyline points="8 6 2 12 8 18"></polyline>
+                  </svg>
+                </div>
+                <p class="titulo-vazio">Prévia do Código</p>
                 <p class="sub-vazio">Digite sua implementação no painel à esquerda para ver o realce de sintaxe em tempo real.</p>
               </div>
             }

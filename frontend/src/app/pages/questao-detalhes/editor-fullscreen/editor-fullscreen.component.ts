@@ -11,10 +11,12 @@ import {
   computed,
   signal,
   AfterViewInit,
-  OnDestroy
+  OnDestroy,
+  inject
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { Questao, getDificuldadeClasse, getDificuldadeTexto } from '../../../models/questao.model';
 import { KatexDirective } from '../../../directives/katex.directive';
 
@@ -65,6 +67,9 @@ export class EditorFullscreenComponent implements OnInit, AfterViewInit, OnDestr
   @ViewChild('textareaCodigo') textareaCodigo?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('mathFieldComposer') mathFieldComposer?: ElementRef<MathfieldElement>;
   @ViewChild('gutterMatematica') gutterMatematica?: ElementRef<HTMLElement>;
+  @ViewChild('inputArquivoImagem') inputArquivoImagem?: ElementRef<HTMLInputElement>;
+
+  private readonly http = inject(HttpClient);
 
   public readonly getDificuldadeTexto = getDificuldadeTexto;
   public readonly getDificuldadeClasse = getDificuldadeClasse;
@@ -72,10 +77,35 @@ export class EditorFullscreenComponent implements OnInit, AfterViewInit, OnDestr
   // Modos de Edição
   public modoAtivo = signal<'MATEMATICA' | 'ALGORITMO'>('MATEMATICA');
 
+  // Modo de Visualização do Preview: Documento Paginado x Página Corrida
+  public modoVisualizacao = signal<'DOCUMENTO' | 'CORRIDO'>('DOCUMENTO');
+  public paginaAtualIndex = signal<number>(0);
+  public uploadingImagem = signal<boolean>(false);
+  public erroUpload = signal<string>('');
+  public dragOver = signal<boolean>(false);
+
   // Estados dos Conteúdos
   public conteudo = signal<string>('');
   public trechoCodigo = signal<string>('');
   public linguagemCodigo = signal<string>('java');
+
+  // Divisão do documento em páginas com base no delimitador <!-- pagebreak -->
+  public paginas = computed(() => {
+    const raw = this.conteudo();
+    if (!raw || !raw.trim()) {
+      return [''];
+    }
+    const partes = raw.split(/<!--\s*pagebreak\s*-->/gi);
+    return partes.length > 0 ? partes : [''];
+  });
+
+  public totalPaginas = computed(() => this.paginas().length);
+
+  public conteudoPaginaAtiva = computed(() => {
+    const pags = this.paginas();
+    const idx = Math.min(Math.max(this.paginaAtualIndex(), 0), pags.length - 1);
+    return pags[idx] || '';
+  });
 
   // Contadores de linhas reativos para régua de IDE
   public linhasMatematica = computed(() => {
@@ -108,7 +138,7 @@ export class EditorFullscreenComponent implements OnInit, AfterViewInit, OnDestr
   public readonly abasCompositor = [
     { id: 'basico', rotulo: 'Básico', icone: '∑' },
     { id: 'calculo', rotulo: 'Cálculo', icone: '∫' },
-    { id: 'gregas', rotulo: 'Gregas', icone: 'α' },
+    { id: 'gregas', rotulo: 'Letras Gregas', icone: 'α' },
     { id: 'matrizes', rotulo: 'Matrizes', icone: '⊞' }
   ] as const;
   public abaCompositorAtiva = signal<string>('basico');
@@ -427,6 +457,148 @@ public class Solucao {
     setTimeout(() => {
       el.focus();
       const novoPos = start + simbolo.length;
+      el.setSelectionRange(novoPos, novoPos);
+    }, 0);
+  }
+
+  // =========================================================================
+  // GESTÃO DE DOCUMENTO, PÁGINAS E UPLOAD DE IMAGENS
+  // =========================================================================
+
+  public alternarModoVisualizacao(modo: 'DOCUMENTO' | 'CORRIDO'): void {
+    this.modoVisualizacao.set(modo);
+  }
+
+  public proximaPagina(): void {
+    if (this.paginaAtualIndex() < this.totalPaginas() - 1) {
+      this.paginaAtualIndex.update(i => i + 1);
+    }
+  }
+
+  public paginaAnterior(): void {
+    if (this.paginaAtualIndex() > 0) {
+      this.paginaAtualIndex.update(i => i - 1);
+    }
+  }
+
+  public irParaPagina(index: number): void {
+    if (index >= 0 && index < this.totalPaginas()) {
+      this.paginaAtualIndex.set(index);
+    }
+  }
+
+  public inserirQuebraPagina(): void {
+    const delimitador = '\n\n<!-- pagebreak -->\n\n';
+    this.inserirTextoNoCursor(delimitador);
+    setTimeout(() => {
+      this.paginaAtualIndex.set(this.totalPaginas() - 1);
+    }, 50);
+  }
+
+  public acionarSelecaoImagem(): void {
+    this.inputArquivoImagem?.nativeElement.click();
+  }
+
+  public onArquivoSelecionado(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      this.fazerUploadImagem(file);
+      input.value = '';
+    }
+  }
+
+  public onPasteEditor(event: ClipboardEvent): void {
+    const items = event.clipboardData?.items;
+    if (!items) return;
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (item.type.indexOf('image') !== -1) {
+        event.preventDefault();
+        const file = item.getAsFile();
+        if (file) {
+          this.fazerUploadImagem(file);
+        }
+        return;
+      }
+    }
+  }
+
+  public onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragOver.set(true);
+  }
+
+  public onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragOver.set(false);
+  }
+
+  public onDropEditor(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragOver.set(false);
+
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) {
+        this.fazerUploadImagem(file);
+      }
+    }
+  }
+
+  public fazerUploadImagem(file: File): void {
+    if (!file.type.startsWith('image/')) {
+      this.erroUpload.set('Apenas arquivos de imagem sao permitidos.');
+      return;
+    }
+
+    this.uploadingImagem.set(true);
+    this.erroUpload.set('');
+
+    const placeholder = `\n![Carregando: ${file.name}...]()\n`;
+    this.inserirTextoNoCursor(placeholder);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    this.http.post<{ imageUrl: string }>('/api/midia/upload', formData).subscribe({
+      next: (res) => {
+        this.uploadingImagem.set(false);
+        const nomeLimpo = file.name.replace(/\.[^/.]+$/, '');
+        const markdownImagem = `\n![${nomeLimpo}](${res.imageUrl})\n`;
+        this.conteudo.update(txt => txt.replace(placeholder, markdownImagem));
+      },
+      error: (err) => {
+        this.uploadingImagem.set(false);
+        const msg = err?.error?.erro || 'Falha ao processar upload da imagem.';
+        this.erroUpload.set(msg);
+        this.conteudo.update(txt => txt.replace(placeholder, `\n> Falha ao carregar imagem: ${file.name}\n`));
+      }
+    });
+  }
+
+  public inserirTextoNoCursor(texto: string): void {
+    const el = this.textareaMatematica?.nativeElement;
+    if (!el) {
+      this.conteudo.update(txt => txt + texto);
+      return;
+    }
+
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const atual = el.value;
+
+    const novoTexto = atual.substring(0, start) + texto + atual.substring(end);
+    this.conteudo.set(novoTexto);
+
+    setTimeout(() => {
+      el.focus();
+      const novoPos = start + texto.length;
       el.setSelectionRange(novoPos, novoPos);
     }, 0);
   }
