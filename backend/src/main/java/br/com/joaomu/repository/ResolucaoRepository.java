@@ -24,5 +24,12 @@ public interface ResolucaoRepository extends JpaRepository<Resolucao, Long> {
 
     // Deleta todas as resoluções de um visitante (usado pelo cleanup do seeder)
     void deleteAllByAutor_Id(Long autorId);
+
+    // Busca resoluções de autoria do usuário logado carregando a questão vinculada
+    @org.springframework.data.jpa.repository.Query(
+        "SELECT r FROM Resolucao r JOIN FETCH r.questao q " +
+        "WHERE r.autor.id = :userId ORDER BY r.dataCriacao DESC")
+    List<Resolucao> findByAutor_IdOrderByDataCriacaoDesc(
+        @org.springframework.data.repository.query.Param("userId") Long userId);
 }
 

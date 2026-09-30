@@ -87,4 +87,8 @@ public interface QuestaoRepository extends JpaRepository<Questao, Long> {
 
     // Deleta todas as questões de um visitante (usado pelo cleanup do seeder)
     void deleteAllByAutor_Id(Long autorId);
+
+    // Busca questões de autoria do usuário logado ordenadas pela mais recente
+    @EntityGraph(attributePaths = { "autor" })
+    List<Questao> findByAutor_IdOrderByDataInsercaoDesc(Long autorId);
 }

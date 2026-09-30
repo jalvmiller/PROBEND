@@ -4,47 +4,38 @@ import org.springframework.web.bind.annotation.*;
 import br.com.joaomu.dto.auth.UsuarioResponse;
 import br.com.joaomu.entity.Usuario;
 import br.com.joaomu.service.UsuarioService;
-import br.com.joaomu.service.integration.UploadService;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
+/**
+ * Controller para operações e consultas gerais da entidade Usuário no sistema.
+ */
 @RestController
 @RequestMapping("/usuarios")
 public class UsuarioRestController {
 
-    private final UploadService uploadService;
     private final UsuarioService usuarioService;
 
-    public UsuarioRestController(UsuarioService usuarioService, UploadService uploadService) {
+    public UsuarioRestController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
-        this.uploadService = uploadService;
     }
 
-    // O POST de imagem de perfil fica aqui e não no MidiaController,
-    // já que existe a mutação da entidade de negócio, e a entidade
-    // Midia não tem um atributo público que recebe a referência
-    // para o User.
-    @PostMapping("/me/avatar")
-    public ResponseEntity<UsuarioResponse> uploadAvatar(
-            @RequestParam("file") MultipartFile file,
-            Authentication authentication) {
-        String username = authentication.getName();
-        String caminhoAvatar = uploadService.uploadImage(file);
+    @GetMapping("/{id}")
+    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable Long id) {
+        Usuario usuario = usuarioService.buscarPorId(id);
+        return ResponseEntity.ok(UsuarioResponse.fromEntity(usuario));
+    }
 
-        Usuario usuario = usuarioService.buscarPorUsername(username);
-        usuario.setAvatar(caminhoAvatar);
-        Usuario usuarioAtualizado = usuarioService.salvar(usuario);
+    @GetMapping
+    public ResponseEntity<List<UsuarioResponse>> listarTodos(@RequestParam(required = false) String busca) {
+        List<Usuario> usuarios = (busca != null && !busca.isBlank())
+                ? usuarioService.buscarPorTermo(busca)
+                : usuarioService.listarTodos();
 
-        UsuarioResponse response = new UsuarioResponse(
-                usuarioAtualizado.getId(),
-                usuarioAtualizado.getUsername(),
-                usuarioAtualizado.getNome(),
-                usuarioAtualizado.getEmail(),
-                usuarioAtualizado.getAvatar(),
-                usuarioAtualizado.getPontos(),
-                usuarioAtualizado.isEspecialista(),
-                usuarioAtualizado.isAdministrador());
+        List<UsuarioResponse> response = usuarios.stream()
+                .map(UsuarioResponse::fromEntity)
+                .toList();
 
         return ResponseEntity.ok(response);
     }

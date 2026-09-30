@@ -13,4 +13,19 @@ public record UsuarioResponse(
         Integer pontos,
         boolean especialista,
         boolean administrador) {
+
+    public static UsuarioResponse fromEntity(br.com.joaomu.entity.Usuario u) {
+        if (u == null) {
+            return null;
+        }
+        return new UsuarioResponse(
+                u.getId(),
+                u.getUsername(),
+                u.getNome(),
+                u.getEmail(),
+                u.getAvatar(),
+                u.getPontos(),
+                u.isEspecialista(),
+                u.isAdministrador());
+    }
 }

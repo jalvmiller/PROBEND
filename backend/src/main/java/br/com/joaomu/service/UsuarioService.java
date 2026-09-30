@@ -3,6 +3,10 @@ package br.com.joaomu.service;
 import br.com.joaomu.entity.Usuario;
 import br.com.joaomu.repository.UsuarioRepository;
 
+import br.com.joaomu.dto.perfil.AlterarSenhaRequest;
+import br.com.joaomu.dto.perfil.AtualizarPerfilRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +16,11 @@ import java.util.List;
 public class UsuarioService implements CrudService<Usuario, Long> {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -80,5 +86,27 @@ public class UsuarioService implements CrudService<Usuario, Long> {
     public Usuario buscarPorUsername(String username) {
         return usuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+    }
+
+    public Usuario atualizarPerfil(Long id, AtualizarPerfilRequest request) {
+        Usuario existente = buscarPorId(id);
+        existente.setNome(request.nome());
+        existente.setEmail(request.email());
+        return usuarioRepository.save(existente);
+    }
+
+    public void alterarSenha(Long id, AlterarSenhaRequest request) {
+        Usuario existente = buscarPorId(id);
+
+        if (!passwordEncoder.matches(request.senhaAtual(), existente.getPassword())) {
+            throw new IllegalArgumentException("Senha atual incorreta.");
+        }
+
+        if (!request.novaSenha().equals(request.confirmacaoSenha())) {
+            throw new IllegalArgumentException("A confirmação da nova senha não confere.");
+        }
+
+        existente.setPassword(passwordEncoder.encode(request.novaSenha()));
+        usuarioRepository.save(existente);
     }
 }
