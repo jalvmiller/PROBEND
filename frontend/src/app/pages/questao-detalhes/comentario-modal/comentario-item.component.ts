@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth.service';
 import { Comentario } from '../../../models/questao.model';
 import { KatexDirective } from '../../../directives/katex.directive';
+import { AvatarComponent } from '../../../components/avatar/avatar.component';
 
 /**
  * ComentarioItemComponent
@@ -15,7 +16,7 @@ import { KatexDirective } from '../../../directives/katex.directive';
 @Component({
   selector: 'app-comentario-item',
   standalone: true,
-  imports: [CommonModule, FormsModule, KatexDirective, ComentarioItemComponent],
+  imports: [CommonModule, FormsModule, KatexDirective, ComentarioItemComponent, AvatarComponent],
   templateUrl: './comentario-item.component.html',
   styleUrl: './comentario-item.component.css'
 })

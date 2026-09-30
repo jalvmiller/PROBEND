@@ -1,21 +1,9 @@
 <div class="config-container">
   <div class="config-header">
-    <a routerLink="/" class="link-voltar">Voltar ao Repositório</a>
+    <a routerLink="/" class="link-voltar">← Voltar ao Repositório</a>
     <h1 class="page-title">Configurações & Perfil</h1>
-    <p class="page-desc">Gerencie seus dados de usuário, preferências visuais e atalhos do sistema.</p>
+    <p class="page-desc">Gerencie seus dados de usuário, credenciais de acesso e preferências do sistema.</p>
   </div>
-
-  @if (mensagemSucesso()) {
-    <div class="alert alert-sucesso">
-      <span>{{ mensagemSucesso() }}</span>
-    </div>
-  }
-
-  @if (mensagemErro()) {
-    <div class="alert alert-erro">
-      <span>{{ mensagemErro() }}</span>
-    </div>
-  }
 
   <!-- CARD 1: Dados do Perfil do Usuário -->
   <section class="card-config">
@@ -50,52 +38,171 @@
 
       <div class="perfil-info">
         <h2 class="perfil-nome">{{ authService.currentUser()?.nome || authService.currentUser()?.username }}</h2>
-        <p class="perfil-dica">
-          @if (enviandoAvatar()) {
-            <span class="text-amber">Atualizando foto...</span>
+        <span class="perfil-username font-mono">@{{ authService.currentUser()?.username }}</span>
+        <div class="perfil-badges-row">
+          <span class="badge-role" [ngClass]="{
+            'role-admin': authService.currentUser()?.administrador,
+            'role-especialista': authService.currentUser()?.especialista,
+            'role-comum': !authService.currentUser()?.administrador && !authService.currentUser()?.especialista
+          }">
+            {{ obterRoleLabel() }}
+          </span>
+          <span class="badge-pontos">{{ authService.currentUser()?.pontos ?? 0 }} pontos acumulados</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensagens de Feedback de Dados -->
+    @if (mensagemDadosSucesso()) {
+      <div class="alert alert-sucesso">
+        <span>{{ mensagemDadosSucesso() }}</span>
+      </div>
+    }
+    @if (mensagemDadosErro()) {
+      <div class="alert alert-erro">
+        <span>{{ mensagemDadosErro() }}</span>
+      </div>
+    }
+
+    <!-- Formulário de Alteração de Nome e E-mail -->
+    <form (ngSubmit)="salvarDados()" class="form-config">
+      <h3 class="secao-subtitulo">Alterar Dados Pessoais</h3>
+
+      <div class="form-grid">
+        <div class="form-campo">
+          <label for="input-nome" class="form-label">Nome Completo</label>
+          <input
+            id="input-nome"
+            type="text"
+            class="input-config"
+            [ngModel]="nome()"
+            (ngModelChange)="nome.set($event)"
+            name="nome"
+            placeholder="Seu nome"
+            required
+          />
+        </div>
+
+        <div class="form-campo">
+          <label for="input-email" class="form-label">Endereço de E-mail</label>
+          <input
+            id="input-email"
+            type="email"
+            class="input-config"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event)"
+            name="email"
+            placeholder="seu.email@exemplo.com"
+            required
+          />
+        </div>
+      </div>
+
+      <div class="form-acoes">
+        <button type="submit" class="btn-salvar" [disabled]="salvandoDados()">
+          @if (salvandoDados()) {
+            <span>Salvando dados...</span>
           } @else {
-            <span>Clique no avatar para selecionar uma nova foto</span>
+            <span>Salvar Alterações</span>
           }
-        </p>
+        </button>
+      </div>
+    </form>
+
+    <!-- Divisor de Linha entre Dados Pessoais e Senha de Acesso -->
+    <hr class="divisor-config-secao" />
+
+    <div class="card-titulo-row">
+      <div class="icone-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </div>
+      <div>
+        <h3 class="card-titulo">Segurança & Senha de Acesso</h3>
+        <p class="card-sub">Atualize sua senha periodicamente para manter sua conta protegida</p>
       </div>
     </div>
 
-    <!-- Grid de Atributos do Usuário -->
-    <div class="perfil-grid">
-      <div class="dado-item">
-        <span class="dado-label">Nome Completo</span>
-        <span class="dado-valor">{{ authService.currentUser()?.nome || 'Não informado' }}</span>
+    <!-- Mensagens de Feedback de Senha -->
+    @if (mensagemSenhaSucesso()) {
+      <div class="alert alert-sucesso">
+        <span>{{ mensagemSenhaSucesso() }}</span>
+      </div>
+    }
+    @if (mensagemSenhaErro()) {
+      <div class="alert alert-erro">
+        <span>{{ mensagemSenhaErro() }}</span>
+      </div>
+    }
+
+    <form (ngSubmit)="salvarSenha()" class="form-config">
+      <div class="form-grid-3">
+        <div class="form-campo">
+          <label for="senha-atual" class="form-label">Senha Atual</label>
+          <input
+            id="senha-atual"
+            type="password"
+            class="input-config"
+            [ngModel]="senhaAtual()"
+            (ngModelChange)="senhaAtual.set($event)"
+            name="senhaAtual"
+            placeholder="••••••••"
+            required
+          />
+        </div>
+
+        <div class="form-campo">
+          <label for="nova-senha" class="form-label">Nova Senha</label>
+          <input
+            id="nova-senha"
+            type="password"
+            class="input-config"
+            [ngModel]="novaSenha()"
+            (ngModelChange)="novaSenha.set($event)"
+            name="novaSenha"
+            placeholder="Mínimo 6 caracteres"
+            required
+          />
+        </div>
+
+        <div class="form-campo">
+          <label for="conf-senha" class="form-label">Confirmar Nova Senha</label>
+          <input
+            id="conf-senha"
+            type="password"
+            class="input-config"
+            [ngModel]="confirmacaoSenha()"
+            (ngModelChange)="confirmacaoSenha.set($event)"
+            name="confirmacaoSenha"
+            placeholder="Repita a nova senha"
+            required
+          />
+        </div>
       </div>
 
-      <div class="dado-item">
-        <span class="dado-label">Nome de Usuário</span>
-        <span class="dado-valor font-mono">@{{ authService.currentUser()?.username }}</span>
-      </div>
+      @if (novaSenha() && confirmacaoSenha() && novaSenha() !== confirmacaoSenha()) {
+        <span class="erro-inline">As senhas digitadas não coincidem.</span>
+      }
 
-      <div class="dado-item">
-        <span class="dado-label">E-mail</span>
-        <span class="dado-valor">{{ authService.currentUser()?.email || 'Não informado' }}</span>
+      <div class="form-acoes">
+        <button
+          type="submit"
+          class="btn-salvar"
+          [disabled]="salvandoSenha() || (novaSenha() !== confirmacaoSenha()) || !novaSenha()"
+        >
+          @if (salvandoSenha()) {
+            <span>Atualizando senha...</span>
+          } @else {
+            <span>Atualizar Senha</span>
+          }
+        </button>
       </div>
-
-      <div class="dado-item">
-        <span class="dado-label">Pontuação Acumulada</span>
-        <span class="dado-valor valor-destaque">{{ authService.currentUser()?.pontos ?? 0 }} pontos</span>
-      </div>
-
-      <div class="dado-item">
-        <span class="dado-label">Perfil de Acesso (Role)</span>
-        <span class="badge-role" [ngClass]="{
-          'role-admin': authService.currentUser()?.administrador,
-          'role-especialista': authService.currentUser()?.especialista,
-          'role-comum': !authService.currentUser()?.administrador && !authService.currentUser()?.especialista
-        }">
-          {{ obterRoleLabel() }}
-        </span>
-      </div>
-    </div>
+    </form>
   </section>
 
-  <!-- CARD 2: Preferências Visuais (Tema) -->
+  <!-- CARD 3: Preferências Visuais (Tema) -->
   <section class="card-config">
     <div class="card-titulo-row">
       <div class="icone-box">
@@ -143,7 +250,7 @@
     </div>
   </section>
 
-  <!-- CARD 3: Acessibilidade & Produtividade -->
+  <!-- CARD 4: Acessibilidade & Produtividade -->
   <section class="card-config">
     <div class="card-titulo-row">
       <div class="icone-box">

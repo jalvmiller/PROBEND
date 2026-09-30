@@ -63,7 +63,7 @@
 }
 
 .modal-titulo {
-  font-family: var(--font-serif, Georgia, serif);
+  font-family: var(--font-sans);
   font-size: 1.4rem;
   color: var(--text-primary, #f0f6fc);
   margin: 0;

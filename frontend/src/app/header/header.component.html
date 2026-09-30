@@ -1,19 +1,5 @@
 <header class="navbar">
   <div class="logo-area">
-    @if (authService.isAuthenticated()) {
-      <button
-        type="button"
-        class="btn-hamburguer-mobile"
-        (click)="sidebarService.toggleMobile()"
-        aria-label="Abrir menu de navegação"
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-      </button>
-    }
     <div class="logo" routerLink="/" style="cursor: pointer;">
       <span class="simbolo">∫</span>
       <span class="titulo">PROBEND</span>

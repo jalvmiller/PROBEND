@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 130" width="100%" height="100%">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap');
+      .brand-title {
+        font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-weight: 800;
+        font-size: 38px;
+        letter-spacing: 0.08em;
+      }
+      .brand-tag {
+        font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+        font-weight: 600;
+        font-size: 11px;
+        letter-spacing: 0.28em;
+      }
+    </style>
+  </defs>
+
+  <!-- Container Minimalista Deep Slate -->
+  <rect width="520" height="130" rx="16" fill="#090d14" />
+  <rect width="520" height="130" rx="16" fill="none" stroke="#1e293b" stroke-width="1" />
+
+  <!-- ================= LOGOMARK: THE PROBEND MONOGRAM ================= -->
+  <!-- 
+    SÍNTESE GEOMÉTRICA MINIMALISTA:
+    1. Haste Branca: Integral Matemática (∫) com curvatura contínua na base.
+    2. Arco Âmbar: Curva de Função (Cálculo / Math) formando a cabeça do 'P'.
+    3. Chevron Ciano: Prompt de Terminal (>) & Bloco Lógico (Algoritmos / Code).
+    União: O glifo forma simultaneamente o 'P' e o 'B' de PROBEND.
+  -->
+  <g id="probend-mark" transform="translate(14, 0)">
+    <!-- 1. HASTE INTEGRAL (Branco Puro / Estrutura / ∫) -->
+    <path d="M 46 26 L 46 76 C 46 89, 34 97, 24 91" 
+          fill="none" 
+          stroke="#f8fafc" 
+          stroke-width="9.5" 
+          stroke-linecap="round" />
+
+    <!-- 2. ARCO MATEMÁTICO (Âmbar / Curvatura Contínua / Lobe Superior do P) -->
+    <path d="M 60 26 L 76 26 C 87 26, 95 32.5, 95 41.5 C 95 50.5, 87 57, 76 57 L 60 57" 
+          fill="none" 
+          stroke="#f59e0b" 
+          stroke-width="9.5" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" />
+
+    <!-- 3. CHEVRON ALGORÍTMICO (Ciano / Lógica Discreta / Prompt > / Lobe do B) -->
+    <path d="M 60 69 L 82 80 L 60 91" 
+          fill="none" 
+          stroke="#38bdf8" 
+          stroke-width="8.5" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" />
+  </g>
+
+  <!-- ================= WORDMARK & IDENTIDADE TIPOGRÁFICA ================= -->
+  <g id="probend-text" transform="translate(148, 0)">
+    <!-- Título Principal -->
+    <text x="0" y="66" class="brand-title" fill="#f8fafc">
+      PRO<tspan fill="#f59e0b">BEND</tspan>
+    </text>
+
+    <!-- Subtítulo Técnico Minimalista -->
+    <text x="2" y="89" class="brand-tag" fill="#94a3b8">
+      MATH <tspan fill="#38bdf8">&amp;</tspan> ALGO LAB
+    </text>
+  </g>
+</svg>

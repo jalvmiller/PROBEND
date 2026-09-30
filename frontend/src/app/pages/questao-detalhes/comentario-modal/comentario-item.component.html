@@ -3,7 +3,7 @@
     <!-- Estado Colapsado (Compacto estilo Reddit) -->
     <div class="header-colapsado" (click)="alternarColapso()" role="button" tabindex="0">
       <button type="button" class="btn-toggle" aria-label="Expandir comentário">[+]</button>
-      <span class="avatar-mini">{{ (comentario.autor.nome || comentario.autor.username || 'A')[0].toUpperCase() }}</span>
+      <app-avatar [usuario]="comentario.autor" tamanho="mini"></app-avatar>
       <span class="nome-autor">{{ comentario.autor.nome || comentario.autor.username }}</span>
       <span class="badge-oculto">
         {{ contarTotalRespostas(comentario) + 1 }} {{ (contarTotalRespostas(comentario) + 1) === 1 ? 'comentário oculto' : 'comentários ocultos' }}
@@ -33,7 +33,7 @@
           >
             [−]
           </button>
-          <span class="avatar-badge">{{ (comentario.autor.nome || comentario.autor.username || 'A')[0].toUpperCase() }}</span>
+          <app-avatar [usuario]="comentario.autor" tamanho="badge"></app-avatar>
           <span class="nome-autor">{{ comentario.autor.nome || comentario.autor.username }}</span>
           @if (comentario.dataCriacao) {
             <span class="data-comentario">{{ comentario.dataCriacao | date:'dd/MM/yyyy HH:mm' }}</span>
