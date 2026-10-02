@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, inject, signal, computed } from '@angular/core';
+﻿import { Component, OnInit, Input, ViewChild, ElementRef, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -6,8 +6,9 @@ import { QuestaoService } from '../../services/questao.service';
 import { AuthService } from '../../services/auth.service';
 import { Questao, Resolucao, getDificuldadeTexto, getDificuldadeClasse } from '../../models/questao.model';
 import { KatexDirective } from '../../directives/katex.directive';
-import { ComentarioModalComponent } from './comentario-modal/comentario-modal.component';
-import { EditorFullscreenComponent, RespostaEditorFullscreen } from './editor-fullscreen/editor-fullscreen.component';
+import { ComentarioModalComponent } from '../../components/comentario-modal/comentario-modal.component';
+import { EditorComplexoResolucaoComponent } from '../../components/editor-complexo/editor-complexo-resolucao/editor-complexo-resolucao.component';
+import { RespostaEditorComplexo } from '../../components/editor-complexo/editor-complexo.component';
 import { AvatarComponent } from '../../components/avatar/avatar.component';
 
 @Component({
@@ -19,14 +20,13 @@ import { AvatarComponent } from '../../components/avatar/avatar.component';
     RouterLink,
     KatexDirective,
     ComentarioModalComponent,
-    EditorFullscreenComponent,
+    EditorComplexoResolucaoComponent,
     AvatarComponent
   ],
   templateUrl: './questao-detalhes.component.html',
   styleUrl: './questao-detalhes.component.css'
 })
 export class QuestaoDetalhesComponent implements OnInit {
-  // O Angular preenche este @Input automaticamente com o :id da URL
   @Input() id!: string;
   @ViewChild('splitContainer') splitContainer?: ElementRef<HTMLElement>;
 
@@ -37,68 +37,14 @@ export class QuestaoDetalhesComponent implements OnInit {
   public readonly getDificuldadeTexto = getDificuldadeTexto;
   public readonly getDificuldadeClasse = getDificuldadeClasse;
 
-  // Janelas Resizable (Divisor Arrastável)
-  public leftWidthPct = signal<number>(58);
+  // Splitter Central Arrastavel
+  public leftWidthPct = signal<number>(52);
   public rightWidthPct = computed(() => 100 - this.leftWidthPct());
   public isResizing = signal<boolean>(false);
-  public janelasModificadas = signal<boolean>(false);
 
-  private readonly MIN_LEFT_PCT = 25;
-  private readonly MAX_LEFT_PCT = 75;
+  private readonly MIN_LEFT_PCT = 28;
+  private readonly MAX_LEFT_PCT = 72;
   private readonly SPLIT_STORAGE_KEY = 'probend_split_left_pct';
-  private readonly JANELAS_MOD_KEY = 'probend_janelas_modificadas';
-
-  // Estados reativos
-  public questao = signal<Questao | null>(null);
-  public resolucoes = signal<Resolucao[]>([]);
-  public loading = signal<boolean>(true);
-  public erro = signal<string>('');
-
-  // Upvotes
-  public isUpvotedQuestao = signal<boolean>(false);
-  public upvotesCount = signal<number>(0);
-  public meusUpvotesResolucoes = signal<number[]>([]);
-
-  // Formulário de submissão de resolução
-  public novaResolucao = signal<string>('');
-  public codigoResolucao = signal<string>('');
-  public linguagemResolucao = signal<string>('java');
-  public submetendo = signal<boolean>(false);
-  public editorFullscreenAberto = signal<boolean>(false);
-
-  // Modal de comentários
-  public modalResolucaoId = signal<number | null>(null);
-  public modalAutorNome = signal<string>('');
-
-  // Verifica se o usuário autenticado é o autor da questão
-  public isAutor = computed(() => {
-    const q = this.questao();
-    const u = this.authService.currentUser();
-    if (!q?.autor || !u) return false;
-    return q.autor.id === u.id || q.autor.username === u.username;
-  });
-
-  ngOnInit(): void {
-    const savedPct = localStorage.getItem(this.SPLIT_STORAGE_KEY);
-    if (savedPct) {
-      const num = Number(savedPct);
-      if (!isNaN(num) && num >= this.MIN_LEFT_PCT && num <= this.MAX_LEFT_PCT) {
-        this.leftWidthPct.set(num);
-        this.janelasModificadas.set(true);
-      }
-    }
-
-    if (localStorage.getItem(this.JANELAS_MOD_KEY) === 'true') {
-      this.janelasModificadas.set(true);
-    }
-
-    this.route.paramMap.subscribe(params => {
-      const routeId = this.id || params.get('id');
-      if (routeId) {
-        this.carregarDados(routeId);
-      }
-    });
-  }
 
   public iniciarArrasto(e: MouseEvent): void {
     e.preventDefault();
@@ -116,7 +62,6 @@ export class QuestaoDetalhesComponent implements OnInit {
       const rawPct = ((moveEvent.clientX - rect.left) / rect.width) * 100;
       const clamped = Math.min(this.MAX_LEFT_PCT, Math.max(this.MIN_LEFT_PCT, rawPct));
       this.leftWidthPct.set(clamped);
-      this.janelasModificadas.set(true);
     };
 
     const onMouseUp = () => {
@@ -124,7 +69,6 @@ export class QuestaoDetalhesComponent implements OnInit {
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
       localStorage.setItem(this.SPLIT_STORAGE_KEY, String(this.leftWidthPct()));
-      localStorage.setItem(this.JANELAS_MOD_KEY, 'true');
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('mouseup', onMouseUp);
     };
@@ -134,201 +78,100 @@ export class QuestaoDetalhesComponent implements OnInit {
   }
 
   public iniciarArrastoTouch(e: TouchEvent): void {
-    if (!e.touches || e.touches.length === 0) return;
     this.isResizing.set(true);
+    document.body.style.userSelect = 'none';
 
     const target = e.currentTarget as HTMLElement;
     const container = target.closest('.split-container') as HTMLElement || this.splitContainer?.nativeElement;
 
     const onTouchMove = (moveEvent: TouchEvent) => {
-      if (!container || !moveEvent.touches || moveEvent.touches.length === 0) return;
-      const touch = moveEvent.touches[0];
+      if (!container) return;
       const rect = container.getBoundingClientRect();
       if (rect.width <= 0) return;
+      const touch = moveEvent.touches[0];
       const rawPct = ((touch.clientX - rect.left) / rect.width) * 100;
       const clamped = Math.min(this.MAX_LEFT_PCT, Math.max(this.MIN_LEFT_PCT, rawPct));
       this.leftWidthPct.set(clamped);
-      this.janelasModificadas.set(true);
     };
 
     const onTouchEnd = () => {
       this.isResizing.set(false);
+      document.body.style.userSelect = '';
       localStorage.setItem(this.SPLIT_STORAGE_KEY, String(this.leftWidthPct()));
-      localStorage.setItem(this.JANELAS_MOD_KEY, 'true');
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('touchend', onTouchEnd);
-      window.removeEventListener('touchcancel', onTouchEnd);
     };
 
-    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchmove', onTouchMove);
     window.addEventListener('touchend', onTouchEnd);
-    window.addEventListener('touchcancel', onTouchEnd);
   }
 
-  public iniciarResizeJanela(
-    e: MouseEvent | TouchEvent,
-    handle: 'br' | 'bl' | 'tr' | 'tl' | 'b' | 'r' | 'l' | 't',
-    janelaEl: HTMLElement
-  ): void {
-    e.preventDefault();
-    e.stopPropagation();
+  // Navegacao de Abas do Painel Esquerdo
+  public alternarAbaEsquerda(aba: 'enunciado' | 'resolucoes'): void {
+    this.abaAtivaEsquerda.set(aba);
+  }
+  public abaAtivaEsquerda = signal<'enunciado' | 'resolucoes'>('enunciado');
 
-    const clientX = 'touches' in e && e.touches.length > 0 ? e.touches[0].clientX : (e as MouseEvent).clientX;
-    const clientY = 'touches' in e && e.touches.length > 0 ? e.touches[0].clientY : (e as MouseEvent).clientY;
+  // Ordenacao das Resolucoes
+  public ordenacaoResolucoes = signal<'upvotes' | 'recentes'>('upvotes');
 
-    const startX = clientX;
-    const startY = clientY;
-    const rect = janelaEl.getBoundingClientRect();
-    const parentEl = (janelaEl.parentElement as HTMLElement) || document.body;
-    const parentRect = parentEl.getBoundingClientRect();
+  public readonly resolucoesOrdenadas = computed(() => {
+    const lista = [...this.resolucoes()];
+    if (this.ordenacaoResolucoes() === 'upvotes') {
+      return lista.sort((a, b) => {
+        const upA = a.upvotesCount ?? a.upvotes ?? 0;
+        const upB = b.upvotesCount ?? b.upvotes ?? 0;
+        return upB - upA;
+      });
+    } else {
+      return lista.sort((a, b) => {
+        const dataA = new Date(a.dataCriacao || a.criadoEm || 0).getTime();
+        const dataB = new Date(b.dataCriacao || b.criadoEm || 0).getTime();
+        return dataB - dataA;
+      });
+    }
+  });
 
-    const fixedLeft = rect.left;
-    const fixedRight = rect.right;
-    const fixedTop = rect.top;
-    const fixedBottom = rect.bottom;
+  // Estados principais da Questao e Resolucoes
+  public questao = signal<Questao | null>(null);
+  public resolucoes = signal<Resolucao[]>([]);
+  public loading = signal<boolean>(true);
+  public erro = signal<string>('');
 
-    // Altura máxima baseada no conteúdo real para não permitir esticar além do conteúdo (impede o vazio)
-    const scrollContainer = (janelaEl.querySelector('.janela-conteudo-scroll') as HTMLElement) || janelaEl;
-    const minWidth = 240;
-    const minHeight = 140;
-    const contentMaxHeight = Math.max(minHeight, scrollContainer.scrollHeight + 4);
+  // Upvotes
+  public isUpvotedQuestao = signal<boolean>(false);
+  public upvotesCount = signal<number>(0);
+  public meusUpvotesResolucoes = signal<number[]>([]);
 
-    const isRightHandle = handle === 'r' || handle === 'br' || handle === 'tr';
-    const isLeftHandle = handle === 'l' || handle === 'bl' || handle === 'tl';
-    const isBottomHandle = handle === 'b' || handle === 'br' || handle === 'bl';
-    const isTopHandle = handle === 't' || handle === 'tr' || handle === 'tl';
+  // Formulario de submissao do workspace
+  public novaResolucao = signal<string>('');
+  public codigoResolucao = signal<string>('');
+  public linguagemResolucao = signal<string>('java');
+  public mostrarCampoCodigo = signal<boolean>(false);
+  public selectedPdfFile = signal<File | null>(null);
+  public submetendo = signal<boolean>(false);
+  public editorComplexoAberto = signal<boolean>(false);
 
-    const cursorMap: Record<string, string> = {
-      br: 'se-resize',
-      bl: 'sw-resize',
-      tr: 'ne-resize',
-      tl: 'nw-resize',
-      b: 's-resize',
-      r: 'e-resize',
-      l: 'w-resize',
-      t: 'n-resize'
-    };
+  // Modal de comentarios
+  public modalResolucaoId = signal<number | null>(null);
+  public modalAutorNome = signal<string>('');
 
-    document.body.style.cursor = cursorMap[handle] || 'se-resize';
-    document.body.style.userSelect = 'none';
-    janelaEl.classList.add('janela-redimensionando');
+  // Verifica se o usuario autenticado e o autor da questao
+  public isAutor = computed(() => {
+    const q = this.questao();
+    const u = this.authService.currentUser();
+    return !!(q && u && q.autor && q.autor.id === u.id);
+  });
 
-    const onMove = (moveEvent: MouseEvent | TouchEvent) => {
-      const curX = 'touches' in moveEvent && moveEvent.touches.length > 0
-        ? moveEvent.touches[0].clientX
-        : (moveEvent as MouseEvent).clientX;
-      const curY = 'touches' in moveEvent && moveEvent.touches.length > 0
-        ? moveEvent.touches[0].clientY
-        : (moveEvent as MouseEvent).clientY;
-
-      // 1. Redimensionamento pela DIREITA: lado esquerdo estritamente fixo, borda direita move-se até o limite do pai
-      if (isRightHandle) {
-        const clampedRight = Math.min(parentRect.right, Math.max(fixedLeft + minWidth, curX));
-        const newWidth = clampedRight - fixedLeft;
-        if (clampedRight >= parentRect.right - 2 && parseFloat(janelaEl.style.marginLeft || '0') <= 0) {
-          janelaEl.style.width = '';
-        } else {
-          janelaEl.style.width = `${newWidth}px`;
-        }
-        this.janelasModificadas.set(true);
-      }
-
-      // 2. Redimensionamento pela ESQUERDA: borda direita ESTRITAMENTE FIXA (fixedRight), lado esquerdo move-se
-      // Impossibilita matematicamente qualquer overflow à direita
-      if (isLeftHandle) {
-        const clampedLeft = Math.max(parentRect.left, Math.min(fixedRight - minWidth, curX));
-        const newWidth = fixedRight - clampedLeft;
-        const newMarginLeft = clampedLeft - parentRect.left;
-
-        if (clampedLeft <= parentRect.left + 2 && fixedRight >= parentRect.right - 2) {
-          janelaEl.style.width = '';
-          janelaEl.style.marginLeft = '';
-        } else {
-          janelaEl.style.width = `${newWidth}px`;
-          janelaEl.style.marginLeft = newMarginLeft > 0 ? `${newMarginLeft}px` : '';
-        }
-        this.janelasModificadas.set(true);
-      }
-
-      // 3. Redimensionamento por BAIXO: topo estritamente fixo, base move-se até a altura real do conteúdo
-      if (isBottomHandle) {
-        const clampedBottom = Math.min(fixedTop + contentMaxHeight, Math.max(fixedTop + minHeight, curY));
-        const newHeight = clampedBottom - fixedTop;
-        if (newHeight >= contentMaxHeight - 2) {
-          janelaEl.style.height = '';
-        } else {
-          janelaEl.style.height = `${newHeight}px`;
-        }
-        this.janelasModificadas.set(true);
-      }
-
-      // 4. Redimensionamento por CIMA: base estritamente fixa, topo move-se
-      if (isTopHandle) {
-        const clampedTop = Math.max(fixedBottom - contentMaxHeight, Math.min(fixedBottom - minHeight, curY));
-        const newHeight = fixedBottom - clampedTop;
-        if (newHeight >= contentMaxHeight - 2) {
-          janelaEl.style.height = '';
-        } else {
-          janelaEl.style.height = `${newHeight}px`;
-        }
-        this.janelasModificadas.set(true);
-      }
-    };
-
-    const onEnd = () => {
-      document.body.style.cursor = '';
-      document.body.style.userSelect = '';
-      janelaEl.classList.remove('janela-redimensionando');
-      localStorage.setItem(this.JANELAS_MOD_KEY, 'true');
-
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onEnd);
-      window.removeEventListener('touchmove', onMove);
-      window.removeEventListener('touchend', onEnd);
-      window.removeEventListener('touchcancel', onEnd);
-    };
-
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onEnd);
-    window.addEventListener('touchmove', onMove, { passive: false });
-    window.addEventListener('touchend', onEnd);
-    window.addEventListener('touchcancel', onEnd);
+  ngOnInit(): void {
+    const savedPct = localStorage.getItem(this.SPLIT_STORAGE_KEY);
+    if (savedPct) {
+      this.leftWidthPct.set(Number(savedPct));
+    }
+    this.carregarDadosGlobais(this.id);
   }
 
-  public resetarJanela(janelaEl: HTMLElement): void {
-    janelaEl.style.width = '';
-    janelaEl.style.height = '';
-    janelaEl.style.maxWidth = '';
-    janelaEl.style.maxHeight = '';
-    janelaEl.style.marginLeft = '';
-  }
-
-  public desfazerAlteracoesJanelas(): void {
-    const elementos = document.querySelectorAll('.resizable-window');
-    elementos.forEach((el) => {
-      const htmlEl = el as HTMLElement;
-      htmlEl.style.width = '';
-      htmlEl.style.height = '';
-      htmlEl.style.maxWidth = '';
-      htmlEl.style.maxHeight = '';
-      htmlEl.style.marginLeft = '';
-    });
-
-    // Restaura o divisor central ao valor padrão de 58%
-    this.leftWidthPct.set(58);
-    localStorage.removeItem(this.SPLIT_STORAGE_KEY);
-    localStorage.removeItem(this.JANELAS_MOD_KEY);
-    this.janelasModificadas.set(false);
-  }
-
-  public fecharAlertaRollback(): void {
-    this.janelasModificadas.set(false);
-  }
-
-  public carregarDados(id: string): void {
-    this.loading.set(true);
-    this.erro.set('');
-
+  private carregarDadosGlobais(id: string): void {
     this.questaoService.buscarPorId(id).subscribe({
       next: (q) => {
         this.questao.set(q);
@@ -336,20 +179,18 @@ export class QuestaoDetalhesComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.erro.set('Não foi possível carregar os detalhes da questão.');
+        this.erro.set('Nao foi possivel carregar os detalhes da questao.');
         this.loading.set(false);
       }
     });
 
-    // Carrega a lista de resoluções
     this.questaoService.listarResolucoes(id).subscribe({
       next: (resList) => {
         this.resolucoes.set(resList || []);
       },
-      error: (err) => console.error('Erro ao carregar resoluções:', err)
+      error: (err) => console.error('Erro ao carregar resolucoes:', err)
     });
 
-    // Se estiver autenticado, carrega upvotes do usuário
     if (this.authService.isAuthenticated()) {
       this.questaoService.getMeusUpvotes().subscribe({
         next: (upvoteIds) => {
@@ -367,7 +208,7 @@ export class QuestaoDetalhesComponent implements OnInit {
 
   public darUpvoteQuestao(): void {
     if (!this.authService.isAuthenticated()) {
-      alert('Você precisa estar logado para dar upvote.');
+      alert('Voce precisa estar logado para dar upvote.');
       return;
     }
 
@@ -380,7 +221,6 @@ export class QuestaoDetalhesComponent implements OnInit {
           this.upvotesCount.set(resp.upvotes);
           this.isUpvotedQuestao.set(resp.upvoted);
         } else {
-          // Alterna otimista se retorno for void
           const atual = this.isUpvotedQuestao();
           this.isUpvotedQuestao.set(!atual);
           this.upvotesCount.update(c => atual ? Math.max(0, c - 1) : c + 1);
@@ -399,47 +239,86 @@ export class QuestaoDetalhesComponent implements OnInit {
       next: (atualizada) => {
         this.questao.update(atual => atual ? { ...atual, solucionada: atualizada.solucionada } : null);
       },
-      error: () => alert('Erro ao alterar status da questão.')
+      error: () => alert('Erro ao alterar status da questao.')
     });
+  }
+
+  public onPdfSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      if (file.type === 'application/pdf') {
+        this.selectedPdfFile.set(file);
+      } else {
+        alert('Por favor, selecione um arquivo PDF valido.');
+      }
+    }
+  }
+
+  public removerArquivoPdf(): void {
+    this.selectedPdfFile.set(null);
   }
 
   public submeterResolucao(): void {
     const texto = (this.novaResolucao() || '').trim();
-    if (!texto || this.submetendo()) return;
+    const pdfFile = this.selectedPdfFile();
+    
+    if (!texto && !pdfFile || this.submetendo()) return;
 
     if (!this.authService.isAuthenticated()) {
-      alert('Você precisa estar logado para submeter uma demonstração.');
+      alert('Voce precisa estar logado para submeter uma demonstracao.');
       return;
     }
 
     this.submetendo.set(true);
+
+    if (pdfFile) {
+      this.questaoService.uploadArquivoPdf(pdfFile).subscribe({
+        next: (resp) => {
+          this.finalizarSubmissao(texto, resp.url);
+        },
+        error: () => {
+          alert('Erro ao fazer upload do PDF. Tente novamente.');
+          this.submetendo.set(false);
+        }
+      });
+    } else {
+      this.finalizarSubmissao(texto);
+    }
+  }
+
+  private finalizarSubmissao(texto: string, arquivoPdfUrl?: string): void {
     this.questaoService.enviarResolucao(this.id, {
-      conteudo: texto,
+      conteudo: texto || 'Resolucao em anexo (PDF).',
       trechoCodigo: this.codigoResolucao().trim() || undefined,
-      linguagemCodigo: this.codigoResolucao().trim() ? this.linguagemResolucao() : undefined
+      linguagemCodigo: this.codigoResolucao().trim() ? this.linguagemResolucao() : undefined,
+      arquivoPdfUrl: arquivoPdfUrl
     }).subscribe({
       next: (nova) => {
         this.resolucoes.update(atuais => [nova, ...atuais]);
         this.novaResolucao.set('');
         this.codigoResolucao.set('');
+        this.selectedPdfFile.set(null);
         this.submetendo.set(false);
+        // Ao publicar, comuta para a aba de resolucoes para o usuario ver sua demonstracao
+        this.abaAtivaEsquerda.set('resolucoes');
       },
       error: () => {
-        alert('Erro ao enviar resolução. Tente novamente.');
+        alert('Erro ao enviar resolucao. Tente novamente.');
         this.submetendo.set(false);
       }
     });
   }
 
-  public abrirEditorFullscreen(): void {
+  public abrirEditor(): void {
     if (!this.authService.isAuthenticated()) {
-      alert('Você precisa estar logado para abrir o editor e submeter uma resolução.');
+      alert('Voce precisa estar logado para abrir o editor e submeter uma resolucao.');
       return;
     }
-    this.editorFullscreenAberto.set(true);
+    this.editorComplexoAberto.set(true);
   }
 
-  public fecharEditorFullscreen(dados: RespostaEditorFullscreen): void {
+  public fecharEditorComplexo(dados: RespostaEditorComplexo): void {
     if (dados) {
       this.novaResolucao.set(dados.conteudo || '');
       this.codigoResolucao.set(dados.trechoCodigo || '');
@@ -447,32 +326,54 @@ export class QuestaoDetalhesComponent implements OnInit {
         this.linguagemResolucao.set(dados.linguagemCodigo);
       }
     }
-    this.editorFullscreenAberto.set(false);
+    this.editorComplexoAberto.set(false);
   }
 
-  public publicarPeloFullscreen(dados: RespostaEditorFullscreen): void {
-    if (!dados?.conteudo?.trim()) return;
+  public publicarPeloEditor(dados: RespostaEditorComplexo): void {
+    if (!dados?.conteudo?.trim() && !dados?.arquivoPdf) return;
 
+    this.submetendo.set(true);
+
+    if (dados.arquivoPdf) {
+      this.questaoService.uploadArquivoPdf(dados.arquivoPdf).subscribe({
+        next: (resp) => {
+          this.finalizarSubmissaoEditor(dados, resp.url);
+        },
+        error: () => {
+          alert('Erro ao fazer upload do PDF pelo editor.');
+          this.submetendo.set(false);
+        }
+      });
+    } else {
+      this.finalizarSubmissaoEditor(dados);
+    }
+  }
+
+  private finalizarSubmissaoEditor(dados: RespostaEditorComplexo, arquivoPdfUrl?: string): void {
     this.questaoService.enviarResolucao(this.id, {
-      conteudo: dados.conteudo,
+      conteudo: dados.conteudo || 'Resolucao em anexo (PDF).',
       trechoCodigo: dados.trechoCodigo,
-      linguagemCodigo: dados.linguagemCodigo
+      linguagemCodigo: dados.linguagemCodigo,
+      arquivoPdfUrl: arquivoPdfUrl
     }).subscribe({
       next: (nova) => {
         this.resolucoes.update(atuais => [nova, ...atuais]);
         this.novaResolucao.set('');
         this.codigoResolucao.set('');
-        this.editorFullscreenAberto.set(false);
+        this.editorComplexoAberto.set(false);
+        this.submetendo.set(false);
+        this.abaAtivaEsquerda.set('resolucoes');
       },
       error: () => {
-        alert('Erro ao enviar resolução. Tente novamente.');
+        alert('Erro ao enviar resolucao pelo editor. Tente novamente.');
+        this.submetendo.set(false);
       }
     });
   }
 
   public darUpvoteResolucao(res: Resolucao): void {
     if (!this.authService.isAuthenticated()) {
-      alert('Você precisa estar logado para dar upvote em resoluções.');
+      alert('Voce precisa estar logado para dar upvote em resolucoes.');
       return;
     }
 
@@ -503,10 +404,6 @@ export class QuestaoDetalhesComponent implements OnInit {
     return this.meusUpvotesResolucoes().includes(resolucaoId);
   }
 
-  public isUpvotedResolucao(resolucaoId: number): boolean {
-    return this.isResolucaoUpvoted(resolucaoId);
-  }
-
   public abrirModalComentarios(res: Resolucao): void {
     this.modalResolucaoId.set(res.id);
     this.modalAutorNome.set(res.autor?.nome || res.autor?.username || 'Membro do Lab');
@@ -515,7 +412,6 @@ export class QuestaoDetalhesComponent implements OnInit {
   public fecharModalComentarios(): void {
     const id = this.modalResolucaoId();
     if (id) {
-      // Atualiza a quantidade de comentários da resolução
       this.questaoService.listarComentarios(id).subscribe({
         next: (coms) => {
           this.resolucoes.update(lista =>
@@ -525,6 +421,10 @@ export class QuestaoDetalhesComponent implements OnInit {
       });
     }
     this.modalResolucaoId.set(null);
+  }
+
+  public alterarOrdenacao(ord: 'upvotes' | 'recentes'): void {
+    this.ordenacaoResolucoes.set(ord);
   }
 
   public getTagsArray(tags: any): string[] {

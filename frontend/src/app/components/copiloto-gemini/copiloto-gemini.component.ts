@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { QuestaoService } from '../../../services/questao.service';
-import { Questao } from '../../../models/questao.model';
+import { QuestaoService } from '../../services/questao.service';
+import { Questao } from '../../models/questao.model';
 
 @Component({
   selector: 'app-copiloto-gemini',

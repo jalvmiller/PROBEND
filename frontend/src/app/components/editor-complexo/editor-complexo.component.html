@@ -16,16 +16,13 @@
 
       <div class="info-questao">
         <div class="titulo-linha">
-          <span class="badge-questao-id">#{{ questao.id }}</span>
-          <h1 class="titulo-questao-truncado" [title]="questao.titulo || questao.enunciado">
-            {{ questao.titulo || 'Demonstração Técnica' }}
+          <span class="badge-questao-id">{{ badgeModo }}</span>
+          <h1 class="titulo-questao-truncado" [title]="titulo">
+            {{ titulo }}
           </h1>
         </div>
         <div class="metadados-chips">
-          <span class="chip-materia">{{ questao.materia || 'Geral' }}</span>
-          <span class="chip-dificuldade" [ngClass]="getDificuldadeClasse(questao.dificuldade)">
-            {{ getDificuldadeTexto(questao.dificuldade) }}
-          </span>
+          <span class="chip-materia">{{ subtitulo }}</span>
         </div>
       </div>
     </div>
@@ -52,24 +49,39 @@
 
     <!-- Ações à Direita -->
     <div class="topo-direita">
-      <button
-        type="button"
-        class="btn-toggle-enunciado"
-        [class.ativo]="enunciadoAberto()"
-        (click)="toggleEnunciado()"
-        title="Consultar enunciado original da questão"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-        </svg>
-        <span>{{ enunciadoAberto() ? 'Ocultar Enunciado' : 'Ver Enunciado' }}</span>
-      </button>
+      @if (mostrarVerEnunciado) {
+        <button
+          type="button"
+          class="btn-toggle-enunciado"
+          [class.ativo]="enunciadoAberto()"
+          (click)="toggleEnunciado()"
+          title="Consultar enunciado original da questão"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+          <span>{{ enunciadoAberto() ? 'Ocultar Enunciado' : 'Ver Enunciado' }}</span>
+        </button>
+      }
 
       <div class="stats-contadores">
         <span class="stat-item">{{ totalLinhas() }} lin</span>
         <span class="stat-div">·</span>
         <span class="stat-item">{{ totalCaracteres() }} carac</span>
+      </div>
+
+      <div class="editor-anexo-pdf">
+        <label class="btn-topo-pdf" [class.anexado]="selectedPdfFile()" title="Anexar PDF da Resolução">
+          <input type="file" accept="application/pdf" (change)="onPdfSelected($event)" style="display: none;">
+          <span class="icone-pdf">📄</span>
+          @if (selectedPdfFile(); as file) {
+            <span class="pdf-nome">{{ file.name }}</span>
+          }
+        </label>
+        @if (selectedPdfFile()) {
+          <button type="button" class="btn-remover-pdf-topo" (click)="removerArquivoPdf()" title="Remover PDF">&times;</button>
+        }
       </div>
 
       <button
@@ -80,26 +92,26 @@
       >
         @if (submetendo()) {
           <span class="spinner-sm"></span>
-          <span>Submetendo...</span>
+          <span>Processando...</span>
         } @else {
-          <span>Submeter</span>
+          <span>{{ textoBotaoAcao }}</span>
         }
       </button>
     </div>
   </header>
 
   <!-- Drawer Deslizante de Enunciado -->
-  @if (enunciadoAberto()) {
+  @if (mostrarVerEnunciado && enunciadoAberto()) {
     <section class="drawer-enunciado">
       <div class="drawer-conteudo">
         <div class="drawer-header">
           <span class="drawer-tag">Enunciado da Questão Original</span>
           <button type="button" class="btn-fechar-drawer" (click)="enunciadoAberto.set(false)">✕</button>
         </div>
-        <div class="drawer-corpo" [appKatex]="questao.enunciado"></div>
-        @if (questao.trechoCodigo) {
+        <div class="drawer-corpo" [appKatex]="enunciadoOriginal"></div>
+        @if (codigoOriginal) {
           <div class="drawer-codigo">
-            <pre class="codigo-pre"><code>{{ questao.trechoCodigo }}</code></pre>
+            <pre class="codigo-pre"><code>{{ codigoOriginal }}</code></pre>
           </div>
         }
       </div>
@@ -282,7 +294,7 @@
               <textarea
                 #textareaMatematica
                 class="textarea-fullscreen textarea-math"
-                [placeholder]="placeholderMatematica"
+                [placeholder]="placeholderMatematica()"
                 [ngModel]="conteudo()"
                 (ngModelChange)="conteudo.set($event)"
                 (input)="onInputTextareaMatematica()"
@@ -450,7 +462,7 @@
               </div>
               <p class="titulo-vazio">Documento Vazio</p>
               <p class="sub-vazio">
-                Digite sua demonstração, insira fórmulas LaTeX, imagens ou quebras de página para visualizar o documento renderizado.
+                Digite sua resolução no painel anterior, que conta com LaTeX e Markdown
               </p>
             </div>
           }
@@ -493,7 +505,7 @@
               <textarea
                 #textareaCodigo
                 class="textarea-fullscreen textarea-code"
-                [placeholder]="placeholderCodigo"
+                [placeholder]="placeholderCodigo()"
                 [ngModel]="trechoCodigo()"
                 (ngModelChange)="trechoCodigo.set($event)"
                 (keydown)="tratarTab($event)"

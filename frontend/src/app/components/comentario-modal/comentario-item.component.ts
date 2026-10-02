@@ -1,10 +1,10 @@
 import { Component, Input, Output, EventEmitter, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../../services/auth.service';
-import { Comentario } from '../../../models/questao.model';
-import { KatexDirective } from '../../../directives/katex.directive';
-import { AvatarComponent } from '../../../components/avatar/avatar.component';
+import { AuthService } from '../../services/auth.service';
+import { Comentario } from '../../models/questao.model';
+import { KatexDirective } from '../../directives/katex.directive';
+import { AvatarComponent } from '../avatar/avatar.component';
 
 /**
  * ComentarioItemComponent

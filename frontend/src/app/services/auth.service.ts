@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, catchError, of, firstValueFrom } from 'rxjs';
+import { Observable, tap, catchError, of, firstValueFrom, switchMap } from 'rxjs';
 import { Usuario, LoginRequest, RegisterRequest, AuthResponse } from '../models/auth.model';
 
 /**
@@ -63,15 +63,12 @@ export class AuthService {
    * Após a validação das credenciais pelo Spring (que grava o cookie HTTP-Only AUTH_TOKEN),
    * atualiza o Signal `_currentUser` com os dados do usuário.
    */
-  public login(credenciais: LoginRequest): Observable<AuthResponse> {
+  public login(credenciais: LoginRequest): Observable<Usuario> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/login`, credenciais).pipe(
-      tap(async () => {
-        try {
-          const usuario = await firstValueFrom(this.obterUsuarioAtual());
-          this._currentUser.set(usuario);
-        } catch {
-          this._currentUser.set(null);
-        }
+      switchMap(() => this.obterUsuarioAtual()),
+      tap({
+        next: (usuario) => this._currentUser.set(usuario),
+        error: () => this._currentUser.set(null)
       })
     );
   }
@@ -86,15 +83,12 @@ export class AuthService {
   /**
    * POST /api/auth/visitor-session - Cria uma sessão temporária de visitante
    */
-  public visitorSession(): Observable<AuthResponse> {
+  public visitorSession(): Observable<Usuario> {
     return this.http.post<AuthResponse>(`${this.baseUrl}/visitor-session`, {}).pipe(
-      tap(async () => {
-        try {
-          const usuario = await firstValueFrom(this.obterUsuarioAtual());
-          this._currentUser.set(usuario);
-        } catch {
-          this._currentUser.set(null);
-        }
+      switchMap(() => this.obterUsuarioAtual()),
+      tap({
+        next: (usuario) => this._currentUser.set(usuario),
+        error: () => this._currentUser.set(null)
       })
     );
   }

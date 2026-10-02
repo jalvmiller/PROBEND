@@ -33,6 +33,7 @@ export interface Resolucao {
   conteudo: string;
   trechoCodigo?: string;
   linguagemCodigo?: string;
+  arquivoPdfUrl?: string;
   autor: Usuario;
   upvotes?: number;
   upvotesCount?: number;

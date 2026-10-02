@@ -84,8 +84,19 @@ export class QuestaoService {
   /**
    * Envia uma nova resolução para uma questão
    */
-  public enviarResolucao(questaoId: number | string, dados: { conteudo: string; trechoCodigo?: string; linguagemCodigo?: string }): Observable<Resolucao> {
+  public enviarResolucao(questaoId: number | string, dados: { conteudo: string; trechoCodigo?: string; linguagemCodigo?: string; arquivoPdfUrl?: string }): Observable<Resolucao> {
     return this.http.post<Resolucao>(`${this.baseUrl}/${questaoId}/resolucoes`, dados);
+  }
+
+  /**
+   * Faz o upload de um arquivo PDF para a resolução
+   */
+  public uploadArquivoPdf(file: File): Observable<{ url: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    // Assumindo que a rota do backend para arquivo geral seja semelhante à de upload de imagem
+    // Por enquanto usamos /api/midia/upload-arquivo (a ser criada no backend)
+    return this.http.post<{ url: string }>('/api/midia/upload-arquivo', formData);
   }
 
   /**

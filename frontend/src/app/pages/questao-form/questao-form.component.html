@@ -1,174 +1,125 @@
-<div class="form-container">
+﻿<div class="form-container">
   <div class="form-topo">
-    <a
-      routerLink="/"
-      class="link-voltar"
-      >Voltar ao Repositório</a
-    >
-    <h1 class="page-title">{{ id ? 'Editar Questão #' + id : 'Nova Questão Técnica' }}</h1>
+    <a routerLink="/" class="link-voltar">&larr; Voltar para o repositorio</a>
+    <h1 class="page-title">{{ id ? 'Editar Questao #' + id : 'Nova Questao Tecnica' }}</h1>
     <p class="page-desc">
-      Cadastre ou edite problemas com suporte a fórmulas em KaTeX, blocos de código e diagramas.
+      Cadastre ou edite problemas com suporte a formulas em KaTeX, blocos de codigo e diagramas.
     </p>
   </div>
 
-  <!-- Copiloto Gemini IA — Componente Especialista (apenas em modo de criação) -->
   @if (!id) {
     <app-copiloto-gemini
-      [rascunhoAtual]="enunciado()"
+      [rascunhoAtual]="form.value.enunciado || ''"
       (sugestaoGerada)="aplicarSugestaoIA($event)"
       (publicadaDireto)="onQuestaoPublicadaDireto($event)"
     ></app-copiloto-gemini>
   }
 
-  <!-- Formulário Principal -->
-  <form
-    (ngSubmit)="salvarQuestao()"
-    class="card-form"
-  >
-    <!-- Linha 1: Título -->
+  <form [formGroup]="form" (ngSubmit)="salvarQuestao()" class="card-form">
     <div class="form-group">
-      <label
-        class="form-label"
-        for="titulo"
-        >Título da Questão (Opcional)</label
-      >
+      <label class="form-label" for="titulo">Titulo da Questao (Opcional)</label>
       <input
         id="titulo"
         type="text"
         class="input-field"
-        placeholder="Ex: Teorema Fundamental do Cálculo em Coordenadas Polares"
-        [ngModel]="titulo()"
-        (ngModelChange)="titulo.set($event)"
-        name="titulo"
+        placeholder="Ex: Teorema Fundamental do Calculo em Coordenadas Polares"
+        formControlName="titulo"
       />
     </div>
 
-    <!-- Linha 2: Matéria, Assunto, Dificuldade e Fonte -->
     <div class="grid-campos">
       <div class="form-group">
-        <label
-          class="form-label"
-          for="materia"
-          >Matéria / Área *</label
-        >
+        <label class="form-label" for="materia">Materia / Area *</label>
         <input
           id="materia"
           type="text"
           class="input-field"
-          placeholder="Ex: Cálculo 1, Física, Java"
-          [ngModel]="materia()"
-          (ngModelChange)="materia.set($event)"
-          name="materia"
-          required
+          placeholder="Ex: Calculo 1, Fisica, Java"
+          formControlName="materia"
         />
+        @if (form.get('materia')?.invalid && form.get('materia')?.touched) {
+          <span class="error-msg">Materia e obrigatoria.</span>
+        }
       </div>
 
       <div class="form-group">
-        <label
-          class="form-label"
-          for="assunto"
-          >Assunto Específico</label
-        >
+        <label class="form-label" for="assunto">Assunto Especifico</label>
         <input
           id="assunto"
           type="text"
           class="input-field"
           placeholder="Ex: Derivadas Parciais, Polimorfismo"
-          [ngModel]="assunto()"
-          (ngModelChange)="assunto.set($event)"
-          name="assunto"
+          formControlName="assunto"
         />
       </div>
 
       <div class="form-group">
-        <label
-          class="form-label"
-          for="dificuldade"
-          >Dificuldade</label
-        >
+        <label class="form-label" for="dificuldade">Dificuldade</label>
         <select
           id="dificuldade"
           class="input-field select-field"
-          [ngModel]="dificuldade()"
-          (ngModelChange)="dificuldade.set(+$event)"
-          name="dificuldade"
+          formControlName="dificuldade"
         >
-          <option [value]="0">Fácil</option>
-          <option [value]="1">Médio</option>
-          <option [value]="2">Difícil</option>
+          <option [ngValue]="0">Facil</option>
+          <option [ngValue]="1">Medio</option>
+          <option [ngValue]="2">Dificil</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label
-          class="form-label"
-          for="fonte"
-          >Fonte / Exame</label
-        >
+        <label class="form-label" for="fonte">Fonte / Exame</label>
         <input
           id="fonte"
           type="text"
           class="input-field"
           placeholder="Ex: ITA 2024, Halliday Vol. 1, ENADE"
-          [ngModel]="fonte()"
-          (ngModelChange)="fonte.set($event)"
-          name="fonte"
+          formControlName="fonte"
         />
       </div>
     </div>
 
-    <!-- Linha 3: Enunciado (com Preview KaTeX) -->
+    <div class="card-editor-complexo">
+      <div class="card-editor-header">
+        <div class="card-editor-info">
+          <h3>Editor Complexo</h3>
+          <p>Redija questoes usando MathLive, auto-completar de formulas LaTeX e realce PrismJS (Lado-a-Lado).</p>
+        </div>
+        <button type="button" class="btn btn-primary" (click)="abrirEditorComplexo()">
+          Abrir Editor Complexo (Tela Cheia)
+        </button>
+      </div>
+    </div>
+
     <div class="form-group">
       <div class="label-com-dica">
-        <label
-          class="form-label"
-          for="enunciado"
-          >Enunciado da Questão *</label
-        >
-        <span class="dica-katex"
-          >Fórmulas: <code>$...$</code> para inline e <code>$$...$$</code> para bloco</span
-        >
+        <label class="form-label" for="enunciado">Enunciado da Questao *</label>
+        <span class="dica-katex">Formulas: <code>$...$</code> para inline e <code>...</code> para bloco</span>
       </div>
       <textarea
         id="enunciado"
         class="input-field enunciado-textarea"
         rows="6"
-        placeholder="Digite o enunciado detalhado da questão. Você pode incluir fórmulas em LaTeX: $x^2 + y^2 = r^2$..."
-        [ngModel]="enunciado()"
-        (ngModelChange)="enunciado.set($event)"
-        name="enunciado"
-        required
+        placeholder="Digite o enunciado detalhado da questao..."
+        formControlName="enunciado"
       ></textarea>
+      @if (form.get('enunciado')?.invalid && form.get('enunciado')?.touched) {
+        <span class="error-msg">O enunciado e obrigatorio.</span>
+      }
     </div>
 
-    <!-- Preview ao Vivo em KaTeX do Enunciado -->
-    @if (enunciado()) {
+    @if (form.value.enunciado) {
       <div class="preview-katex-box">
         <div class="preview-header">
-          <span class="preview-tag">Prévia de Renderização KaTeX</span>
+          <span class="preview-tag">Previa de Renderizacao KaTeX</span>
         </div>
-        <div
-          class="preview-corpo"
-          [appKatex]="enunciado()"
-        ></div>
+        <div class="preview-corpo" [appKatex]="form.value.enunciado"></div>
       </div>
     }
 
-    <!-- Linha 4: Código Técnico Opcional -->
     <div class="grid-codigo">
       <div class="form-group campo-linguagem">
-        <label
-          class="form-label"
-          for="linguagemCodigo"
-          >Linguagem de Programação</label
-        >
-        <select
-          id="linguagemCodigo"
-          class="input-field select-field"
-          [ngModel]="linguagemCodigo()"
-          (ngModelChange)="linguagemCodigo.set($event)"
-          name="linguagemCodigo"
-        >
+        <label class="form-label" for="linguagemCodigo">Linguagem de Programacao</label>
+        <select id="linguagemCodigo" class="input-field select-field" formControlName="linguagemCodigo">
           <option value="">Nenhuma (Apenas texto)</option>
           <option value="java">Java</option>
           <option value="python">Python</option>
@@ -180,24 +131,17 @@
       </div>
 
       <div class="form-group campo-trecho">
-        <label
-          class="form-label"
-          for="trechoCodigo"
-          >Trecho de Código (Opcional)</label
-        >
+        <label class="form-label" for="trechoCodigo">Trecho de Codigo (Opcional)</label>
         <textarea
           id="trechoCodigo"
           class="input-field font-mono"
           rows="4"
-          placeholder="Cole aqui o trecho de código ou pseudocódigo relevante..."
-          [ngModel]="trechoCodigo()"
-          (ngModelChange)="trechoCodigo.set($event)"
-          name="trechoCodigo"
+          placeholder="Cole aqui o trecho de codigo..."
+          formControlName="trechoCodigo"
         ></textarea>
       </div>
     </div>
 
-    <!-- Linha 5: Upload de Diagrama / Imagem da Questão -->
     <div class="form-group secao-upload">
       <label class="form-label">Diagrama ou Imagem Ilustrativa (Opcional)</label>
       <div class="upload-area">
@@ -209,10 +153,7 @@
           [disabled]="enviandoImagem()"
           class="input-file"
         />
-        <label
-          for="arquivo-imagem"
-          class="btn btn-secondary btn-escolher-arquivo"
-        >
+        <label for="arquivo-imagem" class="btn btn-secondary btn-escolher-arquivo">
           @if (enviandoImagem()) {
             <span class="spinner-sm"></span>
             <span>Enviando imagem...</span>
@@ -222,44 +163,43 @@
         </label>
       </div>
 
-      @if (imagemUrl()) {
+      @if (form.value.imagemUrl) {
         <div class="preview-imagem-container">
-          <img
-            [src]="imagemUrl()"
-            alt="Diagrama da questão"
-            class="img-preview"
-          />
-          <button
-            type="button"
-            class="btn-remover-img"
-            (click)="removerImagem()"
-            title="Remover imagem"
-          >
+          <img [src]="form.value.imagemUrl" alt="Diagrama da questao" class="img-preview" />
+          <button type="button" class="btn-remover-img" (click)="removerImagem()" title="Remover imagem">
             Remover
           </button>
         </div>
       }
     </div>
 
-    <!-- Botões Finais de Ação -->
     <div class="form-acoes">
-      <a
-        routerLink="/"
-        class="btn btn-secondary"
-        >Cancelar</a
-      >
+      <a routerLink="/" class="btn btn-secondary">Cancelar</a>
       <button
         type="submit"
         class="btn btn-primary btn-salvar"
-        [disabled]="salvando() || enviandoImagem() || !enunciado()"
+        [disabled]="salvando() || enviandoImagem() || form.invalid"
       >
         @if (salvando()) {
           <span class="spinner-sm"></span>
           <span>Gravando...</span>
         } @else {
-          <span>{{ id ? 'Salvar Alterações' : 'Publicar Questão' }}</span>
+          <span>{{ id ? 'Salvar Alteracoes' : 'Publicar Questao' }}</span>
         }
       </button>
     </div>
   </form>
 </div>
+
+@if (editorComplexoAberto()) {
+  <app-editor-complexo-criacao
+    [tituloQuestao]="form.value.titulo || ''"
+    [materiaQuestao]="form.value.materia || ''"
+    [isEdicao]="!!id"
+    [conteudoInicial]="form.value.enunciado || ''"
+    [codigoInicial]="form.value.trechoCodigo || ''"
+    [linguagemInicial]="form.value.linguagemCodigo || ''"
+    (fechar)="editorComplexoAberto.set(false)"
+    (publicar)="aplicarPeloEditor($event)"
+  ></app-editor-complexo-criacao>
+}

@@ -202,6 +202,64 @@
   opacity: 0.5;
 }
 
+/* Anexo de PDF no Topo */
+.editor-anexo-pdf {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-right: 0.5rem;
+}
+
+.btn-topo-pdf {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  background-color: var(--bg-app);
+  border: 1px dashed var(--border-default);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-topo-pdf:hover {
+  border-color: var(--accent-amber);
+  color: var(--text-primary);
+  background-color: rgba(245, 158, 11, 0.05);
+}
+
+.btn-topo-pdf.anexado {
+  background-color: var(--accent-amber-subtle);
+  border: 1px solid var(--accent-amber);
+  color: var(--text-primary);
+}
+
+.pdf-nome {
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-remover-pdf-topo {
+  background: transparent;
+  border: none;
+  color: var(--danger, #ef4444);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.1rem 0.25rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.btn-remover-pdf-topo:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
 .btn-publicar-topo {
   display: flex;
   align-items: center;

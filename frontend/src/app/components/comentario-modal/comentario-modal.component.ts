@@ -1,16 +1,15 @@
 import { Component, OnInit, Input, Output, EventEmitter, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { QuestaoService } from '../../../services/questao.service';
-import { AuthService } from '../../../services/auth.service';
-import { Comentario } from '../../../models/questao.model';
-import { KatexDirective } from '../../../directives/katex.directive';
+import { QuestaoService } from '../../services/questao.service';
+import { AuthService } from '../../services/auth.service';
+import { Comentario } from '../../models/questao.model';
 import { ComentarioItemComponent } from './comentario-item.component';
 
 @Component({
   selector: 'app-comentario-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, KatexDirective, ComentarioItemComponent],
+  imports: [CommonModule, FormsModule, ComentarioItemComponent],
   templateUrl: './comentario-modal.component.html',
   styleUrl: './comentario-modal.component.css'
 })

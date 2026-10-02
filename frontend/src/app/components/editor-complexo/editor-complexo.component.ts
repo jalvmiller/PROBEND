@@ -17,8 +17,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Questao, getDificuldadeClasse, getDificuldadeTexto } from '../../../models/questao.model';
-import { KatexDirective } from '../../../directives/katex.directive';
+import { Questao, getDificuldadeClasse, getDificuldadeTexto } from '../../models/questao.model';
+import { KatexDirective } from '../../directives/katex.directive';
 
 import 'mathlive';
 import { MathfieldElement } from 'mathlive';
@@ -40,28 +40,39 @@ import 'prismjs/components/prism-sql';
 import 'prismjs/components/prism-rust';
 import 'prismjs/components/prism-go';
 
-export interface RespostaEditorFullscreen {
+export interface RespostaEditorComplexo {
   conteudo: string;
   trechoCodigo?: string;
   linguagemCodigo?: string;
+  arquivoPdf?: File;
 }
 
 @Component({
-  selector: 'app-editor-fullscreen',
+  selector: 'app-editor-complexo',
   standalone: true,
   imports: [CommonModule, FormsModule, KatexDirective],
-  templateUrl: './editor-fullscreen.component.html',
-  styleUrl: './editor-fullscreen.component.css',
+  templateUrl: './editor-complexo.component.html',
+  styleUrl: './editor-complexo.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class EditorFullscreenComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input({ required: true }) questao!: Questao;
+export class EditorComplexoComponent implements OnInit, AfterViewInit, OnDestroy {
+  @Input() titulo: string = '';
+  @Input() subtitulo: string = '';
+  @Input() badgeModo: string = 'EDITOR';
+  @Input() placeholderMatematicaText: string = '';
+  @Input() placeholderCodigoText: string = '';
+  @Input() mostrarVerEnunciado: boolean = false;
+  @Input() enunciadoOriginal: string = '';
+  @Input() codigoOriginal: string = '';
+  @Input() textoBotaoAcao: string = 'Submeter';
+  
   @Input() conteudoInicial: string = '';
   @Input() codigoInicial: string = '';
   @Input() linguagemInicial: string = 'java';
+  @Input() forcarModoAlgoritmo: boolean = false;
 
-  @Output() fechar = new EventEmitter<RespostaEditorFullscreen>();
-  @Output() publicar = new EventEmitter<RespostaEditorFullscreen>();
+  @Output() fechar = new EventEmitter<RespostaEditorComplexo>();
+  @Output() publicar = new EventEmitter<RespostaEditorComplexo>();
 
   @ViewChild('textareaMatematica') textareaMatematica?: ElementRef<HTMLTextAreaElement>;
   @ViewChild('textareaCodigo') textareaCodigo?: ElementRef<HTMLTextAreaElement>;
@@ -83,6 +94,7 @@ export class EditorFullscreenComponent implements OnInit, AfterViewInit, OnDestr
   public uploadingImagem = signal<boolean>(false);
   public erroUpload = signal<string>('');
   public dragOver = signal<boolean>(false);
+  public selectedPdfFile = signal<File | null>(null);
 
   // Estados dos Conteúdos
   public conteudo = signal<string>('');
@@ -291,22 +303,20 @@ export class EditorFullscreenComponent implements OnInit, AfterViewInit, OnDestr
     { visual: 'ẋ', latex: '\\dot{#0}', dica: 'Ponto (derivada temporal)' }
   ];
 
-  // Placeholders seguros com caracteres {}
-  public readonly placeholderMatematica = `Digite sua demonstração passo a passo...
+  // Placeholders
+  public placeholderMatematica = computed(() => {
+    return this.placeholderMatematicaText || `Digite sua demonstração passo a passo...
 
 Use $fórmula$ para equações na linha e $$fórmula$$ para equações em bloco.
 Exemplo:
 Seja a integral:
 $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
+  });
 
-  public readonly placeholderCodigo = `// Escreva aqui o algoritmo ou solução computacional...
-// Pressione Tab normalmente para indentação.
-
-public class Solucao {
-    public static void main(String[] args) {
-        System.out.println("Demonstração");
-    }
-}`;
+  public placeholderCodigo = computed(() => {
+    return this.placeholderCodigoText || `// Escreva aqui o algoritmo ou solução computacional...
+// Pressione Tab normalmente para indentação.`;
+  });
 
   // Estatísticas computadas
   public totalCaracteres = computed(() => this.conteudo().length + this.trechoCodigo().length);
@@ -338,12 +348,9 @@ public class Solucao {
     }
     if (this.linguagemInicial) {
       this.linguagemCodigo.set(this.linguagemInicial);
-    } else if (this.questao?.linguagemCodigo) {
-      this.linguagemCodigo.set(this.questao.linguagemCodigo);
     }
 
-    // Se a questão já tiver trecho de código ou linguagem especificada, inicia no modo ALGORITMO
-    if (this.codigoInicial || this.questao?.trechoCodigo || this.questao?.linguagemCodigo) {
+    if (this.forcarModoAlgoritmo || this.codigoInicial) {
       this.modoAtivo.set('ALGORITMO');
     }
   }
@@ -936,13 +943,31 @@ public class Solucao {
     this.fechar.emit({
       conteudo: this.conteudo(),
       trechoCodigo: this.trechoCodigo(),
-      linguagemCodigo: this.linguagemCodigo()
+      linguagemCodigo: this.linguagemCodigo(),
+      arquivoPdf: this.selectedPdfFile() || undefined
     });
+  }
+
+  public onPdfSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      if (file.type === 'application/pdf') {
+        this.selectedPdfFile.set(file);
+      } else {
+        alert('Por favor, selecione um arquivo PDF válido.');
+      }
+    }
+  }
+
+  public removerArquivoPdf(): void {
+    this.selectedPdfFile.set(null);
   }
 
   public submeter(): void {
     const cont = this.conteudo().trim();
     const cod = this.trechoCodigo().trim();
+    const pdfFile = this.selectedPdfFile();
 
     // Se estiver no modo algoritmo e o usuário só escreveu código, geramos uma descrição padrão se vazia
     let conteudoFinal = cont;
@@ -950,16 +975,17 @@ public class Solucao {
       conteudoFinal = `Resolução algorítmica implementada em ${this.linguagemCodigo().toUpperCase()}.`;
     }
 
-    if (!conteudoFinal) {
-      alert('Por favor, digite uma explicação teórica, demonstração matemática ou código para a resolução.');
+    if (!conteudoFinal && !pdfFile) {
+      alert('Por favor, digite uma explicação teórica, demonstração matemática, código, ou anexe um PDF para a resolução.');
       return;
     }
 
     this.submetendo.set(true);
     this.publicar.emit({
-      conteudo: conteudoFinal,
+      conteudo: conteudoFinal || 'Resolução em anexo (PDF).',
       trechoCodigo: cod || undefined,
-      linguagemCodigo: cod ? this.linguagemCodigo() : undefined
+      linguagemCodigo: cod ? this.linguagemCodigo() : undefined,
+      arquivoPdf: pdfFile || undefined
     });
   }
 }

@@ -1,16 +1,18 @@
-import { Component, OnInit, Input, inject, signal } from '@angular/core';
+﻿import { Component, OnInit, Input, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { QuestaoService } from '../../services/questao.service';
-import { Dificuldade, Questao } from '../../models/questao.model';
+import { Questao } from '../../models/questao.model';
 import { KatexDirective } from '../../directives/katex.directive';
-import { CopilotoGeminiComponent } from './copiloto-gemini/copiloto-gemini.component';
+import { CopilotoGeminiComponent } from '../../components/copiloto-gemini/copiloto-gemini.component';
+import { EditorComplexoCriacaoComponent } from '../../components/editor-complexo/editor-complexo-criacao/editor-complexo-criacao.component';
+import { RespostaEditorComplexo } from '../../components/editor-complexo/editor-complexo.component';
 
 @Component({
   selector: 'app-questao-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, KatexDirective, CopilotoGeminiComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, KatexDirective, CopilotoGeminiComponent, EditorComplexoCriacaoComponent],
   templateUrl: './questao-form.component.html',
   styleUrl: './questao-form.component.css',
 })
@@ -19,43 +21,70 @@ export class QuestaoFormComponent implements OnInit {
 
   private readonly questaoService = inject(QuestaoService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly fb = inject(FormBuilder);
 
-  // Form Model
-  public titulo = signal<string>('');
-  public enunciado = signal<string>('');
-  public materia = signal<string>('');
-  public assunto = signal<string>('');
-  public dificuldade = signal<number>(0);
-  public fonte = signal<string>('');
-  public trechoCodigo = signal<string>('');
-  public linguagemCodigo = signal<string>('');
-  public imagemUrl = signal<string>('');
+  // Form Model unificado
+  public form = this.fb.nonNullable.group({
+    titulo: [''],
+    enunciado: ['', [Validators.required]],
+    materia: ['', [Validators.required]],
+    assunto: [''],
+    dificuldade: [0],
+    fonte: [''],
+    trechoCodigo: [''],
+    linguagemCodigo: [''],
+    imagemUrl: ['']
+  });
 
   // Estados de Upload e Salvamento
   public enviandoImagem = signal<boolean>(false);
   public salvando = signal<boolean>(false);
   public erro = signal<string>('');
+  
+  public editorComplexoAberto = signal<boolean>(false);
 
   ngOnInit(): void {
     if (this.id) {
       this.carregarParaEdicao(this.id);
     }
+
+    this.route.queryParams.subscribe(params => {
+      if (params['editor'] === 'true') {
+        this.editorComplexoAberto.set(true);
+      }
+    });
+  }
+
+  public abrirEditorComplexo(): void {
+    this.editorComplexoAberto.set(true);
+  }
+
+  public aplicarPeloEditor(dados: RespostaEditorComplexo): void {
+    this.form.patchValue({
+      enunciado: dados.conteudo,
+      trechoCodigo: dados.trechoCodigo || '',
+      linguagemCodigo: dados.linguagemCodigo || ''
+    });
+    this.editorComplexoAberto.set(false);
   }
 
   private carregarParaEdicao(id: string): void {
     this.questaoService.buscarPorId(id).subscribe({
       next: (q) => {
-        this.titulo.set(q.titulo || '');
-        this.enunciado.set(q.enunciado || '');
-        this.materia.set(q.materia || '');
-        this.assunto.set(q.assunto || '');
-        this.dificuldade.set(Number(q.dificuldade) || 0);
-        this.fonte.set(q.fonte || '');
-        this.trechoCodigo.set(q.trechoCodigo || '');
-        this.linguagemCodigo.set(q.linguagemCodigo || '');
-        this.imagemUrl.set(q.imagemUrl || '');
+        this.form.patchValue({
+          titulo: q.titulo || '',
+          enunciado: q.enunciado || '',
+          materia: q.materia || '',
+          assunto: q.assunto || '',
+          dificuldade: Number(q.dificuldade) || 0,
+          fonte: q.fonte || '',
+          trechoCodigo: q.trechoCodigo || '',
+          linguagemCodigo: q.linguagemCodigo || '',
+          imagemUrl: q.imagemUrl || ''
+        });
       },
-      error: () => this.erro.set('Erro ao carregar dados da questão para edição.'),
+      error: () => this.erro.set('Erro ao carregar dados da questao para edicao.'),
     });
   }
 
@@ -67,7 +96,7 @@ export class QuestaoFormComponent implements OnInit {
     this.enviandoImagem.set(true);
     this.questaoService.uploadImagem(file).subscribe({
       next: (res) => {
-        this.imagemUrl.set(res.url);
+        this.form.patchValue({ imagemUrl: res.url });
         this.enviandoImagem.set(false);
       },
       error: () => {
@@ -79,14 +108,16 @@ export class QuestaoFormComponent implements OnInit {
 
   public aplicarSugestaoIA(dados: any): void {
     if (!dados) return;
-    if (dados.titulo) this.titulo.set(dados.titulo);
-    if (dados.enunciado) this.enunciado.set(dados.enunciado);
-    if (dados.materia) this.materia.set(dados.materia);
-    if (dados.assunto) this.assunto.set(dados.assunto);
-    if (dados.dificuldade !== undefined) this.dificuldade.set(Number(dados.dificuldade) || 0);
-    if (dados.trechoCodigo) this.trechoCodigo.set(dados.trechoCodigo);
-    if (dados.linguagemCodigo) this.linguagemCodigo.set(dados.linguagemCodigo);
-    if (dados.fonte) this.fonte.set(dados.fonte);
+    this.form.patchValue({
+      titulo: dados.titulo ?? this.form.value.titulo,
+      enunciado: dados.enunciado ?? this.form.value.enunciado,
+      materia: dados.materia ?? this.form.value.materia,
+      assunto: dados.assunto ?? this.form.value.assunto,
+      dificuldade: dados.dificuldade !== undefined ? Number(dados.dificuldade) : this.form.value.dificuldade,
+      trechoCodigo: dados.trechoCodigo ?? this.form.value.trechoCodigo,
+      linguagemCodigo: dados.linguagemCodigo ?? this.form.value.linguagemCodigo,
+      fonte: dados.fonte ?? this.form.value.fonte
+    });
   }
 
   public onQuestaoPublicadaDireto(q: Questao): void {
@@ -94,30 +125,23 @@ export class QuestaoFormComponent implements OnInit {
   }
 
   public removerImagem(): void {
-    this.imagemUrl.set('');
+    this.form.patchValue({ imagemUrl: '' });
   }
 
   public salvarQuestao(): void {
-    const tit = (this.titulo() || '').trim();
-    const enun = (this.enunciado() || '').trim();
-    const mat = (this.materia() || '').trim();
-
-    if (!enun) {
-      alert('O enunciado da questão é obrigatório.');
+    if (this.form.invalid) {
+      alert('O enunciado e a materia da questao sao obrigatorios.');
       return;
     }
 
     this.salvando.set(true);
+    const rawValue = this.form.getRawValue();
     const payload = {
-      titulo: tit || enun.substring(0, 45) + '...',
-      enunciado: enun,
-      materia: mat || 'Geral',
-      assunto: (this.assunto() || '').trim() || 'Outros',
-      dificuldade: Number(this.dificuldade()) || 0,
-      fonte: (this.fonte() || '').trim(),
-      trechoCodigo: (this.trechoCodigo() || '').trim(),
-      linguagemCodigo: (this.linguagemCodigo() || '').trim(),
-      imagemUrl: (this.imagemUrl() || '').trim(),
+      ...rawValue,
+      titulo: rawValue.titulo.trim() || rawValue.enunciado.substring(0, 45).trim() + '...',
+      materia: rawValue.materia.trim() || 'Geral',
+      assunto: rawValue.assunto.trim() || 'Outros',
+      dificuldade: Number(rawValue.dificuldade) || 0
     };
 
     if (this.id) {
@@ -127,7 +151,7 @@ export class QuestaoFormComponent implements OnInit {
           this.router.navigate(['/questoes', this.id]);
         },
         error: () => {
-          alert('Erro ao atualizar questão.');
+          alert('Erro ao atualizar questao.');
           this.salvando.set(false);
         },
       });
@@ -138,7 +162,7 @@ export class QuestaoFormComponent implements OnInit {
           this.router.navigate(['/questoes', nova.id]);
         },
         error: () => {
-          alert('Erro ao cadastrar questão.');
+          alert('Erro ao cadastrar questao.');
           this.salvando.set(false);
         },
       });

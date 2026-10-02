@@ -1,0 +1,123 @@
+﻿<div class="workspace-card">
+  <!-- Cabecalho do Workspace -->
+  <div class="workspace-cabecalho">
+    <div class="cabecalho-texto">
+      <h2 class="subtitulo-workspace">Sua Demonstracao Tecnica</h2>
+      <p class="instrucao-latex">
+        Suporta formulas em LaTeX: <code>$formula$</code> (inline) ou <code>$$formula$$</code> (bloco).
+      </p>
+    </div>
+
+    <!-- Botao do Editor Completo -->
+    <button
+      type="button"
+      class="btn-editor-expandir"
+      (click)="abrirEditor()"
+      title="Abrir editor lado-a-lado com preview"
+    >
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 3h6v6"></path>
+        <path d="M9 21H3v-6"></path>
+        <path d="M21 3l-7 7"></path>
+        <path d="M3 21l7-7"></path>
+      </svg>
+      <span>Editor Completo</span>
+    </button>
+  </div>
+
+  @if (authService.isAuthenticated()) {
+    <div class="workspace-conteudo-scroll">
+      
+      <!-- Upload de PDF -->
+      <div class="upload-pdf-container">
+        <input 
+          type="file" 
+          id="upload-pdf" 
+          accept="application/pdf" 
+          class="input-file-pdf"
+          (change)="onPdfSelected($event)"
+          [disabled]="submetendo()"
+        >
+        <label for="upload-pdf" class="btn-upload-pdf" [class.pdf-selecionado]="selectedPdfFile()">
+          <span class="icone-pdf"></span>
+          {{ selectedPdfFile() ? 'Trocar Arquivo PDF' : 'Anexar PDF (Opcional)' }}
+        </label>
+        
+        @if (selectedPdfFile()) {
+          <div class="pdf-info">
+            <span class="pdf-nome">{{ selectedPdfFile()?.name }}</span>
+            <button type="button" class="btn-remover-pdf" (click)="removerArquivoPdf()" [disabled]="submetendo()">
+              &times;
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- Campo Principal (Texto/LaTeX) -->
+      <div class="campo-edicao principal">
+        <textarea 
+          [ngModel]="novaResolucao()" 
+          (ngModelChange)="novaResolucao.set($event)"
+          class="textarea-workspace" 
+          placeholder="Descreva seu raciocinio matematico ou estrutural..."
+        ></textarea>
+      </div>
+
+      <!-- Botao para alternar campo de codigo opcional -->
+      @if (!mostrarCampoCodigo()) {
+        <button type="button" class="btn-toggle-codigo" (click)="mostrarCampoCodigo.set(true)">
+          + Incluir trecho de codigo ou script de verificacao
+        </button>
+      } @else {
+        <div class="bloco-insercao-codigo">
+          <div class="codigo-cabecalho-edicao">
+            <span class="font-mono text-xs">Script de Verificacao (Opcional):</span>
+            <button type="button" class="btn-fechar-campo-codigo" (click)="mostrarCampoCodigo.set(false)">&times;</button>
+          </div>
+          <textarea
+            [ngModel]="codigoResolucao()"
+            (ngModelChange)="codigoResolucao.set($event)"
+            rows="4"
+            placeholder="// Insira seu algoritmo ou script Python/Java..."
+            class="textarea-codigo"
+          ></textarea>
+        </div>
+      }
+    </div>
+
+    <!-- Rodape Fixo com Botao de Publicacao -->
+    <div class="workspace-rodape">
+      <button 
+        type="button"
+        class="btn-publicar" 
+        [disabled]="(!novaResolucao().trim() && !selectedPdfFile()) || submetendo()"
+        (click)="submeterResolucao()"
+      >
+        @if (submetendo()) {
+          <span class="spinner-inline"></span> Publicando demonstracao...
+        } @else {
+          Publicar Demonstracao
+        }
+      </button>
+    </div>
+  } @else {
+    <div class="box-login-requerido">
+      <span class="icone-bloqueio">🔒</span>
+      <h3>Autenticacao Necessaria</h3>
+      <p>Voce precisa estar autenticado para enviar uma demonstracao ou resolucao tecnica.</p>
+      <a routerLink="/login" class="btn-ir-login">Fazer Login</a>
+    </div>
+  }
+</div>
+
+<!-- Editor de Resolucao em Tela Cheia (Editor Complexo) -->
+@if (editorComplexoAberto()) {
+  <app-editor-complexo-resolucao
+    [questao]="questao"
+    [conteudoInicial]="novaResolucao()"
+    [codigoInicial]="codigoResolucao()"
+    [linguagemInicial]="linguagemResolucao()"
+    (fechar)="fecharEditorComplexo($event)"
+    (publicar)="publicarPeloEditor($event)"
+  ></app-editor-complexo-resolucao>
+}
