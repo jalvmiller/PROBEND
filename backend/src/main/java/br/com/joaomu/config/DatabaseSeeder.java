@@ -23,17 +23,29 @@ public class DatabaseSeeder implements CommandLineRunner {
 	private final QuestaoRepository questaoRepository;
 	private final ResolucaoRepository resolucaoRepository;
 	private final UpvoteRepository upvoteRepository;
+	private final br.com.joaomu.repository.TrilhaRepository trilhaRepository;
+	private final br.com.joaomu.repository.ItemTrilhaRepository itemTrilhaRepository;
+	private final br.com.joaomu.repository.InscricaoTrilhaRepository inscricaoTrilhaRepository;
+	private final br.com.joaomu.repository.ProgressoItemTrilhaRepository progressoItemTrilhaRepository;
 	private final PasswordEncoder passwordEncoder;
 
 	public DatabaseSeeder(UsuarioRepository usuarioRepository,
 			QuestaoRepository questaoRepository,
 			ResolucaoRepository resolucaoRepository,
 			UpvoteRepository upvoteRepository,
+			br.com.joaomu.repository.TrilhaRepository trilhaRepository,
+			br.com.joaomu.repository.ItemTrilhaRepository itemTrilhaRepository,
+			br.com.joaomu.repository.InscricaoTrilhaRepository inscricaoTrilhaRepository,
+			br.com.joaomu.repository.ProgressoItemTrilhaRepository progressoItemTrilhaRepository,
 			PasswordEncoder passwordEncoder) {
 		this.usuarioRepository = usuarioRepository;
 		this.questaoRepository = questaoRepository;
 		this.resolucaoRepository = resolucaoRepository;
 		this.upvoteRepository = upvoteRepository;
+		this.trilhaRepository = trilhaRepository;
+		this.itemTrilhaRepository = itemTrilhaRepository;
+		this.inscricaoTrilhaRepository = inscricaoTrilhaRepository;
+		this.progressoItemTrilhaRepository = progressoItemTrilhaRepository;
 		this.passwordEncoder = passwordEncoder;
 	}
 
@@ -45,6 +57,9 @@ public class DatabaseSeeder implements CommandLineRunner {
 			executeSeeding();
 		} else {
 			System.out.println("Banco de dados já contém usuários. Pulando inicialização do seed.");
+			if (trilhaRepository.count() == 0) {
+				seederTrilhaInicial();
+			}
 		}
 	}
 
@@ -66,6 +81,10 @@ public class DatabaseSeeder implements CommandLineRunner {
 		usuarioRepository.deleteAll(visitantes);
 
 		// Reset completo e recarga do seed
+		progressoItemTrilhaRepository.deleteAllInBatch();
+		inscricaoTrilhaRepository.deleteAllInBatch();
+		itemTrilhaRepository.deleteAllInBatch();
+		trilhaRepository.deleteAllInBatch();
 		upvoteRepository.deleteAllInBatch();
 		resolucaoRepository.deleteAllInBatch();
 		questaoRepository.deleteAllInBatch();
@@ -313,6 +332,80 @@ public class DatabaseSeeder implements CommandLineRunner {
 		resolucaoRepository.saveAll(Arrays.asList(r1, r2, rP, r3, r4, r5, r6));
 		System.out.println("Resoluções de teste cadastradas!");
 
+		// 4. Criar Trilha Modelo e Ativar para o Usuário
+		br.com.joaomu.entity.Trilha trilha = new br.com.joaomu.entity.Trilha(
+				"Fundamentos de Exatas & Computação",
+				"Trilha essencial contendo cálculo, álgebra linear, física mecânica e algoritmos fundamentais.",
+				admin,
+				true
+		);
+		trilha = trilhaRepository.save(trilha);
+
+		br.com.joaomu.entity.ItemTrilha it1 = new br.com.joaomu.entity.ItemTrilha(trilha, q1, 1);
+		br.com.joaomu.entity.ItemTrilha it2 = new br.com.joaomu.entity.ItemTrilha(trilha, q2, 2);
+		br.com.joaomu.entity.ItemTrilha it3 = new br.com.joaomu.entity.ItemTrilha(trilha, q3, 3);
+		br.com.joaomu.entity.ItemTrilha it4 = new br.com.joaomu.entity.ItemTrilha(trilha, q4, 4);
+		br.com.joaomu.entity.ItemTrilha it5 = new br.com.joaomu.entity.ItemTrilha(trilha, q5, 5);
+		br.com.joaomu.entity.ItemTrilha it6 = new br.com.joaomu.entity.ItemTrilha(trilha, q6, 6);
+		itemTrilhaRepository.saveAll(Arrays.asList(it1, it2, it3, it4, it5, it6));
+
+		// Ativar para o usuário admin e user
+		br.com.joaomu.entity.InscricaoTrilha inscricaoAdmin = new br.com.joaomu.entity.InscricaoTrilha(admin, trilha, true);
+		br.com.joaomu.entity.InscricaoTrilha inscricaoUser = new br.com.joaomu.entity.InscricaoTrilha(user, trilha, true);
+		inscricaoTrilhaRepository.saveAll(Arrays.asList(inscricaoAdmin, inscricaoUser));
+
+		// Progresso inicial de exemplo (q1 e q2 concluídas para ambos)
+		br.com.joaomu.entity.ProgressoItemTrilha p1 = new br.com.joaomu.entity.ProgressoItemTrilha(user, it1, true);
+		br.com.joaomu.entity.ProgressoItemTrilha p2 = new br.com.joaomu.entity.ProgressoItemTrilha(user, it2, true);
+		br.com.joaomu.entity.ProgressoItemTrilha pa1 = new br.com.joaomu.entity.ProgressoItemTrilha(admin, it1, true);
+		br.com.joaomu.entity.ProgressoItemTrilha pa2 = new br.com.joaomu.entity.ProgressoItemTrilha(admin, it2, true);
+		br.com.joaomu.entity.ProgressoItemTrilha pa3 = new br.com.joaomu.entity.ProgressoItemTrilha(admin, it3, true);
+		progressoItemTrilhaRepository.saveAll(Arrays.asList(p1, p2, pa1, pa2, pa3));
+
+		System.out.println("Trilha modelo semeada e ativada!");
+
 		System.out.println("=== Dados seed carregados com sucesso! ===");
+	}
+
+	private void seederTrilhaInicial() {
+		var adminOpt = usuarioRepository.findByUsername("admin");
+		var userOpt = usuarioRepository.findByUsername("user");
+		if (adminOpt.isEmpty() || userOpt.isEmpty()) {
+			return;
+		}
+		var admin = adminOpt.get();
+		var user = userOpt.get();
+		var questoes = questaoRepository.findAll();
+		if (questoes.size() < 6) {
+			return;
+		}
+
+		br.com.joaomu.entity.Trilha trilha = new br.com.joaomu.entity.Trilha(
+				"Fundamentos de Exatas & Computação",
+				"Trilha essencial contendo cálculo, álgebra linear, física mecânica e algoritmos fundamentais.",
+				admin,
+				true
+		);
+		trilha = trilhaRepository.save(trilha);
+
+		List<br.com.joaomu.entity.ItemTrilha> itens = new ArrayList<>();
+		for (int i = 0; i < 6; i++) {
+			itens.add(new br.com.joaomu.entity.ItemTrilha(trilha, questoes.get(i), i + 1));
+		}
+		itemTrilhaRepository.saveAll(itens);
+
+		br.com.joaomu.entity.InscricaoTrilha inscricaoAdmin = new br.com.joaomu.entity.InscricaoTrilha(admin, trilha, true);
+		br.com.joaomu.entity.InscricaoTrilha inscricaoUser = new br.com.joaomu.entity.InscricaoTrilha(user, trilha, true);
+		inscricaoTrilhaRepository.saveAll(Arrays.asList(inscricaoAdmin, inscricaoUser));
+
+		if (itens.size() >= 3) {
+			br.com.joaomu.entity.ProgressoItemTrilha p1 = new br.com.joaomu.entity.ProgressoItemTrilha(user, itens.get(0), true);
+			br.com.joaomu.entity.ProgressoItemTrilha p2 = new br.com.joaomu.entity.ProgressoItemTrilha(user, itens.get(1), true);
+			br.com.joaomu.entity.ProgressoItemTrilha pa1 = new br.com.joaomu.entity.ProgressoItemTrilha(admin, itens.get(0), true);
+			br.com.joaomu.entity.ProgressoItemTrilha pa2 = new br.com.joaomu.entity.ProgressoItemTrilha(admin, itens.get(1), true);
+			br.com.joaomu.entity.ProgressoItemTrilha pa3 = new br.com.joaomu.entity.ProgressoItemTrilha(admin, itens.get(2), true);
+			progressoItemTrilhaRepository.saveAll(Arrays.asList(p1, p2, pa1, pa2, pa3));
+		}
+		System.out.println("Trilha modelo semeada e ativada para admin e user!");
 	}
 }

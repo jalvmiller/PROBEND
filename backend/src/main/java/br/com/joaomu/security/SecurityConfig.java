@@ -95,6 +95,11 @@ public class SecurityConfig {
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/questoes/**").authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/questoes/**").authenticated()
 
+                        // ── Trilhas: leitura de catálogo pública, ativação e progresso autenticados ──
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/trilhas").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/trilhas/{id}").permitAll()
+                        .requestMatchers("/trilhas/**").authenticated()
+
                         // ── Usuários: tudo exige autenticação ────────────────────
                         .requestMatchers("/usuarios/**").authenticated()
                         .requestMatchers("/auth/me").authenticated()
