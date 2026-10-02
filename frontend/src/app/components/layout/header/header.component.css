@@ -6,7 +6,6 @@
   background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-primary);
-  margin-bottom: 1.5rem;
   border-radius: var(--radius-md, 8px);
 }
 

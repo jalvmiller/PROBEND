@@ -1,0 +1,336 @@
+<aside 
+  id="quest-tracker" 
+  role="complementary" 
+  aria-label="Progresso da Trilha de Estudos"
+  class="quest-tracker-aside select-none">
+  
+  @if (trilhaService.trilhaAtiva(); as trilha) {
+    <!-- ========================================== -->
+    <!-- MODO ATIVO: PAINEL EXPANDIDO               -->
+    <!-- ========================================== -->
+    @if (!trilhaService.recolhido()) {
+      <div 
+        class="tracker-card"
+        [style.width.px]="larguraCard()"
+        [class.is-dragging]="isResizing()">
+
+        <!-- Alça de Redimensionamento Lateral Esquerda (Borda de Arraste) -->
+        <div 
+          class="resize-handle-left"
+          (mousedown)="iniciarArrasto($event)"
+          (touchstart)="iniciarArrastoTouch($event)"
+          (dblclick)="resetarTamanho($event)"
+          title="Arraste para redimensionar (duplo clique para restaurar padrão)"
+          aria-label="Redimensionar largura">
+          <div class="resize-grip-line"></div>
+        </div>
+
+        <!-- Alça de Redimensionamento Canto Inferior Esquerdo -->
+        <div 
+          class="resize-handle-corner"
+          (mousedown)="iniciarArrasto($event)"
+          (touchstart)="iniciarArrastoTouch($event)"
+          (dblclick)="resetarTamanho($event)"
+          title="Arraste para redimensionar (duplo clique para restaurar padrão)"
+          aria-label="Redimensionar painel">
+          <svg class="resize-corner-icon" viewBox="0 0 16 16" fill="currentColor">
+            <circle cx="4" cy="12" r="1.5" />
+            <circle cx="8" cy="12" r="1.5" />
+            <circle cx="12" cy="12" r="1.5" />
+            <circle cx="4" cy="8" r="1.5" />
+            <circle cx="8" cy="8" r="1.5" />
+            <circle cx="4" cy="4" r="1.5" />
+          </svg>
+        </div>
+
+        <!-- Botões Superiores: Reset e Minimizar -->
+        <div class="tracker-top-actions">
+          @if (larguraCard() !== DEFAULT_LARGURA) {
+            <button 
+              type="button"
+              (click)="resetarTamanho($event)"
+              class="btn-top-action btn-reset"
+              title="Restaurar tamanho padrão"
+              aria-label="Restaurar tamanho padrão">
+              <svg class="icone-top-action" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </button>
+          }
+          <button 
+            type="button"
+            (click)="toggleRecolher()" 
+            aria-label="Recolher painel de trilha"
+            title="Recolher para modo mini-HUD"
+            class="btn-top-action btn-minimizar">
+            <svg class="icone-top-action" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- 1. CIRCULAR PROGRESS RING (TOPO) -->
+        <div class="ring-container">
+          <svg class="ring-svg" viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="50" r="40" 
+                    class="ring-bg" 
+                    stroke-width="7" 
+                    fill="transparent" />
+            
+            <circle cx="50" cy="50" r="40" 
+                    class="ring-fill" 
+                    stroke-width="7" 
+                    stroke-linecap="round"
+                    stroke-dasharray="251.2" 
+                    [style.strokeDashoffset]="strokeDashoffset()" 
+                    fill="transparent" />
+          </svg>
+
+          <!-- Contagem interna com fonte única e sem porcentagem -->
+          <div class="ring-center-content" 
+               role="progressbar" 
+               [attr.aria-valuenow]="trilha.concluidas" 
+               aria-valuemin="0" 
+               [attr.aria-valuemax]="trilha.totalQuestoes" 
+               [attr.aria-valuetext]="trilha.concluidas + ' de ' + trilha.totalQuestoes + ' questões concluídas'">
+            <div class="ring-counter-text">
+              <span>{{ trilha.concluidas }}</span>
+              <span class="ring-counter-sep">/</span>
+              <span>{{ trilha.totalQuestoes }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. LEGENDA BÁSICA (CENTRO) -->
+        <div class="legenda-container">
+          <span class="legenda-kicker">Trilha Ativa</span>
+          <h2 class="legenda-titulo" [title]="trilha.titulo">
+            {{ trilha.titulo }}
+          </h2>
+        </div>
+
+        <!-- Ação de Marcar na Trilha da Questão Atual -->
+        @if (slotAtual(); as slot) {
+          <div class="slot-atual-container">
+            <button 
+              type="button" 
+              (click)="toggleConclusao($event, slot.itemId)" 
+              class="btn-trilha-conclusao-hud"
+              [class.concluida]="slot.concluida"
+              [title]="slot.concluida ? 'Desmarcar conclusão da questão atual na trilha' : 'Marcar questão atual como concluída na trilha'"
+            >
+              @if (slot.concluida) {
+                <span>✓ Questão Concluída na Trilha</span>
+              } @else {
+                <span>○ Marcar na Trilha</span>
+              }
+            </button>
+          </div>
+        }
+
+        <div class="tracker-divisor"></div>
+
+        <!-- 3. MINI-GRID ESTILO MOODLE (EMBAIXO) -->
+        <div class="grid-section">
+          <nav aria-label="Slots das questões da trilha">
+            <ol class="moodle-grid">
+              @for (slot of trilha.slots; track slot.itemId) {
+                <li class="moodle-grid-item">
+                  <button 
+                    type="button"
+                    (click)="navegarParaQuestao(slot.questaoId)"
+                    [title]="'Q' + slot.numero + ': ' + slot.titulo + ' (' + (slot.concluida ? 'Concluída' : 'Pendente') + ')'"
+                    [attr.aria-label]="'Questão ' + slot.numero + ': ' + (slot.concluida ? 'Concluída' : 'Pendente') + (questaoIdAtual() === slot.questaoId ? ', Atual' : '')"
+                    [attr.aria-current]="questaoIdAtual() === slot.questaoId ? 'step' : null"
+                    class="moodle-slot"
+                    [class.slot-concluido]="slot.concluida"
+                    [class.slot-atual]="questaoIdAtual() === slot.questaoId"
+                    [class.slot-pendente]="!slot.concluida && questaoIdAtual() !== slot.questaoId">
+                    <span>{{ slot.numero }}</span>
+                    @if (slot.concluida) {
+                      <span class="slot-check" aria-hidden="true">&#x2713;</span>
+                    } @else if (questaoIdAtual() === slot.questaoId) {
+                      <span class="slot-active-dot" aria-hidden="true"></span>
+                    }
+                  </button>
+                </li>
+              }
+            </ol>
+          </nav>
+
+          <!-- Legenda de cores abaixo do grid -->
+          <div class="cores-legenda">
+            <div class="cor-item">
+              <span class="indicador-cor ind-concluida"></span>
+              <span>Concluída</span>
+            </div>
+            <div class="cor-item">
+              <span class="indicador-cor ind-atual"></span>
+              <span>Atual</span>
+            </div>
+            <div class="cor-item">
+              <span class="indicador-cor ind-pendente"></span>
+              <span>Pendente</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <!-- ========================================== -->
+      <!-- MODO ATIVO: RECOLHIDO (MINI-HUD)           -->
+      <!-- ========================================== -->
+      <div 
+        (click)="toggleRecolher()" 
+        role="button"
+        tabindex="0"
+        aria-label="Expandir Quest Tracker da Trilha"
+        [title]="'Expandir Trilha: ' + trilha.titulo"
+        class="tracker-mini">
+        
+        <div class="mini-ring-container">
+          <svg class="ring-svg" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="40" class="ring-bg" stroke-width="10" fill="transparent" />
+            <circle cx="50" cy="50" r="40" class="ring-fill" stroke-width="10" stroke-linecap="round"
+                    stroke-dasharray="251.2" [style.strokeDashoffset]="strokeDashoffset()" fill="transparent" />
+          </svg>
+          <span class="mini-counter-text">
+            {{ trilha.concluidas }}/{{ trilha.totalQuestoes }}
+          </span>
+        </div>
+
+        <div class="mini-label-box">
+          <span class="mini-kicker">Trilha</span>
+          <span class="mini-titulo">{{ trilha.titulo }}</span>
+        </div>
+      </div>
+    }
+  } @else {
+    <!-- ========================================== -->
+    <!-- MODO INATIVO: NENHUMA TRILHA SELECIONADA   -->
+    <!-- ========================================== -->
+    @if (!trilhaService.recolhido()) {
+      <div 
+        class="tracker-card card-inativo"
+        [style.width.px]="larguraCard()"
+        [class.is-dragging]="isResizing()">
+
+        <!-- Alça de Redimensionamento Lateral Esquerda (Borda de Arraste) -->
+        <div 
+          class="resize-handle-left"
+          (mousedown)="iniciarArrasto($event)"
+          (touchstart)="iniciarArrastoTouch($event)"
+          (dblclick)="resetarTamanho($event)"
+          title="Arraste para redimensionar (duplo clique para restaurar padrão)"
+          aria-label="Redimensionar largura">
+          <div class="resize-grip-line"></div>
+        </div>
+
+        <!-- Alça de Redimensionamento Canto Inferior Esquerdo -->
+        <div 
+          class="resize-handle-corner"
+          (mousedown)="iniciarArrasto($event)"
+          (touchstart)="iniciarArrastoTouch($event)"
+          (dblclick)="resetarTamanho($event)"
+          title="Arraste para redimensionar (duplo clique para restaurar padrão)"
+          aria-label="Redimensionar painel">
+          <svg class="resize-corner-icon" viewBox="0 0 16 16" fill="currentColor">
+            <circle cx="4" cy="12" r="1.5" />
+            <circle cx="8" cy="12" r="1.5" />
+            <circle cx="12" cy="12" r="1.5" />
+            <circle cx="4" cy="8" r="1.5" />
+            <circle cx="8" cy="8" r="1.5" />
+            <circle cx="4" cy="4" r="1.5" />
+          </svg>
+        </div>
+
+        <!-- Botões Superiores: Reset e Minimizar -->
+        <div class="tracker-top-actions">
+          @if (larguraCard() !== DEFAULT_LARGURA) {
+            <button 
+              type="button"
+              (click)="resetarTamanho($event)"
+              class="btn-top-action btn-reset"
+              title="Restaurar tamanho padrão"
+              aria-label="Restaurar tamanho padrão">
+              <svg class="icone-top-action" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </button>
+          }
+          <button 
+            type="button"
+            (click)="toggleRecolher()" 
+            aria-label="Recolher painel de trilha"
+            title="Recolher para modo mini-HUD"
+            class="btn-top-action btn-minimizar">
+            <svg class="icone-top-action" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Anel Circular Vazio / Pontilhado -->
+        <div class="ring-container">
+          <svg class="ring-svg" viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="50" r="40" 
+                    class="ring-bg ring-inativo" 
+                    stroke-width="7" 
+                    stroke-dasharray="5 5"
+                    fill="transparent" />
+          </svg>
+
+          <div class="ring-center-content">
+            <div class="ring-counter-text text-inativo">
+              <span>—</span>
+              <span class="ring-counter-sep">/</span>
+              <span>—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Legenda: Trilha Inativa -->
+        <div class="legenda-container">
+          <span class="legenda-kicker kicker-inativo">Trilha Inativa</span>
+          <h2 class="legenda-titulo titulo-inativo">
+            Nenhuma trilha selecionada
+          </h2>
+        </div>
+
+        <div class="tracker-divisor"></div>
+
+        <!-- Ação para Criar Trilha -->
+        <div class="inativo-acoes">
+          <p class="inativo-descricao">
+            Você não possui uma trilha ativa no momento.
+          </p>
+          <a routerLink="/trilhas/nova" class="btn-criar-trilha">
+            + Criar Nova Trilha
+          </a>
+        </div>
+      </div>
+    } @else {
+      <!-- MODO INATIVO: RECOLHIDO -->
+      <div 
+        (click)="toggleRecolher()" 
+        role="button"
+        tabindex="0"
+        aria-label="Expandir Quest Tracker da Trilha"
+        title="Trilha Inativa — Clique para expandir"
+        class="tracker-mini mini-inativo">
+        
+        <div class="mini-ring-container">
+          <svg class="ring-svg" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="40" class="ring-bg ring-inativo" stroke-width="10" stroke-dasharray="4 4" fill="transparent" />
+          </svg>
+          <span class="mini-counter-text text-inativo">—/—</span>
+        </div>
+
+        <div class="mini-label-box">
+          <span class="mini-kicker kicker-inativo">Inativa</span>
+          <span class="mini-titulo titulo-inativo">Nenhuma</span>
+        </div>
+      </div>
+    }
+  }
+
+</aside>

@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService } from '../services/auth.service';
-import { AvatarComponent } from '../components/avatar/avatar.component';
+import { AuthService } from '../../../services/auth.service';
+import { AvatarComponent } from '../../avatar/avatar.component';
 
 /**
  * HeaderComponent: Barra de navegação superior global

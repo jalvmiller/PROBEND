@@ -1,0 +1,194 @@
+<div class="trilha-form-container">
+  <!-- Navegação de topo -->
+  <div class="navegacao-topo">
+    <a routerLink="/" class="link-voltar">&larr; Voltar para o repositório</a>
+  </div>
+
+  <header class="form-header">
+    <h1 class="form-titulo">Criar Nova Trilha de Questões</h1>
+    <p class="form-subtitulo">
+      Monte sua sequência personalizada de estudo. Ao criar, esta trilha será ativada imediatamente no seu <strong>Quest Tracker</strong>.
+    </p>
+  </header>
+
+  @if (erro()) {
+    <div class="alerta-erro" role="alert">
+      <span>{{ erro() }}</span>
+    </div>
+  }
+
+  <!-- Dados Gerais da Trilha -->
+  <section class="card-metadados">
+    <div class="campo-grupo">
+      <label for="titulo-trilha" class="campo-label">Título da Trilha *</label>
+      <input 
+        id="titulo-trilha" 
+        type="text" 
+        [ngModel]="titulo()" 
+        (ngModelChange)="titulo.set($event)"
+        placeholder="Ex: Resistência dos Materiais — Tensões e Deformações" 
+        maxlength="120"
+        class="input-texto" />
+    </div>
+
+    <div class="campo-grupo">
+      <label for="descricao-trilha" class="campo-label">Descrição (Opcional)</label>
+      <textarea 
+        id="descricao-trilha" 
+        rows="2"
+        [ngModel]="descricao()" 
+        (ngModelChange)="descricao.set($event)"
+        placeholder="Breve resumo pedagógico sobre os objetivos desta trilha..." 
+        class="textarea-texto"></textarea>
+    </div>
+
+    <div class="campo-checkbox">
+      <label class="checkbox-label">
+        <input 
+          type="checkbox" 
+          [ngModel]="publica()" 
+          (ngModelChange)="publica.set($event)" />
+        <span>Tornar esta trilha pública para que outros estudantes possam segui-la</span>
+      </label>
+    </div>
+  </section>
+
+  <!-- Montador de Sequência (Duas Colunas) -->
+  <div class="builder-grid">
+    <!-- Coluna 1: Questões Selecionadas (Ordem da Trilha) -->
+    <section class="coluna-trilha">
+      <div class="coluna-header">
+        <div>
+          <h2 class="coluna-titulo">Sequência da Trilha</h2>
+          <span class="contador-badge">{{ questoesSelecionadas().length }} questões</span>
+        </div>
+        <span class="dica-ordem">Arraste ou use as setas para ordenar</span>
+      </div>
+
+      <div class="lista-selecionadas">
+        @if (questoesSelecionadas().length === 0) {
+          <div class="empty-selecionadas">
+            <p class="empty-texto">Sua trilha ainda está vazia.</p>
+            <span class="empty-sub">Escolha questões no banco ao lado para adicionar.</span>
+          </div>
+        } @else {
+          @for (q of questoesSelecionadas(); track q.id; let idx = $index) {
+            <div class="card-slot-trilha">
+              <div class="slot-ordem-badge">{{ idx + 1 }}</div>
+              
+              <div class="slot-conteudo">
+                <div class="slot-meta">
+                  <span class="badge-materia">{{ q.materia }}</span>
+                  @if (q.assunto) {
+                    <span class="badge-assunto">{{ q.assunto }}</span>
+                  }
+                  <span class="badge-dificuldade" [ngClass]="getDificuldadeClasse(q.dificuldade)">
+                    {{ getDificuldadeTexto(q.dificuldade) }}
+                  </span>
+                </div>
+                <p class="slot-enunciado">{{ q.enunciado }}</p>
+              </div>
+
+              <div class="slot-acoes">
+                <button 
+                  type="button" 
+                  (click)="moverCima(idx)" 
+                  [disabled]="idx === 0" 
+                  title="Mover para cima" 
+                  class="btn-mover">
+                  ▲
+                </button>
+                <button 
+                  type="button" 
+                  (click)="moverBaixo(idx)" 
+                  [disabled]="idx === questoesSelecionadas().length - 1" 
+                  title="Mover para baixo" 
+                  class="btn-mover">
+                  ▼
+                </button>
+                <button 
+                  type="button" 
+                  (click)="removerQuestao(idx)" 
+                  title="Remover da trilha" 
+                  class="btn-remover">
+                  &times;
+                </button>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </section>
+
+    <!-- Coluna 2: Banco de Questões Disponíveis -->
+    <section class="coluna-banco">
+      <div class="coluna-header">
+        <h2 class="coluna-titulo">Banco de Questões</h2>
+        <span class="contador-disponiveis">{{ questoesFiltradas().length }} disponíveis</span>
+      </div>
+
+      <div class="busca-container">
+        <input 
+          type="text" 
+          [ngModel]="busca()" 
+          (ngModelChange)="busca.set($event)"
+          placeholder="Buscar por matéria, assunto ou enunciado..." 
+          class="input-busca" />
+      </div>
+
+      <div class="lista-disponiveis">
+        @if (carregandoQuestoes()) {
+          <div class="loading-state">
+            <span class="loading-spin">∫</span>
+            <p>Carregando banco de questões...</p>
+          </div>
+        } @else if (questoesFiltradas().length === 0) {
+          <div class="empty-busca">
+            <p>Nenhuma questão disponível encontrada.</p>
+          </div>
+        } @else {
+          @for (q of questoesFiltradas(); track q.id) {
+            <div class="card-questao-disponivel">
+              <div class="disponivel-info">
+                <div class="slot-meta">
+                  <span class="badge-materia">{{ q.materia }}</span>
+                  @if (q.assunto) {
+                    <span class="badge-assunto">{{ q.assunto }}</span>
+                  }
+                  <span class="badge-dificuldade" [ngClass]="getDificuldadeClasse(q.dificuldade)">
+                    {{ getDificuldadeTexto(q.dificuldade) }}
+                  </span>
+                </div>
+                <p class="disponivel-enunciado">{{ q.enunciado }}</p>
+              </div>
+
+              <button 
+                type="button" 
+                (click)="adicionarQuestao(q)" 
+                class="btn-adicionar-slot"
+                title="Adicionar à trilha">
+                + Adicionar
+              </button>
+            </div>
+          }
+        }
+      </div>
+    </section>
+  </div>
+
+  <!-- Barra de Ações Inferior -->
+  <footer class="form-footer">
+    <a routerLink="/" class="btn-cancelar">Cancelar</a>
+    <button 
+      type="button" 
+      (click)="salvarTrilha()" 
+      [disabled]="salvando() || questoesSelecionadas().length === 0 || !titulo().trim()" 
+      class="btn-salvar-trilha">
+      @if (salvando()) {
+        <span>Salvando Trilha...</span>
+      } @else {
+        <span>Criar e Ativar Trilha</span>
+      }
+    </button>
+  </footer>
+</div>

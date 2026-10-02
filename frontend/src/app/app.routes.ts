@@ -44,7 +44,15 @@ export const routes: Routes = [
       import('./pages/questao-detalhes/questao-detalhes.component').then(m => m.QuestaoDetalhesComponent)
   },
 
-  // 4. Rota de Perfil & Configurações
+  // 4. Rotas de Trilhas
+  {
+    path: 'trilhas/nova',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/trilha-form/trilha-form.component').then(m => m.TrilhaFormComponent)
+  },
+
+  // 5. Rota de Perfil & Configurações
   {
     path: 'configuracoes',
     canActivate: [authGuard],
