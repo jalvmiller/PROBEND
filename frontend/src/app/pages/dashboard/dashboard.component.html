@@ -94,6 +94,151 @@
         </div>
       </div>
     </div>
+
+    <!-- Gatilho de Pesquisa Profunda (Sugestão 1: Quadrado Âmbar Compacto com Anel Duplo) -->
+    <div class="linha-busca-profunda-trigger">
+      <div class="busca-profunda-trigger-wrapper">
+        <button
+          type="button"
+          class="btn-quadrado-profundo"
+          [class.ativo]="buscaProfundaAberta()"
+          (click)="toggleBuscaProfunda()"
+          aria-label="Alternar painel de pesquisa profunda"
+          [title]="buscaProfundaAberta() ? 'Recolher pesquisa profunda' : 'Abrir pesquisa profunda'"
+        >
+          <!-- Ícone Sliders de precisão técnica -->
+          <svg class="icone-profundo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="21" x2="4" y2="14"></line>
+            <line x1="4" y1="10" x2="4" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12" y2="3"></line>
+            <line x1="20" y1="21" x2="20" y2="16"></line>
+            <line x1="20" y1="12" x2="20" y2="3"></line>
+            <line x1="1" y1="14" x2="7" y2="14"></line>
+            <line x1="9" y1="8" x2="15" y2="8"></line>
+            <line x1="17" y1="16" x2="23" y2="16"></line>
+          </svg>
+        </button>
+
+        <span class="busca-profunda-label" (click)="toggleBuscaProfunda()">
+          Pesquisa profunda
+        </span>
+
+        @if (totalFiltrosProfundosAtivos > 0) {
+          <span class="badge-profundo-ativo">
+            {{ totalFiltrosProfundosAtivos }} {{ totalFiltrosProfundosAtivos === 1 ? 'filtro ativo' : 'filtros ativos' }}
+          </span>
+        }
+      </div>
+
+      @if (buscaProfundaAberta() && totalFiltrosProfundosAtivos > 0) {
+        <button
+          type="button"
+          class="btn-limpar-profundo-mini"
+          (click)="limparFiltrosProfundos()"
+        >
+          Limpar filtros
+        </button>
+      }
+    </div>
+
+    <!-- Painel Expansível de Pesquisa Profunda (Design Ampliado e Sóbrio) -->
+    @if (buscaProfundaAberta()) {
+      <div class="container-painel-profundo">
+        <!-- Barra Âmbar Minimalista Acima do Painel de Pesquisa Profunda -->
+        <div class="barra-acento-painel-profundo" aria-hidden="true"></div>
+
+        <div class="painel-profundo-expansivel">
+          <!-- Topo do Painel: Título e Ação de Limpar -->
+          <div class="painel-profundo-header">
+            <div class="painel-profundo-titulo-wrap">
+              <span class="painel-profundo-dot"></span>
+              <span class="painel-profundo-titulo">Refinamento da pesquisa</span>
+              <span class="painel-profundo-subtitulo">Parâmetros específicos para o feed</span>
+            </div>
+
+            @if (totalFiltrosProfundosAtivos > 0) {
+              <button
+                type="button"
+                class="btn-limpar-profundo-header"
+                (click)="limparFiltrosProfundos()"
+              >
+                Limpar filtros
+              </button>
+            }
+          </div>
+
+          <!-- Grade Principal de Filtros Ampliados -->
+          <div class="painel-profundo-grid">
+            <!-- Bloco 1: Conteúdo e Mídia -->
+            <div class="grupo-campo-profundo">
+              <span class="profundo-sublabel">Conteúdo da questão:</span>
+              <div class="chips-profundos">
+                <button
+                  type="button"
+                  class="chip-profundo"
+                  [class.ativo]="filtroComCodigo()"
+                  (click)="toggleFiltroComCodigo()"
+                >
+                  Com código
+                </button>
+                <button
+                  type="button"
+                  class="chip-profundo"
+                  [class.ativo]="filtroComImagem()"
+                  (click)="toggleFiltroComImagem()"
+                >
+                  Com imagem
+                </button>
+              </div>
+            </div>
+
+            <!-- Bloco 2: Seletor de Matéria Específica -->
+            <div class="grupo-campo-profundo">
+              <span class="profundo-sublabel">Filtrar por matéria:</span>
+              <select
+                class="select-profundo"
+                [ngModel]="filtroMateriaProfunda()"
+                (ngModelChange)="alterarFiltroMateriaProfunda($event)"
+              >
+                <option value="TODAS">Todas as matérias</option>
+                @for (m of materiasDisponiveis; track m) {
+                  <option [value]="m">{{ m }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Bloco 3: Seletor de Ordenação -->
+            <div class="grupo-campo-profundo">
+              <span class="profundo-sublabel">Ordem de exibição:</span>
+              <select
+                class="select-profundo"
+                [ngModel]="filtroOrdenacao()"
+                (ngModelChange)="alterarOrdenacao($event)"
+              >
+                <option value="RECENTES">Mais recentes primeiro</option>
+                <option value="UPVOTES_DESC">Mais votadas (Upvotes)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Rodapé do Painel: Feedback do Feed e Ação de Recolher -->
+          <div class="painel-profundo-footer">
+            <span class="painel-profundo-contagem">
+              Exibindo <strong>{{ questoesFiltradas.length }}</strong> {{ questoesFiltradas.length === 1 ? 'questão compatível' : 'questões compatíveis' }}
+            </span>
+
+            <button
+              type="button"
+              class="btn-recolher-painel"
+              (click)="toggleBuscaProfunda()"
+            >
+              Recolher painel
+            </button>
+          </div>
+        </div>
+      </div>
+    }
   </div>
 
   <!-- Feed de Questões -->

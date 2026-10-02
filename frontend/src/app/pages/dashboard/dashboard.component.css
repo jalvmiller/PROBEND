@@ -143,6 +143,339 @@
   background-color: var(--accent-emerald-subtle);
 }
 
+/* ==========================================================================
+   Pesquisa Profunda (Sugestão 1: Quadrado Âmbar Compacto com Anel Duplo)
+   ========================================================================== */
+
+.linha-busca-profunda-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding-top: 0.35rem;
+}
+
+.busca-profunda-trigger-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+/* O Quadrado Amarelo com cantos dos cards (var(--radius-md)) e Anel Duplo Fino */
+.btn-quadrado-profundo {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: var(--radius-md);
+  background-color: var(--accent-amber);
+  color: #0f172a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d97706;
+  /* Efeito de Borda Diferenciado: Anel Duplo Preciso */
+  box-shadow: 0 0 0 2px var(--bg-app), 0 0 0 3.5px rgba(245, 158, 11, 0.45);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  padding: 0;
+}
+
+.btn-quadrado-profundo:hover {
+  background-color: #fbbf24;
+  box-shadow: 0 0 0 2px var(--bg-app), 0 0 0 4.5px rgba(245, 158, 11, 0.75);
+  transform: translateY(-1px);
+}
+
+.btn-quadrado-profundo.ativo {
+  background-color: #d97706;
+  box-shadow: 0 0 0 2px var(--bg-app), 0 0 0 4.5px var(--accent-amber);
+}
+
+.icone-profundo {
+  width: 17px;
+  height: 17px;
+  color: #0f172a;
+  stroke: #0f172a;
+}
+
+.busca-profunda-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.busca-profunda-label:hover {
+  color: var(--text-primary);
+}
+
+.badge-profundo-ativo {
+  background-color: var(--accent-amber-subtle);
+  color: var(--accent-amber);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  letter-spacing: 0.04em;
+}
+
+.btn-limpar-profundo-mini {
+  background: none;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 0.725rem;
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  transition: color 0.15s ease;
+}
+
+.btn-limpar-profundo-mini:hover {
+  color: var(--accent-rose, #f43f5e);
+}
+
+/* Container e Barra Âmbar com Expansão da Esquerda para a Direita */
+.container-painel-profundo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  width: 100%;
+}
+
+.barra-acento-painel-profundo {
+  height: 3px;
+  width: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent-amber) 0%, rgba(245, 158, 11, 0.65) 60%, rgba(245, 158, 11, 0.15) 100%);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+  transform-origin: left center;
+  animation: animExpansaoBarraEsquerda 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes animExpansaoBarraEsquerda {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+/* Painel Expansível de Pesquisa Profunda (Design Ampliado e Sóbrio) */
+.painel-profundo-expansivel {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  /* A barra âmbar minimalista animada substitui a borda superior sólida */
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  animation: animRevelarPainel 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes animRevelarPainel {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.painel-profundo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.85rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.painel-profundo-titulo-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.painel-profundo-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent-amber);
+  display: inline-block;
+  align-self: center;
+}
+
+.painel-profundo-titulo {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.painel-profundo-subtitulo {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+}
+
+.btn-limpar-profundo-header {
+  background: none;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+  padding: 0;
+}
+
+.btn-limpar-profundo-header:hover {
+  color: var(--accent-rose, #f43f5e);
+}
+
+.painel-profundo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+.grupo-campo-profundo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.profundo-sublabel {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}
+
+.chips-profundos {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.chip-profundo {
+  background-color: var(--bg-surface-raised);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.55rem 0.95rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.chip-profundo:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  background-color: var(--bg-surface-hover);
+}
+
+.chip-profundo.ativo {
+  background-color: var(--accent-amber-subtle);
+  border-color: var(--accent-amber);
+  color: var(--accent-amber);
+  font-weight: 700;
+}
+
+.select-profundo {
+  background-color: var(--bg-surface-raised);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.select-profundo:focus {
+  border-color: var(--accent-amber);
+  background-color: var(--bg-surface-hover);
+}
+
+.painel-profundo-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 0.85rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.painel-profundo-contagem {
+  font-size: 0.775rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.painel-profundo-contagem strong {
+  color: var(--accent-amber);
+  font-weight: 700;
+}
+
+.btn-recolher-painel {
+  background-color: var(--bg-surface-raised);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.725rem;
+  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-recolher-painel:hover {
+  border-color: var(--border-default);
+  color: var(--text-primary);
+  background-color: var(--bg-surface-hover);
+}
+
 .grid-questoes {
   display: grid;
   grid-template-columns: 1fr;

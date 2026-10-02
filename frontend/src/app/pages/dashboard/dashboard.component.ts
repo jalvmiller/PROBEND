@@ -29,6 +29,13 @@ export class DashboardComponent implements OnInit {
   public paginaAtual = signal<number>(1);
   public meusUpvotes = signal<number[]>([]);
 
+  // Pesquisa Profunda (Filtros Avançados)
+  public buscaProfundaAberta = signal<boolean>(false);
+  public filtroComCodigo = signal<boolean>(false);
+  public filtroComImagem = signal<boolean>(false);
+  public filtroMateriaProfunda = signal<string>('TODAS');
+  public filtroOrdenacao = signal<'RECENTES' | 'UPVOTES_DESC'>('RECENTES');
+
   // Conjunto de IDs de cards expandidos
   public cardsExpandidos = signal<Set<number>>(new Set<number>());
 
@@ -139,6 +146,58 @@ export class DashboardComponent implements OnInit {
     return 'card-dificuldade-facil';
   }
 
+  // Métodos da Pesquisa Profunda
+  public toggleBuscaProfunda(): void {
+    this.buscaProfundaAberta.update(v => !v);
+  }
+
+  public toggleFiltroComCodigo(): void {
+    this.filtroComCodigo.update(v => !v);
+    this.paginaAtual.set(1);
+  }
+
+  public toggleFiltroComImagem(): void {
+    this.filtroComImagem.update(v => !v);
+    this.paginaAtual.set(1);
+  }
+
+  public alterarFiltroMateriaProfunda(materia: string): void {
+    this.filtroMateriaProfunda.set(materia);
+    this.paginaAtual.set(1);
+  }
+
+  public alterarOrdenacao(ordem: 'RECENTES' | 'UPVOTES_DESC'): void {
+    this.filtroOrdenacao.set(ordem);
+    this.paginaAtual.set(1);
+  }
+
+  public limparFiltrosProfundos(): void {
+    this.filtroComCodigo.set(false);
+    this.filtroComImagem.set(false);
+    this.filtroMateriaProfunda.set('TODAS');
+    this.filtroOrdenacao.set('RECENTES');
+    this.paginaAtual.set(1);
+  }
+
+  public get materiasDisponiveis(): string[] {
+    const set = new Set<string>();
+    for (const q of this.questoes()) {
+      if (q.materia && q.materia.trim()) {
+        set.add(q.materia.trim());
+      }
+    }
+    return Array.from(set).sort();
+  }
+
+  public get totalFiltrosProfundosAtivos(): number {
+    let count = 0;
+    if (this.filtroComCodigo()) count++;
+    if (this.filtroComImagem()) count++;
+    if (this.filtroMateriaProfunda() !== 'TODAS') count++;
+    if (this.filtroOrdenacao() !== 'RECENTES') count++;
+    return count;
+  }
+
   public get questoesFiltradas(): Questao[] {
     const dif = this.filtroDificuldade();
     const st = this.filtroStatus();
@@ -160,6 +219,27 @@ export class DashboardComponent implements OnInit {
       lista = lista.filter(q => !q.solucionada);
     } else if (st === 'SOLUCIONADAS') {
       lista = lista.filter(q => q.solucionada);
+    }
+
+    // Pesquisa Profunda: Filtro por Código
+    if (this.filtroComCodigo()) {
+      lista = lista.filter(q => q.trechoCodigo && q.trechoCodigo.trim().length > 0);
+    }
+
+    // Pesquisa Profunda: Filtro por Imagem
+    if (this.filtroComImagem()) {
+      lista = lista.filter(q => q.imagemUrl && q.imagemUrl.trim().length > 0);
+    }
+
+    // Pesquisa Profunda: Filtro por Matéria Específica
+    const matProfunda = this.filtroMateriaProfunda();
+    if (matProfunda !== 'TODAS') {
+      lista = lista.filter(q => q.materia && q.materia.trim().toLowerCase() === matProfunda.toLowerCase());
+    }
+
+    // Pesquisa Profunda: Ordenação
+    if (this.filtroOrdenacao() === 'UPVOTES_DESC') {
+      lista = [...lista].sort((a, b) => (b.upvotes || 0) - (a.upvotes || 0));
     }
 
     return lista;
