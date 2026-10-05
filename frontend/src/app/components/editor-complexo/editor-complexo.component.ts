@@ -18,6 +18,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Questao, getDificuldadeClasse, getDificuldadeTexto } from '../../models/questao.model';
+import { AuthService } from '../../services/auth.service';
 import { KatexDirective } from '../../directives/katex.directive';
 
 import 'mathlive';
@@ -81,9 +82,25 @@ export class EditorComplexoComponent implements OnInit, AfterViewInit, OnDestroy
   @ViewChild('inputArquivoImagem') inputArquivoImagem?: ElementRef<HTMLInputElement>;
 
   private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
 
   public readonly getDificuldadeTexto = getDificuldadeTexto;
   public readonly getDificuldadeClasse = getDificuldadeClasse;
+
+  @Input() autorNome?: string;
+
+  public autorExibicao = computed(() => {
+    if (this.autorNome && this.autorNome.trim()) {
+      return this.autorNome.trim();
+    }
+    const user = this.authService.currentUser();
+    return user?.nome || user?.username || 'Autor';
+  });
+
+  // Modal de Guia de Uso
+  public modalGuiaAberto = signal<boolean>(false);
+  public abrirModalGuia(): void { this.modalGuiaAberto.set(true); }
+  public fecharModalGuia(): void { this.modalGuiaAberto.set(false); }
 
   // Modos de Edição
   public modoAtivo = signal<'MATEMATICA' | 'ALGORITMO'>('MATEMATICA');
@@ -118,6 +135,32 @@ export class EditorComplexoComponent implements OnInit, AfterViewInit, OnDestroy
     const idx = Math.min(Math.max(this.paginaAtualIndex(), 0), pags.length - 1);
     return pags[idx] || '';
   });
+
+  public sincronizarPaginaComCursor(posCursor: number): void {
+    const el = this.textareaMatematica?.nativeElement;
+    const texto = el ? el.value : this.conteudo();
+    const textoAntes = texto.substring(0, posCursor);
+    const paginaCursor = (textoAntes.match(/<!--\s*pagebreak\s*-->/gi) || []).length;
+    const maxPagina = Math.max(this.totalPaginas() - 1, 0);
+    const paginaAlvo = Math.min(paginaCursor, maxPagina);
+    if (this.paginaAtualIndex() !== paginaAlvo) {
+      this.paginaAtualIndex.set(paginaAlvo);
+    }
+  }
+
+  public sincronizarPaginaComLinha(linha: number): void {
+    const el = this.textareaMatematica?.nativeElement;
+    const texto = el ? el.value : this.conteudo();
+    const linhas = texto.split('\n');
+    const linhasAntes = linhas.slice(0, Math.max(0, linha));
+    const textoAntes = linhasAntes.join('\n');
+    const paginaCursor = (textoAntes.match(/<!--\s*pagebreak\s*-->/gi) || []).length;
+    const maxPagina = Math.max(this.totalPaginas() - 1, 0);
+    const paginaAlvo = Math.min(paginaCursor, maxPagina);
+    if (this.paginaAtualIndex() !== paginaAlvo) {
+      this.paginaAtualIndex.set(paginaAlvo);
+    }
+  }
 
   // Contadores de linhas reativos para régua de IDE
   public linhasMatematica = computed(() => {
@@ -303,14 +346,16 @@ export class EditorComplexoComponent implements OnInit, AfterViewInit, OnDestroy
     { visual: 'ẋ', latex: '\\dot{#0}', dica: 'Ponto (derivada temporal)' }
   ];
 
-  // Placeholders
-  public placeholderMatematica = computed(() => {
-    return this.placeholderMatematicaText || `Digite sua demonstração passo a passo...
+  // Placeholders e Texto Exemplo Inicial
+  public readonly textoExemploPadrao = `Digite sua demonstração passo a passo...
 
 Use $fórmula$ para equações na linha e $$fórmula$$ para equações em bloco.
 Exemplo:
 Seja a integral:
 $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
+
+  public placeholderMatematica = computed(() => {
+    return this.placeholderMatematicaText || 'Digite sua demonstração matemática em Markdown e LaTeX ($...$ ou $$...$$)...';
   });
 
   public placeholderCodigo = computed(() => {
@@ -339,9 +384,18 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
     }
   });
 
+  public focarTextareaMatematica(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.editor-gutter')) {
+      this.textareaMatematica?.nativeElement.focus();
+    }
+  }
+
   ngOnInit(): void {
-    if (this.conteudoInicial) {
+    if (this.conteudoInicial && this.conteudoInicial.trim()) {
       this.conteudo.set(this.conteudoInicial);
+    } else {
+      this.conteudo.set(this.textoExemploPadrao);
     }
     if (this.codigoInicial) {
       this.trechoCodigo.set(this.codigoInicial);
@@ -379,7 +433,6 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
         if (this._sincronizandoCompositor) return;
         const val = mf.value;
         this.compositorLatex.set(val);
-        this.atualizarLinhaAtivaEmTempoReal(val);
       });
 
       // Intercepta atalhos globais também a partir do mathfield
@@ -391,12 +444,6 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
       }, { capture: true });
 
       this._mathFieldConfigurado = true;
-
-      // Inicializa com a expressão da linha ativa
-      const linhas = this.conteudo().split('\n');
-      if (linhas.length > 0) {
-        this.carregarLinhaNoCompositor(linhas[this.linhaAtiva() - 1] || '');
-      }
     }, 100);
   }
 
@@ -428,7 +475,6 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
     mf.focus();
     const val = mf.value;
     this.compositorLatex.set(val);
-    this.atualizarLinhaAtivaEmTempoReal(val);
   }
 
   public limparCompositor(): void {
@@ -436,8 +482,17 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
     if (mf) {
       mf.value = '';
       this.compositorLatex.set('');
-      this.atualizarLinhaAtivaEmTempoReal('');
       MathfieldElement.playSound('delete');
+      mf.focus();
+    }
+  }
+
+  public puxarLinhaParaCompositor(): void {
+    const linhas = this.conteudo().split('\n');
+    const conteudoLinha = linhas[this.linhaAtiva() - 1] || '';
+    this.carregarLinhaNoCompositor(conteudoLinha);
+    const mf = this.mathFieldComposer?.nativeElement;
+    if (mf) {
       mf.focus();
     }
   }
@@ -465,6 +520,70 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
       el.focus();
       const novoPos = start + simbolo.length;
       el.setSelectionRange(novoPos, novoPos);
+      this.onInteracaoTextareaMatematica();
+    }, 0);
+  }
+
+  public inserirFormatacao(tipo: string): void {
+    const el = this.textareaMatematica?.nativeElement;
+    if (!el) return;
+
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const atual = el.value;
+    const selecionado = atual.substring(start, end);
+
+    let prefixo = '';
+    let sufixo = '';
+    let textoPadrao = '';
+
+    switch (tipo) {
+      case 'h2':
+        prefixo = '\n## ';
+        textoPadrao = selecionado || 'Subtítulo da Seção';
+        sufixo = '\n';
+        break;
+      case 'bold':
+        prefixo = '**';
+        textoPadrao = selecionado || 'texto em negrito';
+        sufixo = '**';
+        break;
+      case 'italic':
+        prefixo = '*';
+        textoPadrao = selecionado || 'texto em itálico';
+        sufixo = '*';
+        break;
+      case 'lista':
+        prefixo = '\n- ';
+        textoPadrao = selecionado || 'Item da lista';
+        sufixo = '\n';
+        break;
+      case 'citacao':
+        prefixo = '\n> ';
+        textoPadrao = selecionado || 'Observação ou teorema...';
+        sufixo = '\n';
+        break;
+      case 'math-inline':
+        prefixo = '$';
+        textoPadrao = selecionado || 'f(x) = x^2';
+        sufixo = '$';
+        break;
+      case 'math-bloco':
+        prefixo = '\n$$\n';
+        textoPadrao = selecionado || '\\int_{0}^{1} x \\, dx = \\frac{1}{2}';
+        sufixo = '\n$$\n';
+        break;
+    }
+
+    const novoConteudo = atual.substring(0, start) + prefixo + textoPadrao + sufixo + atual.substring(end);
+    this.conteudo.set(novoConteudo);
+
+    setTimeout(() => {
+      el.focus();
+      const novoStart = start + prefixo.length;
+      const novoEnd = novoStart + textoPadrao.length;
+      el.setSelectionRange(novoStart, novoEnd);
+      this.onInteracaoTextareaMatematica();
     }, 0);
   }
 
@@ -497,9 +616,6 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
   public inserirQuebraPagina(): void {
     const delimitador = '\n\n<!-- pagebreak -->\n\n';
     this.inserirTextoNoCursor(delimitador);
-    setTimeout(() => {
-      this.paginaAtualIndex.set(this.totalPaginas() - 1);
-    }, 50);
   }
 
   public acionarSelecaoImagem(): void {
@@ -607,6 +723,7 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
       el.focus();
       const novoPos = start + texto.length;
       el.setSelectionRange(novoPos, novoPos);
+      this.onInteracaoTextareaMatematica();
     }, 0);
   }
 
@@ -620,6 +737,11 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
    */
   @HostListener('window:keydown', ['$event'])
   public onWindowKeyDown(event: KeyboardEvent): void {
+    if (this.modalGuiaAberto() && event.key === 'Escape') {
+      this.fecharModalGuia();
+      event.preventDefault();
+      return;
+    }
     if (this.modoAtivo() !== 'MATEMATICA') return;
     this.tratarKeyDownMatematica(event);
   }
@@ -705,7 +827,7 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
     if (match) {
       return match[1].trim();
     }
-    return trim.replace(/\$/g, '').trim();
+    return '';
   }
 
   public carregarLinhaNoCompositor(conteudoLinha: string): void {
@@ -737,17 +859,33 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
 
   public aplicarCompositorComoInline(): void {
     const latex = this.obterLatexDoCompositor();
-    const formato = latex ? `$${latex}$` : '$ $';
-    this.inserirOuAtualizarLinhaAtiva(formato);
-    this.carregarLinhaNoCompositor(formato);
+    if (!latex) return;
+    const formato = `$${latex}$`;
+    const linhas = this.conteudo().split('\n');
+    const idx = this.linhaAtiva() - 1;
+    const linhaAtual = (linhas[idx] || '').trim();
+
+    if (linhaAtual === '' || (linhaAtual.startsWith('$') && linhaAtual.endsWith('$') && !linhaAtual.startsWith('$$'))) {
+      this.inserirOuAtualizarLinhaAtiva(formato);
+    } else {
+      this.inserirTextoNoCursor(` ${formato} `);
+    }
     MathfieldElement.playSound('keypress');
   }
 
   public aplicarCompositorComoBloco(): void {
     const latex = this.obterLatexDoCompositor();
-    const formato = latex ? `$$${latex}$$` : '$$ $$';
-    this.inserirOuAtualizarLinhaAtiva(formato);
-    this.carregarLinhaNoCompositor(formato);
+    if (!latex) return;
+    const formato = `$$\n${latex}\n$$`;
+    const linhas = this.conteudo().split('\n');
+    const idx = this.linhaAtiva() - 1;
+    const linhaAtual = (linhas[idx] || '').trim();
+
+    if (linhaAtual === '' || (linhaAtual.startsWith('$$') && linhaAtual.endsWith('$$'))) {
+      this.inserirOuAtualizarLinhaAtiva(formato);
+    } else {
+      this.inserirTextoNoCursor(`\n${formato}\n`);
+    }
     MathfieldElement.playSound('keypress');
   }
 
@@ -804,6 +942,16 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
     }
 
     const linhaAtual = linhas[idx].trim();
+
+    // Se a linha atual tiver texto comum e não tiver $, não converte em fórmula acidentalmente!
+    const isFormula = (linhaAtual.startsWith('$') && linhaAtual.endsWith('$')) ||
+                      (linhaAtual.startsWith('$$') && linhaAtual.endsWith('$$')) ||
+                      linhaAtual === '';
+
+    if (!isFormula && !linhaAtual.includes('$')) {
+      return;
+    }
+
     let novaLinha: string;
 
     if (!limpo) {
@@ -840,6 +988,7 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
     }
 
     this.linhaAtiva.set(indiceAlvo);
+    this.sincronizarPaginaComLinha(indiceAlvo);
 
     let pos = 0;
     for (let i = 0; i < indiceAlvo - 1; i++) {
@@ -856,44 +1005,27 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
       el.setSelectionRange(pos, pos);
       this._manterLinhaVisivel(indiceAlvo);
     }
-
-    const conteudoLinha = linhas[indiceAlvo - 1] || '';
-    this.carregarLinhaNoCompositor(conteudoLinha);
     MathfieldElement.playSound('keypress');
+  }
+
+  public onConteudoChange(novoTexto: string): void {
+    this.conteudo.set(novoTexto);
+    const el = this.textareaMatematica?.nativeElement;
+    if (el) {
+      const pos = el.selectionStart ?? 0;
+      const linha = this.calcularLinhaCursor(novoTexto, pos);
+      this.linhaAtiva.set(linha);
+      this.sincronizarPaginaComCursor(pos);
+    }
   }
 
   public onInteracaoTextareaMatematica(): void {
     const el = this.textareaMatematica?.nativeElement;
     if (!el) return;
-    const linha = this.calcularLinhaCursor(el.value, el.selectionStart);
-    if (linha !== this.linhaAtiva()) {
-      this.linhaAtiva.set(linha);
-      const linhas = this.conteudo().split('\n');
-      const conteudoLinha = linhas[linha - 1] || '';
-      this.carregarLinhaNoCompositor(conteudoLinha);
-    }
-  }
-
-  public onInputTextareaMatematica(): void {
-    const el = this.textareaMatematica?.nativeElement;
-    if (!el) return;
-    const linha = this.calcularLinhaCursor(el.value, el.selectionStart);
+    const pos = el.selectionStart ?? 0;
+    const linha = this.calcularLinhaCursor(el.value, pos);
     this.linhaAtiva.set(linha);
-    const linhas = this.conteudo().split('\n');
-    const conteudoLinha = linhas[linha - 1] || '';
-    const expr = this.extrairExpressaoParaCompositor(conteudoLinha);
-    this.compositorLatex.set(expr);
-    const mf = this.mathFieldComposer?.nativeElement;
-    if (mf && mf.value !== expr) {
-      this._sincronizandoCompositor = true;
-      try {
-        mf.value = expr;
-      } finally {
-        setTimeout(() => {
-          this._sincronizandoCompositor = false;
-        }, 50);
-      }
-    }
+    this.sincronizarPaginaComCursor(pos);
   }
 
   private _manterLinhaVisivel(linha: number): void {
@@ -926,10 +1058,17 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
 
       const atual = el.value;
       const novoTexto = atual.substring(0, start) + espacos + atual.substring(end);
-      this.trechoCodigo.set(novoTexto);
+      if (this.modoAtivo() === 'ALGORITMO') {
+        this.trechoCodigo.set(novoTexto);
+      } else {
+        this.conteudo.set(novoTexto);
+      }
 
       setTimeout(() => {
         el.selectionStart = el.selectionEnd = start + espacos.length;
+        if (this.modoAtivo() === 'MATEMATICA') {
+          this.onInteracaoTextareaMatematica();
+        }
       }, 0);
     }
   }

@@ -65,6 +65,20 @@
         </button>
       }
 
+      <button
+        type="button"
+        class="btn-guia-topo"
+        (click)="abrirModalGuia()"
+        title="Abrir guia de formatação, fórmulas e atalhos"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <span>Guia</span>
+      </button>
+
       <div class="stats-contadores">
         <span class="stat-item">{{ totalLinhas() }} lin</span>
         <span class="stat-div">·</span>
@@ -243,6 +257,18 @@
                 </button>
                 <button
                   type="button"
+                  class="btn-inserir-doc"
+                  (click)="puxarLinhaParaCompositor()"
+                  title="Puxar fórmula da linha ativa para o compositor"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                  </svg>
+                  <span>Puxar Linha</span>
+                </button>
+                <button
+                  type="button"
                   class="btn-inserir-inline"
                   (click)="aplicarCompositorNaLinhaAtual('inline')"
                   [disabled]="!compositorLatex().trim()"
@@ -271,9 +297,65 @@
             </div>
           }
 
+          <!-- Barra de Ferramentas de Inserção Rápida (Markdown & Fórmulas) -->
+          <div class="toolbar-insercao-rapida">
+            <div class="grupo-insercao-itens">
+              <span class="toolbar-secao-rotulo">Formatação:</span>
+              <button type="button" class="btn-ferramenta" (click)="inserirFormatacao('h2')" title="Título H2 (## )">
+                <strong>H2</strong>
+              </button>
+              <button type="button" class="btn-ferramenta" (click)="inserirFormatacao('bold')" title="Negrito (**texto**)">
+                <strong>B</strong>
+              </button>
+              <button type="button" class="btn-ferramenta" (click)="inserirFormatacao('italic')" title="Itálico (*texto*)">
+                <em>I</em>
+              </button>
+              <button type="button" class="btn-ferramenta" (click)="inserirFormatacao('lista')" title="Lista com marcadores (- )">
+                • Lista
+              </button>
+              <button type="button" class="btn-ferramenta" (click)="inserirFormatacao('citacao')" title="Citação ou teorema (> )">
+                ” Citação
+              </button>
+            </div>
+
+            <div class="toolbar-divisor"></div>
+
+            <div class="grupo-insercao-itens">
+              <span class="toolbar-secao-rotulo">Fórmulas:</span>
+              <button type="button" class="btn-ferramenta btn-ferramenta-math" (click)="inserirFormatacao('math-inline')" title="Fórmula inline ($...$)">
+                $x$ Inline
+              </button>
+              <button type="button" class="btn-ferramenta btn-ferramenta-math" (click)="inserirFormatacao('math-bloco')" title="Equação destacada ($$...$$)">
+                $$ Bloco
+              </button>
+              <button type="button" class="btn-ferramenta" (click)="inserirSimbolo('\\frac{a}{b}')" title="Inserir fração">
+                ᵃ⁄ᵦ
+              </button>
+              <button type="button" class="btn-ferramenta" (click)="inserirSimbolo('\\sqrt{x}')" title="Inserir raiz">
+                √x
+              </button>
+              <button type="button" class="btn-ferramenta" (click)="inserirSimbolo('\\int_{a}^{b} f(x) \\, dx')" title="Inserir integral">
+                ∫
+              </button>
+              <button type="button" class="btn-ferramenta" (click)="inserirSimbolo('\\sum_{i=1}^{n}')" title="Inserir somatório">
+                ∑
+              </button>
+              <button type="button" class="btn-ferramenta" (click)="inserirSimbolo('\\lim_{x \\to 0}')" title="Inserir limite">
+                lim
+              </button>
+              <button type="button" class="btn-ferramenta" (click)="inserirSimbolo('\\infty')" title="Inserir infinito">
+                ∞
+              </button>
+            </div>
+          </div>
+
           <!-- Textarea Matemática com Régua IDE e Destaque da Linha Ativa -->
           <div class="campo-edicao-wrapper">
-            <div class="editor-ide-container" [class.drag-over]="dragOver()">
+            <div
+              class="editor-ide-container"
+              [class.drag-over]="dragOver()"
+              (click)="focarTextareaMatematica($event)"
+            >
               <!-- Faixa Contínua de Destaque da Linha Ativa (Gutter + Textarea) -->
               <div
                 class="faixa-linha-ativa"
@@ -296,9 +378,8 @@
                 class="textarea-fullscreen textarea-math"
                 [placeholder]="placeholderMatematica()"
                 [ngModel]="conteudo()"
-                (ngModelChange)="conteudo.set($event)"
-                (input)="onInputTextareaMatematica()"
-                (keydown)="tratarKeyDownMatematica($event)"
+                (ngModelChange)="onConteudoChange($event)"
+                (keydown)="tratarTab($event)"
                 (click)="onInteracaoTextareaMatematica()"
                 (keyup)="onInteracaoTextareaMatematica()"
                 (select)="onInteracaoTextareaMatematica()"
@@ -379,7 +460,7 @@
                 <div class="folha-container-scroll">
                   <div class="folha-documento">
                     <div class="folha-cabecalho-tecnico">
-                      <span class="folha-tag-doc">DOCUMENTO TÉCNICO</span>
+                      <span class="folha-tag-doc">Por: {{ autorExibicao() }}</span>
                       <span class="folha-numero-pagina">Pág. {{ paginaAtualIndex() + 1 }} / {{ totalPaginas() }}</span>
                     </div>
 
@@ -567,4 +648,102 @@
       </div>
     }
   </main>
+
+  <!-- Modal de Guia do Editor -->
+  @if (modalGuiaAberto()) {
+    <div class="modal-guia-overlay" (click)="fecharModalGuia()">
+      <div class="modal-guia-card" (click)="$event.stopPropagation()">
+        <header class="modal-guia-header">
+          <div class="modal-guia-titulo-grupo">
+            <span class="modal-guia-badge">GUIA DO EDITOR</span>
+            <h2 class="modal-guia-titulo">Como Formatar Resoluções e Fórmulas</h2>
+          </div>
+          <button type="button" class="btn-fechar-modal-guia" (click)="fecharModalGuia()" title="Fechar guia">&times;</button>
+        </header>
+
+        <div class="modal-guia-corpo">
+          <div class="guia-secao">
+            <h3 class="guia-secao-titulo">
+              <span class="icone-secao">📐</span> Fórmulas Matemáticas (KaTeX / LaTeX)
+            </h3>
+            <div class="guia-grade">
+              <div class="guia-item">
+                <span class="guia-item-rotulo">Fórmula na Linha (Inline):</span>
+                <code class="guia-codigo">$E = mc^2$</code>
+                <span class="guia-item-desc">Use um único cifrão para equações no meio do texto.</span>
+              </div>
+              <div class="guia-item">
+                <span class="guia-item-rotulo">Fórmula em Bloco (Destaque):</span>
+                <code class="guia-codigo">$$\int_&#123;0&#125;^&#123;1&#125; x^2 \, dx = \frac&#123;1&#125;&#123;3&#125;$$</code>
+                <span class="guia-item-desc">Use dois cifrões para equações centralizadas e em destaque.</span>
+              </div>
+              <div class="guia-item">
+                <span class="guia-item-rotulo">Frações e Raízes:</span>
+                <code class="guia-codigo">\frac&#123;a&#125;&#123;b&#125;, \sqrt&#123;x&#125;, \sqrt[n]&#123;x&#125;</code>
+              </div>
+              <div class="guia-item">
+                <span class="guia-item-rotulo">Letras Gregas:</span>
+                <code class="guia-codigo">\alpha, \beta, \theta, \pi, \lambda, \Delta</code>
+              </div>
+            </div>
+          </div>
+
+          <div class="guia-secao">
+            <h3 class="guia-secao-titulo">
+              <span class="icone-secao">✍️</span> Estrutura de Documento (Markdown)
+            </h3>
+            <div class="guia-grade">
+              <div class="guia-item">
+                <span class="guia-item-rotulo">Títulos e Seções:</span>
+                <code class="guia-codigo">## Subtítulo &nbsp;|&nbsp; ### Tópico</code>
+              </div>
+              <div class="guia-item">
+                <span class="guia-item-rotulo">Ênfase de Texto:</span>
+                <code class="guia-codigo">**negrito** &nbsp;|&nbsp; *itálico*</code>
+              </div>
+              <div class="guia-item">
+                <span class="guia-item-rotulo">Listas e Citações:</span>
+                <code class="guia-codigo">- Item da lista &nbsp;|&nbsp; > Citação</code>
+              </div>
+              <div class="guia-item">
+                <span class="guia-item-rotulo">Quebra Manual de Folha:</span>
+                <code class="guia-codigo">&lt;!-- pagebreak --&gt;</code>
+                <span class="guia-item-desc">Cria uma nova folha imediatamente no preview da direita.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="guia-secao">
+            <h3 class="guia-secao-titulo">
+              <span class="icone-secao">⌨️</span> Atalhos de Teclado
+            </h3>
+            <div class="guia-tabela-atalhos">
+              <div class="atalho-linha">
+                <kbd>Alt + ↑</kbd>
+                <span>Aplica a fórmula do compositor visual como inline ($...$) na linha atual</span>
+              </div>
+              <div class="atalho-linha">
+                <kbd>Alt + ↓</kbd>
+                <span>Aplica a fórmula do compositor visual como bloco ($$...$$) na linha atual</span>
+              </div>
+              <div class="atalho-linha">
+                <kbd>Ctrl + ↑ / ↓</kbd>
+                <span>Navega entre linhas e destaca a linha ativa</span>
+              </div>
+              <div class="atalho-linha">
+                <kbd>Ctrl + V</kbd>
+                <span>Cola imagem da área de transferência diretamente no documento</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="modal-guia-rodape">
+          <button type="button" class="btn-entendi-guia" (click)="fecharModalGuia()">
+            Entendi, voltar ao editor
+          </button>
+        </footer>
+      </div>
+    </div>
+  }
 </div>
