@@ -1,9 +1,10 @@
-﻿import { Component, OnInit, Input, ViewChild, ElementRef, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { QuestaoService } from '../../services/questao.service';
 import { AuthService } from '../../services/auth.service';
+import { TrilhaService } from '../../services/trilha.service';
 import { Questao, Resolucao, getDificuldadeTexto, getDificuldadeClasse } from '../../models/questao.model';
 import { KatexDirective } from '../../directives/katex.directive';
 import { ComentarioModalComponent } from '../../components/comentario-modal/comentario-modal.component';
@@ -33,6 +34,7 @@ export class QuestaoDetalhesComponent implements OnInit {
   private readonly questaoService = inject(QuestaoService);
   private readonly route = inject(ActivatedRoute);
   public readonly authService = inject(AuthService);
+  public readonly trilhaService = inject(TrilhaService);
 
   public readonly getDificuldadeTexto = getDificuldadeTexto;
   public readonly getDificuldadeClasse = getDificuldadeClasse;
@@ -163,15 +165,85 @@ export class QuestaoDetalhesComponent implements OnInit {
     return !!(q && u && q.autor && q.autor.id === u.id);
   });
 
+  // ==========================================
+  // CONTEXTO DA TRILHA DE ESTUDOS ATIVA
+  // ==========================================
+  public alternandoTrilha = signal<boolean>(false);
+
+  public readonly slotTrilhaAtiva = computed(() => {
+    const ativa = this.trilhaService.trilhaAtiva();
+    const q = this.questao();
+    if (!ativa || !q) return null;
+    return ativa.slots.find(s => s.questaoId === q.id) || null;
+  });
+
+  public readonly proximoSlotTrilha = computed(() => {
+    const ativa = this.trilhaService.trilhaAtiva();
+    const atual = this.slotTrilhaAtiva();
+    if (!ativa || !atual) return null;
+    const idx = ativa.slots.findIndex(s => s.itemId === atual.itemId);
+    return idx >= 0 && idx < ativa.slots.length - 1 ? ativa.slots[idx + 1] : null;
+  });
+
+  public readonly anteriorSlotTrilha = computed(() => {
+    const ativa = this.trilhaService.trilhaAtiva();
+    const atual = this.slotTrilhaAtiva();
+    if (!ativa || !atual) return null;
+    const idx = ativa.slots.findIndex(s => s.itemId === atual.itemId);
+    return idx > 0 ? ativa.slots[idx - 1] : null;
+  });
+
+  public alternarConclusaoTrilha(): void {
+    const ativa = this.trilhaService.trilhaAtiva();
+    const slot = this.slotTrilhaAtiva();
+    if (!ativa || !slot || this.alternandoTrilha()) return;
+
+    this.alternandoTrilha.set(true);
+    this.trilhaService.alternarConclusao(ativa.trilhaId, slot.itemId).subscribe({
+      next: () => this.alternandoTrilha.set(false),
+      error: (err) => {
+        console.error('Falha ao alternar conclusão na trilha:', err);
+        this.alternandoTrilha.set(false);
+      }
+    });
+  }
+
+  private idAtualCarregado: string | null = null;
+
   ngOnInit(): void {
     const savedPct = localStorage.getItem(this.SPLIT_STORAGE_KEY);
     if (savedPct) {
       this.leftWidthPct.set(Number(savedPct));
     }
-    this.carregarDadosGlobais(this.id);
+
+    if (this.authService.isAuthenticated() && !this.trilhaService.trilhaAtiva()) {
+      this.trilhaService.carregarTrilhaAtiva().subscribe();
+    }
+
+    // Escuta alterações dinâmicas no parâmetro :id da rota (ex: navegação pelo Quest Tracker ou Sidebar)
+    this.route.paramMap.subscribe(params => {
+      const routeId = params.get('id') || this.id;
+      if (routeId && routeId !== this.idAtualCarregado) {
+        this.idAtualCarregado = routeId;
+        this.id = routeId;
+        this.carregarDadosGlobais(routeId);
+      }
+    });
   }
 
   private carregarDadosGlobais(id: string): void {
+    this.loading.set(true);
+    this.erro.set('');
+    this.novaResolucao.set('');
+    this.codigoResolucao.set('');
+    this.mostrarCampoCodigo.set(false);
+    this.selectedPdfFile.set(null);
+    this.editorComplexoAberto.set(false);
+    this.modalResolucaoId.set(null);
+    this.isUpvotedQuestao.set(false);
+    this.abaAtivaEsquerda.set('enunciado');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     this.questaoService.buscarPorId(id).subscribe({
       next: (q) => {
         this.questao.set(q);
@@ -179,7 +251,7 @@ export class QuestaoDetalhesComponent implements OnInit {
         this.loading.set(false);
       },
       error: () => {
-        this.erro.set('Nao foi possivel carregar os detalhes da questao.');
+        this.erro.set('Não foi possível carregar os detalhes da questão.');
         this.loading.set(false);
       }
     });

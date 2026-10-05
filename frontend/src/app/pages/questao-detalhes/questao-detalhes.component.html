@@ -2,56 +2,36 @@
   <!-- Navegação de topo com contexto e ações da questão -->
   <header class="navegacao-topo">
     <div class="topo-esquerda">
-      <a routerLink="/" class="link-voltar" title="Voltar à lista de problemas">
-        <span class="seta-voltar">←</span> Repositório de Questões
+      <a
+        routerLink="/"
+        class="link-voltar"
+        title="Voltar ao repositório"
+      >
+        <span
+          class="seta-voltar"
+          aria-hidden="true"
+        >
+          ←
+        </span>
+        <span>Voltar ao repositório</span>
       </a>
-
-      @if (questao(); as q) {
-        <div class="badges-row">
-          @if (q.materia) {
-            <span class="badge-materia">{{ q.materia }}</span>
-          }
-          @if (q.assunto) {
-            <span class="badge-assunto">{{ q.assunto }}</span>
-          }
-          <span class="badge-dificuldade" [ngClass]="getDificuldadeClasse(q.dificuldade)">
-            {{ getDificuldadeTexto(q.dificuldade) }}
-          </span>
-
-          <span 
-            class="badge-status" 
-            [class.status-solucionada]="q.solucionada"
-            [class.status-pendente]="!q.solucionada"
-          >
-            @if (q.solucionada) {
-              <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-              <span>Solucionada</span>
-            } @else {
-              <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-              </svg>
-              <span>Pendente</span>
-            }
-          </span>
-        </div>
-      }
     </div>
 
     <!-- Ações no topo direito -->
     @if (questao(); as q) {
       <div class="topo-acoes">
         @if (isAutor()) {
-          <a [routerLink]="['/questoes', q.id, 'editar']" class="btn-editar-questao" title="Editar informações da questão">
-            ✏️ Editar
+          <a
+            [routerLink]="['/questoes', q.id, 'editar']"
+            class="btn-editar-questao"
+            title="Editar informações da questão"
+          >
+            Editar
           </a>
 
-          <button 
-            type="button" 
-            (click)="alternarStatusSolucionada()" 
+          <button
+            type="button"
+            (click)="alternarStatusSolucionada()"
             class="btn-status-toggle"
             [class.btn-status-desmarcar]="q.solucionada"
           >
@@ -71,38 +51,127 @@
   } @else if (erro()) {
     <div class="estado-erro">
       <p>{{ erro() }}</p>
-      <a routerLink="/" class="btn-erro">Voltar ao repositório</a>
+      <a
+        routerLink="/"
+        class="btn-erro"
+      >
+        Voltar ao repositório
+      </a>
     </div>
   } @else if (questao(); as q) {
+    <!-- BANNER CONTEXTUAL: Trilha de Estudos Ativa -->
+    @if (slotTrilhaAtiva(); as slotTrilha) {
+      <aside
+        class="banner-trilha-ativa"
+        [class.banner-concluido]="slotTrilha.concluida"
+        aria-label="Contexto da Trilha de Estudos"
+      >
+        <div class="banner-trilha-lado-esq">
+          <div class="banner-trilha-info">
+            <span
+              class="banner-trilha-nome"
+              [title]="trilhaService.trilhaAtiva()?.titulo"
+            >
+              {{ trilhaService.trilhaAtiva()?.titulo }}
+            </span>
+            <span class="banner-trilha-passo font-mono">
+              Questão {{ slotTrilha.numero }} de {{ trilhaService.trilhaAtiva()?.totalQuestoes }}
+            </span>
+          </div>
+        </div>
+
+        <div class="banner-trilha-lado-dir">
+          @if (anteriorSlotTrilha(); as ant) {
+            <a
+              [routerLink]="['/questoes', ant.questaoId]"
+              class="btn-nav-trilha"
+              title="Questão anterior da trilha"
+            >
+              ← Anterior
+            </a>
+          }
+
+          <button
+            type="button"
+            (click)="alternarConclusaoTrilha()"
+            class="btn-trilha-toggle"
+            [class.concluido]="slotTrilha.concluida"
+            [disabled]="alternandoTrilha()"
+            [title]="
+              slotTrilha.concluida
+                ? 'Clique para desmarcar conclusão desta questão na trilha'
+                : 'Clique para marcar esta questão como concluída na trilha'
+            "
+          >
+            @if (alternandoTrilha()) {
+              <span class="spinner-trilha"></span>
+            } @else if (slotTrilha.concluida) {
+              <svg
+                class="icone-check-banner"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span>Concluída na Trilha</span>
+            } @else {
+              <span class="icone-circulo-banner">○</span>
+              <span>Marcar Concluída na Trilha</span>
+            }
+          </button>
+
+          @if (proximoSlotTrilha(); as prox) {
+            <a
+              [routerLink]="['/questoes', prox.questaoId]"
+              class="btn-nav-trilha btn-nav-destaque"
+              title="Próxima questão da trilha"
+            >
+              Próxima →
+            </a>
+          }
+        </div>
+      </aside>
+    }
+
     <!-- SPLIT WORKSPACE LEETCODE -->
-    <div class="split-container" #splitContainer [class.resizing]="isResizing()">
-      
+    <div
+      class="split-container"
+      #splitContainer
+      [class.resizing]="isResizing()"
+    >
       <!-- PAINEL ESQUERDO: Consulta com Abas (Enunciado / Resoluções) -->
-      <section 
-        class="painel-esquerdo" 
+      <section
+        class="painel-esquerdo"
         [style.width.%]="leftWidthPct()"
         [style.flex-basis.%]="leftWidthPct()"
       >
         <!-- Barra de Abas do Painel Esquerdo -->
-        <div class="tab-bar-esquerda" role="tablist">
-          <button 
-            type="button" 
+        <div
+          class="tab-bar-esquerda"
+          role="tablist"
+        >
+          <button
+            type="button"
             role="tab"
-            class="tab-btn" 
+            class="tab-btn"
             [class.ativo]="abaAtivaEsquerda() === 'enunciado'"
             (click)="alternarAbaEsquerda('enunciado')"
           >
-            <span class="tab-icon">📄</span> Enunciado do Problema
+            Enunciado do Problema
           </button>
 
-          <button 
-            type="button" 
+          <button
+            type="button"
             role="tab"
-            class="tab-btn" 
+            class="tab-btn"
             [class.ativo]="abaAtivaEsquerda() === 'resolucoes'"
             (click)="alternarAbaEsquerda('resolucoes')"
           >
-            <span class="tab-icon">💡</span> Resoluções da Comunidade
+            Resoluções da Comunidade
             <span class="badge-contador-res">{{ resolucoes().length }}</span>
           </button>
         </div>
@@ -122,8 +191,63 @@
 
               <!-- Título da Questão com KaTeX e Upvote no estilo QuestaoCard à direita -->
               <div class="titulo-e-upvote-linha">
-                <h1 class="titulo-problema" [appKatex]="q.titulo || ('Problema de ' + q.materia + (q.assunto ? ' · ' + q.assunto : ''))"></h1>
-
+                @if (questao(); as q) {
+                  <div class="badges-row">
+                    @if (q.materia) {
+                      <span class="badge-materia">{{ q.materia }}</span>
+                    }
+                    @if (q.assunto) {
+                      <span class="badge-assunto">{{ q.assunto }}</span>
+                    }
+                    <span
+                      class="badge-dificuldade"
+                      [ngClass]="getDificuldadeClasse(q.dificuldade)"
+                    >
+                      {{ getDificuldadeTexto(q.dificuldade) }}
+                    </span>
+                  </div>
+                }
+                <div>
+                  <span
+                    class="badge-status"
+                    [class.status-solucionada]="q.solucionada"
+                    [class.status-pendente]="!q.solucionada"
+                  >
+                    @if (q.solucionada) {
+                      <svg
+                        class="status-icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                      <span>Solucionada</span>
+                    } @else {
+                      <svg
+                        class="status-icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="10"
+                        ></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                      </svg>
+                      <span>Pendente</span>
+                    }
+                  </span>
+                </div>
                 <button
                   type="button"
                   class="btn-upvote-questao"
@@ -132,8 +256,18 @@
                   [title]="isUpvotedQuestao() ? 'Remover Upvote' : 'Dar Upvote'"
                   [attr.aria-pressed]="isUpvotedQuestao()"
                 >
-                  <svg class="icone-thumbs" viewBox="0 0 24 24" [attr.fill]="isUpvotedQuestao() ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                  <svg
+                    class="icone-thumbs"
+                    viewBox="0 0 24 24"
+                    [attr.fill]="isUpvotedQuestao() ? 'currentColor' : 'none'"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path
+                      d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
+                    ></path>
                   </svg>
                   <span>{{ upvotesCount() }}</span>
                 </button>
@@ -142,23 +276,36 @@
               <!-- Metadados do Autor -->
               <div class="meta-autor-linha">
                 <div class="autor-info">
-                  <app-avatar [usuario]="q.autor" tamanho="circulo"></app-avatar>
+                  <app-avatar
+                    [usuario]="q.autor"
+                    tamanho="circulo"
+                  ></app-avatar>
                   <div class="autor-detalhes">
-                    <span class="autor-nome">Por <strong>{{ q.autor?.nome || q.autor?.username || 'Anônimo' }}</strong></span>
+                    <span class="autor-nome">
+                      Por
+                      <strong>{{ q.autor?.nome || q.autor?.username || 'Anônimo' }}</strong>
+                    </span>
                     @if (q.dataInsercao) {
-                      <span class="data-post">{{ q.dataInsercao | date:'dd/MM/yyyy' }}</span>
+                      <span class="data-post">{{ q.dataInsercao | date: 'dd/MM/yyyy' }}</span>
                     }
                   </div>
                 </div>
               </div>
 
               <!-- Corpo do Enunciado com KaTeX -->
-              <div class="corpo-enunciado" [appKatex]="q.enunciado"></div>
+              <div
+                class="corpo-enunciado"
+                [appKatex]="q.enunciado"
+              ></div>
 
               <!-- Imagem / Diagrama da Questão -->
               @if (q.imagemUrl) {
                 <div class="container-imagem">
-                  <img [src]="q.imagemUrl" alt="Diagrama da questão" class="imagem-problema" />
+                  <img
+                    [src]="q.imagemUrl"
+                    alt="Diagrama da questão"
+                    class="imagem-problema"
+                  />
                 </div>
               }
 
@@ -189,23 +336,32 @@
               <!-- Barra de Ordenação -->
               <div class="resolucoes-subcabecalho">
                 <span class="contador-resolucoes-texto">
-                  {{ resolucoes().length }} {{ resolucoes().length === 1 ? 'demonstração publicada' : 'demonstrações publicadas' }}
+                  {{ resolucoes().length }}
+                  {{
+                    resolucoes().length === 1
+                      ? 'demonstração publicada'
+                      : 'demonstrações publicadas'
+                  }}
                 </span>
 
                 <div class="seletor-ordenacao">
                   <span class="label-ordem">Ordenar por:</span>
-                  <button 
-                    type="button" 
-                    class="btn-ordem" 
+                  <button
+                    type="button"
+                    class="btn-ordem"
                     [class.ativo]="ordenacaoResolucoes() === 'upvotes'"
                     (click)="alterarOrdenacao('upvotes')"
-                  >Mais Votadas</button>
-                  <button 
-                    type="button" 
-                    class="btn-ordem" 
+                  >
+                    Mais Votadas
+                  </button>
+                  <button
+                    type="button"
+                    class="btn-ordem"
                     [class.ativo]="ordenacaoResolucoes() === 'recentes'"
                     (click)="alterarOrdenacao('recentes')"
-                  >Mais Recentes</button>
+                  >
+                    Mais Recentes
+                  </button>
                 </div>
               </div>
 
@@ -214,7 +370,10 @@
                 <div class="sem-resolucoes">
                   <span class="icone-vazio">📝</span>
                   <h3>Nenhuma resolução submetida ainda</h3>
-                  <p>Escreva o passo a passo matemático no painel ao lado e seja o primeiro a demonstrar a solução!</p>
+                  <p>
+                    Escreva o passo a passo matemático no painel ao lado e seja o primeiro a
+                    demonstrar a solução!
+                  </p>
                 </div>
               } @else {
                 <div class="lista-cards-resolucoes">
@@ -222,29 +381,37 @@
                     <article class="card-resolucao">
                       <div class="res-topo">
                         <div class="res-autor-detalhes">
-                          <app-avatar [usuario]="res.autor" tamanho="mini"></app-avatar>
+                          <app-avatar
+                            [usuario]="res.autor"
+                            tamanho="mini"
+                          ></app-avatar>
                           <div class="res-nome-data">
-                            <span class="res-nome">{{ res.autor?.nome || res.autor?.username }}</span>
+                            <span class="res-nome">
+                              {{ res.autor?.nome || res.autor?.username }}
+                            </span>
                             @if (res.dataCriacao || res.criadoEm) {
-                              <span class="res-data">{{ (res.dataCriacao || res.criadoEm) | date:'dd/MM/yyyy HH:mm' }}</span>
+                              <span class="res-data">
+                                {{ res.dataCriacao || res.criadoEm | date: 'dd/MM/yyyy HH:mm' }}
+                              </span>
                             }
                           </div>
                         </div>
 
                         <div class="res-acoes-botoes">
                           <!-- Upvote na Resolução -->
-                          <button 
+                          <button
                             type="button"
                             (click)="darUpvoteResolucao(res)"
                             class="btn-res-upvote"
                             [class.ativo]="isResolucaoUpvoted(res.id)"
                             title="Curtir resolução"
                           >
-                            <span class="icone-seta">▲</span> {{ res.upvotesCount ?? res.upvotes ?? 0 }}
+                            <span class="icone-seta">▲</span>
+                            {{ res.upvotesCount ?? res.upvotes ?? 0 }}
                           </button>
 
                           <!-- Abrir Modal de Comentários -->
-                          <button 
+                          <button
                             type="button"
                             (click)="abrirModalComentarios(res)"
                             class="btn-res-comentarios"
@@ -256,12 +423,19 @@
                       </div>
 
                       <!-- Conteúdo da Demonstração com KaTeX -->
-                      <div class="res-corpo" [appKatex]="res.conteudo"></div>
+                      <div
+                        class="res-corpo"
+                        [appKatex]="res.conteudo"
+                      ></div>
 
                       <!-- PDF da Resolução -->
                       @if (res.arquivoPdfUrl) {
                         <div class="bloco-pdf">
-                          <a [href]="res.arquivoPdfUrl" target="_blank" class="btn-abrir-pdf-resolucao">
+                          <a
+                            [href]="res.arquivoPdfUrl"
+                            target="_blank"
+                            class="btn-abrir-pdf-resolucao"
+                          >
                             <span class="icone-pdf">📄</span>
                             Abrir Memória de Cálculo (PDF)
                           </a>
@@ -284,11 +458,11 @@
       </section>
 
       <!-- DIVISOR ARRASTÁVEL (SPLIT RESIZER) -->
-      <div 
-        class="split-resizer" 
+      <div
+        class="split-resizer"
         (mousedown)="iniciarArrasto($event)"
         (touchstart)="iniciarArrastoTouch($event)"
-        role="separator" 
+        role="separator"
         aria-orientation="vertical"
         title="Arraste para redimensionar os painéis"
       >
@@ -296,7 +470,7 @@
       </div>
 
       <!-- PAINEL DIREITO: Workspace Ativo de Resolução -->
-      <aside 
+      <aside
         class="painel-direito"
         [style.width.%]="rightWidthPct()"
         [style.flex-basis.%]="rightWidthPct()"
@@ -307,7 +481,11 @@
             <div class="cabecalho-texto">
               <h2 class="subtitulo-workspace">Sua Demonstração Técnica</h2>
               <p class="instrucao-latex">
-                Suporta fórmulas em LaTeX: <code>$fórmula$</code> (inline) ou <code>$$fórmula$$</code> (bloco).
+                Suporta fórmulas em LaTeX:
+                <code>$fórmula$</code>
+                (inline) ou
+                <code>$$fórmula$$</code>
+                (bloco).
               </p>
             </div>
 
@@ -326,10 +504,10 @@
           @if (authService.isAuthenticated()) {
             <div class="workspace-conteudo-scroll">
               <div class="campo-edicao">
-                <textarea 
+                <textarea
                   [ngModel]="novaResolucao()"
                   (ngModelChange)="novaResolucao.set($event)"
-                  rows="9" 
+                  rows="9"
                   placeholder="Explique os passos da demonstração matemática ou algoritmo...&#10;Ex: Seja a função $$f(x) = \lim_{n \to \infty} \left(1 + \frac{x}{n}\right)^n = e^x$$..."
                   class="textarea-resolucao"
                 ></textarea>
@@ -342,14 +520,25 @@
                     <span class="preview-badge">Prévia Matemática em Tempo Real</span>
                     <span class="preview-engine font-mono">KaTeX Engine</span>
                   </div>
-                  <div class="preview-conteudo" [appKatex]="novaResolucao()"></div>
+                  <div
+                    class="preview-conteudo"
+                    [appKatex]="novaResolucao()"
+                  ></div>
                 </div>
               }
 
               <!-- Anexo de Arquivo PDF -->
               <div class="campo-anexo-pdf">
-                <label class="btn-anexar-pdf" [class.anexado]="selectedPdfFile()">
-                  <input type="file" accept="application/pdf" (change)="onPdfSelected($event)" style="display: none;">
+                <label
+                  class="btn-anexar-pdf"
+                  [class.anexado]="selectedPdfFile()"
+                >
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    (change)="onPdfSelected($event)"
+                    style="display: none"
+                  />
                   <span class="icone-pdf">📄</span>
                   @if (selectedPdfFile(); as file) {
                     <span class="nome-arquivo">{{ file.name }}</span>
@@ -358,20 +547,37 @@
                   }
                 </label>
                 @if (selectedPdfFile()) {
-                  <button type="button" class="btn-remover-anexo" (click)="removerArquivoPdf()" title="Remover PDF anexado">&times;</button>
+                  <button
+                    type="button"
+                    class="btn-remover-anexo"
+                    (click)="removerArquivoPdf()"
+                    title="Remover PDF anexado"
+                  >
+                    &times;
+                  </button>
                 }
               </div>
 
               <!-- Botão para alternar campo de código opcional -->
               @if (!mostrarCampoCodigo()) {
-                <button type="button" class="btn-toggle-codigo" (click)="mostrarCampoCodigo.set(true)">
+                <button
+                  type="button"
+                  class="btn-toggle-codigo"
+                  (click)="mostrarCampoCodigo.set(true)"
+                >
                   + Incluir trecho de código ou script de verificação
                 </button>
               } @else {
                 <div class="bloco-insercao-codigo">
                   <div class="codigo-cabecalho-edicao">
                     <span class="font-mono text-xs">Script de Verificação (Opcional):</span>
-                    <button type="button" class="btn-fechar-campo-codigo" (click)="mostrarCampoCodigo.set(false)">&times;</button>
+                    <button
+                      type="button"
+                      class="btn-fechar-campo-codigo"
+                      (click)="mostrarCampoCodigo.set(false)"
+                    >
+                      &times;
+                    </button>
                   </div>
                   <textarea
                     [ngModel]="codigoResolucao()"
@@ -386,16 +592,17 @@
 
             <!-- Rodapé Fixo com Botão de Publicação -->
             <div class="workspace-rodape">
-              <button 
+              <button
                 type="button"
-                class="btn-publicar" 
+                class="btn-publicar"
                 [disabled]="(!novaResolucao().trim() && !selectedPdfFile()) || submetendo()"
                 (click)="submeterResolucao()"
               >
                 @if (submetendo()) {
-                  <span class="spinner-inline"></span> Publicando demonstração...
+                  <span class="spinner-inline"></span>
+                  Submetendo Resolução...
                 } @else {
-                  Publicar Demonstração
+                  Submeter Resolução
                 }
               </button>
             </div>
@@ -403,13 +610,19 @@
             <div class="box-login-requerido">
               <span class="icone-bloqueio">🔒</span>
               <h3>Autenticação Necessária</h3>
-              <p>Você precisa estar autenticado para enviar uma demonstração ou resolução técnica.</p>
-              <a routerLink="/login" class="btn-ir-login">Fazer Login</a>
+              <p>
+                Você precisa estar autenticado para enviar uma demonstração ou resolução técnica.
+              </p>
+              <a
+                routerLink="/login"
+                class="btn-ir-login"
+              >
+                Fazer Login
+              </a>
             </div>
           }
         </div>
       </aside>
-
     </div>
   }
 
