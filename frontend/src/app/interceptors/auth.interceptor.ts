@@ -11,11 +11,29 @@ import { catchError, throwError } from 'rxjs';
  * No Angular, o interceptor clona a requisição adicionando credenciais (cookies da sessão HTTP-Only)
  * e captura respostas 401 para redirecionar rotas privadas automaticamente.
  */
+function getXsrfCookie(): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(/(?:^|; )\s*XSRF-TOKEN=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
 
   // Clona a requisição para habilitar o tráfego automático de cookies HTTP-Only (AUTH_TOKEN / JSESSIONID)
+  let headers = req.headers;
+  const metodo = req.method.toUpperCase();
+
+  // Para requisições mutantes (POST, PUT, PATCH, DELETE), anexa o token CSRF extraído do cookie
+  if (metodo !== 'GET' && metodo !== 'HEAD' && metodo !== 'OPTIONS') {
+    const xsrfToken = getXsrfCookie();
+    if (xsrfToken && !headers.has('X-XSRF-TOKEN')) {
+      headers = headers.set('X-XSRF-TOKEN', xsrfToken);
+    }
+  }
+
   const authReq = req.clone({
+    headers,
     withCredentials: true
   });
 
