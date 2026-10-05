@@ -144,7 +144,9 @@ export class TrilhaTrackerComponent implements OnInit {
     event.stopPropagation();
     const ativa = this.trilhaService.trilhaAtiva();
     if (ativa) {
-      this.trilhaService.alternarConclusao(ativa.trilhaId, itemId).subscribe();
+      this.trilhaService.alternarConclusao(ativa.trilhaId, itemId).subscribe({
+        error: (err) => console.error('Falha ao alternar conclusão no tracker HUD:', err)
+      });
     }
   }
 
