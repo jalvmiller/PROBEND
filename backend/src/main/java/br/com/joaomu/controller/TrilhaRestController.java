@@ -68,7 +68,7 @@ public class TrilhaRestController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{trilhaId}/itens/{itemId}/conclusao")
+    @RequestMapping(value = "/{trilhaId}/itens/{itemId}/conclusao", method = {RequestMethod.PATCH, RequestMethod.POST})
     public ResponseEntity<TrilhaAtivaResponse> alternarConclusaoItem(@PathVariable Long trilhaId,
                                                                     @PathVariable Long itemId) {
         Usuario usuario = trilhaService.resolverUsuarioAtual();
@@ -76,7 +76,7 @@ public class TrilhaRestController {
         return ResponseEntity.ok(atualizada);
     }
 
-    @PatchMapping("/questoes/{questaoId}/conclusao")
+    @RequestMapping(value = "/questoes/{questaoId}/conclusao", method = {RequestMethod.PATCH, RequestMethod.POST})
     public ResponseEntity<TrilhaAtivaResponse> alternarConclusaoPorQuestao(@PathVariable Long questaoId) {
         Usuario usuario = trilhaService.resolverUsuarioAtual();
         TrilhaAtivaResponse atualizada = trilhaService.alternarConclusaoPorQuestao(questaoId, usuario);
