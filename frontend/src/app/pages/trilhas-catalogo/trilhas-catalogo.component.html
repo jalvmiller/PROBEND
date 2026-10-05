@@ -1,0 +1,398 @@
+<div class="catalogo-wrapper">
+
+  <!-- ========================================== -->
+  <!-- NAVEGAÇÃO DE TOPO & CABEÇALHO              -->
+  <!-- ========================================== -->
+  <div class="navegacao-topo">
+    <a routerLink="/" class="link-voltar" title="Retornar ao repositório de questões">
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Voltar ao feed</span>
+    </a>
+  </div>
+
+  <header class="catalogo-topbar">
+    <div class="topbar-esquerda">
+      <span class="icone-logo-box">∫</span>
+      <div>
+        <h1 class="catalogo-titulo-principal">
+          PROBEND <span class="badge-versao font-mono">v1.0 • Trilhas de Estudo</span>
+        </h1>
+        <p class="catalogo-subtitulo-principal">
+          Selecione uma trilha para guiar sua resolução de problemas com acompanhamento no HUD.
+        </p>
+      </div>
+    </div>
+
+    <div class="topbar-direita">
+      <a routerLink="/trilhas/nova" class="btn-nova-trilha">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        <span>+ Nova Trilha</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- ========================================== -->
+  <!-- TOOLBAR DE FILTROS & BUSCA                 -->
+  <!-- ========================================== -->
+  <section class="catalogo-toolbar">
+    <!-- Abas de Filtro -->
+    <div class="filtros-grupo">
+      <span class="filtro-rotulo font-mono">Filtrar:</span>
+      
+      <button 
+        type="button" 
+        class="filtro-btn" 
+        [class.filtro-btn-ativo]="filtroAba() === 'todas'"
+        (click)="mudarAba('todas')">
+        Todas ({{ trilhas().length }})
+      </button>
+
+      <button 
+        type="button" 
+        class="filtro-btn" 
+        [class.filtro-btn-ativo]="filtroAba() === 'minhas'"
+        (click)="mudarAba('minhas')">
+        Minhas Trilhas ({{ totalMinhas() }})
+      </button>
+
+      <button 
+        type="button" 
+        class="filtro-btn" 
+        [class.filtro-btn-ativo]="filtroAba() === 'comunidade'"
+        (click)="mudarAba('comunidade')">
+        Comunidade ({{ totalComunidade() }})
+      </button>
+    </div>
+
+    <!-- Barra de Busca -->
+    <div class="busca-caixa">
+      <svg class="busca-icone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input 
+        type="text" 
+        [ngModel]="termoBusca()"
+        (ngModelChange)="termoBusca.set($event)"
+        placeholder="Buscar trilha ou matéria..." 
+        class="input-busca" />
+      @if (termoBusca()) {
+        <button type="button" class="btn-limpar" (click)="termoBusca.set('')" title="Limpar busca">&times;</button>
+      }
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- GRID DE CARDS                              -->
+  <!-- ========================================== -->
+  <main class="catalogo-conteudo">
+    @if (carregando()) {
+      <div class="estado-feedback">
+        <span class="spin-icone font-mono">∫</span>
+        <p>Carregando catálogo de trilhas...</p>
+      </div>
+    } @else if (trilhasFiltradas().length === 0) {
+      <div class="estado-feedback">
+        <div class="feedback-emoji">🗺️</div>
+        <h3 class="feedback-titulo">Nenhuma trilha encontrada</h3>
+        @if (termoBusca()) {
+          <p class="feedback-desc">Nenhum resultado corresponde à pesquisa "{{ termoBusca() }}".</p>
+          <button type="button" class="btn-acao-secundaria" (click)="termoBusca.set('')">Limpar Busca</button>
+        } @else if (filtroAba() === 'minhas') {
+          <p class="feedback-desc">Você ainda não criou trilhas de estudos personalizadas.</p>
+          <a routerLink="/trilhas/nova" class="btn-nova-trilha" style="margin-top: 0.5rem;">+ Criar Primeira Trilha</a>
+        } @else {
+          <p class="feedback-desc">Nenhuma trilha disponível nesta categoria no momento.</p>
+        }
+      </div>
+    } @else {
+      <div class="grid-cards">
+        @for (trilha of trilhasFiltradas(); track trilha.id) {
+          <div 
+            class="card-trilha-proto"
+            [class.card-ativa]="isTrilhaAtiva(trilha)"
+            (click)="abrirDetalhes(trilha, $event)">
+            
+            <!-- Selo Flutuante de Trilha Ativa (Exact Prototype) -->
+            @if (isTrilhaAtiva(trilha)) {
+              <div class="selo-flutuante-ativa">
+                <span class="ponto-pulsante"></span>
+                <span>Em Andamento</span>
+              </div>
+            }
+
+            <div>
+              <!-- Badges Superiores: Matéria na Esquerda e Visibilidade na Direita -->
+              <div class="card-topo-linha">
+                <span class="badge-materia-tag font-mono">
+                  {{ getTrilhaTag(trilha) }}
+                </span>
+
+                @if (trilha.publica) {
+                  <span class="badge-visibilidade-pub">
+                    <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="2" y1="12" x2="22" y2="12"></line>
+                    </svg>
+                    <span>Pública</span>
+                  </span>
+                } @else {
+                  <span class="badge-visibilidade-priv">
+                    <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <span>Privada (Sua)</span>
+                  </span>
+                }
+              </div>
+
+              <!-- Título e Descrição com Line-clamp -->
+              <h3 class="trilha-titulo-card" [title]="trilha.titulo">
+                {{ trilha.titulo }}
+              </h3>
+              <p class="trilha-desc-card">
+                {{ trilha.descricao || 'Sequência prática de exercícios selecionados para treino e domínio pedagógico.' }}
+              </p>
+
+              <!-- Barra de Progresso Real (Exact Prototype) -->
+              <div class="progresso-container">
+                <div class="progresso-info-row">
+                  <span class="progresso-label">Progresso</span>
+                  <span class="progresso-contagem font-mono" [class.contagem-ativa]="getProgressoPercentual(trilha) > 0">
+                    {{ trilha.concluidas ?? 0 }} / {{ trilha.totalQuestoes }} concl. ({{ getProgressoPercentual(trilha) }}%)
+                  </span>
+                </div>
+                <div class="progresso-barra-track">
+                  <div 
+                    class="progresso-barra-fill"
+                    [class.fill-ativa]="isTrilhaAtiva(trilha)"
+                    [style.width.%]="getProgressoPercentual(trilha)">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rodapé do Card (Exact Prototype) -->
+            <div class="card-rodape-linha" (click)="$event.stopPropagation()">
+              <div class="autor-box">
+                <app-avatar [usuario]="trilha.autor" tamanho="badge"></app-avatar>
+                <span class="autor-nome-label">
+                  {{ isAutor(trilha) ? 'Você (Autor)' : (trilha.autor?.nome || trilha.autor?.username || 'Anônimo') }}
+                </span>
+              </div>
+
+              <div class="card-botoes-acao">
+                @if (isTrilhaAtiva(trilha)) {
+                  <button 
+                    type="button" 
+                    class="btn-card-hud" 
+                    (click)="abrirDetalhes(trilha, $event)"
+                    title="Ver os exercícios da trilha ativa no HUD">
+                    Abrir HUD
+                  </button>
+                } @else {
+                  <button 
+                    type="button" 
+                    class="btn-card-ativar" 
+                    (click)="ativarTrilha(trilha.id, $event)"
+                    [disabled]="idEmAcao() === trilha.id"
+                    title="Definir como trilha ativa no HUD">
+                    {{ idEmAcao() === trilha.id ? 'Ativando...' : 'Ativar Trilha' }}
+                  </button>
+                }
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+  </main>
+
+  <!-- ============================================================== -->
+  <!-- GAVETA LATERAL DE DETALHES (Slide-over Drawer / HUD Interno)    -->
+  <!-- ============================================================== -->
+  @if (gavetaAberta()) {
+    <div class="drawer-backdrop" (click)="fecharDetalhes()" aria-hidden="true"></div>
+
+    <aside class="trilha-drawer" role="dialog" aria-modal="true" aria-label="Detalhes da Trilha">
+      <header class="drawer-topo">
+        <div class="drawer-topo-textos">
+          <div class="drawer-kicker-linha">
+            <span class="icone-kicker font-mono">∫</span>
+            <span class="kicker-texto font-mono">Roteiro Pedagógico</span>
+            @if (trilhaDetalhes()?.publica) {
+              <span class="badge-visibilidade-pub">🌐 Pública</span>
+            } @else {
+              <span class="badge-visibilidade-priv">🔒 Privada</span>
+            }
+          </div>
+          <h2 class="drawer-titulo">{{ trilhaDetalhes()?.titulo }}</h2>
+        </div>
+
+        <button 
+          type="button" 
+          class="btn-fechar" 
+          (click)="fecharDetalhes()" 
+          title="Fechar painel de detalhes">
+          ✕
+        </button>
+      </header>
+
+      <div class="drawer-conteudo-scroll custom-scroll">
+        @if (trilhaDetalhes(); as trilha) {
+          
+          <div class="drawer-bloco-info">
+            <p class="drawer-descricao-texto">
+              {{ trilha.descricao || 'Sequência pedagógica organizada para fixação de conceitos e resolução prática de exercícios.' }}
+            </p>
+
+            <div class="drawer-meta-quadro">
+              <div class="meta-item-box">
+                <app-avatar [usuario]="trilha.autor" tamanho="badge"></app-avatar>
+                <div>
+                  <span class="meta-label">Criada por</span>
+                  <span class="meta-valor">{{ trilha.autor?.nome || trilha.autor?.username || 'Anônimo' }}</span>
+                </div>
+              </div>
+
+              <div class="meta-item-box">
+                <span class="meta-label">Data</span>
+                <span class="meta-valor">{{ trilha.criadoEm | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+
+            <!-- Botão de Ativação / Desativação na Gaveta -->
+            <div class="drawer-acao-destaque">
+              @if (isTrilhaAtiva(trilha)) {
+                <div class="painel-ativo-hud">
+                  <div class="check-icone-box">✓</div>
+                  <div class="painel-ativo-textos">
+                    <strong>Trilha Ativa no Momento</strong>
+                    <span>Acompanhe o progresso pelo Quest Tracker HUD.</span>
+                  </div>
+                  <button 
+                    type="button" 
+                    class="btn-desativar-pill"
+                    (click)="desativarTrilha(trilha.id)"
+                    [disabled]="idEmAcao() === trilha.id">
+                    Desativar
+                  </button>
+                </div>
+              } @else {
+                <button 
+                  type="button" 
+                  class="btn-ativar-largo"
+                  (click)="ativarTrilha(trilha.id)"
+                  [disabled]="idEmAcao() === trilha.id">
+                  <span>⚡</span>
+                  <span>{{ idEmAcao() === trilha.id ? 'Ativando Trilha...' : 'Definir como Trilha Ativa no HUD' }}</span>
+                </button>
+              }
+            </div>
+
+            <!-- Aproveitamento -->
+            <div class="drawer-aproveitamento-box">
+              <div class="aproveitamento-topo">
+                <span class="aprov-label">Aproveitamento</span>
+                <span class="aprov-contagem font-mono">
+                  {{ trilha.concluidas ?? 0 }} de {{ trilha.totalQuestoes }} exercícios concluídos
+                </span>
+              </div>
+              <div class="aprov-barra-track">
+                <div class="aprov-barra-fill" [style.width.%]="getProgressoPercentual(trilha)"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="drawer-divisor-hr"></div>
+
+          <!-- Roteiro de Resolução (Slots da Timeline) -->
+          <div class="drawer-timeline-bloco">
+            <div class="timeline-cabecalho">
+              <h4 class="timeline-titulo-label font-mono">Roteiro de Resolução (Slots)</h4>
+              <span class="timeline-qtd font-mono">{{ trilha.itens?.length || trilha.totalQuestoes }} slots</span>
+            </div>
+
+            @if (carregandoDetalhes()) {
+              <div class="timeline-loading">
+                <span class="spin-icone font-mono">∫</span>
+                <p>Carregando exercícios...</p>
+              </div>
+            } @else if (!trilha.itens || trilha.itens.length === 0) {
+              <div class="timeline-vazia">
+                <p>Nenhum exercício listado nesta trilha.</p>
+              </div>
+            } @else {
+              <div class="timeline-lista-slots">
+                @for (item of trilha.itens; track item.id; let idx = $index) {
+                  <div 
+                    class="slot-card"
+                    [class.slot-card-concluido]="item.concluido"
+                    (click)="navegarParaQuestao(item.questaoId, $event)">
+                    
+                    <div class="slot-num-box" [class.slot-num-concluido]="item.concluido">
+                      @if (item.concluido) {
+                        <span>✓</span>
+                      } @else {
+                        <span>{{ item.ordem || (idx + 1) }}</span>
+                      }
+                    </div>
+
+                    <div class="slot-info-box">
+                      <div class="slot-tags-linha">
+                        <span class="tag-materia font-mono">{{ item.materia }}</span>
+                        @if (item.assunto) {
+                          <span class="tag-assunto">{{ item.assunto }}</span>
+                        }
+                        <span class="tag-dif font-mono" [ngClass]="getDificuldadeClasse(item.dificuldade)">
+                          {{ getDificuldadeTexto(item.dificuldade) }}
+                        </span>
+                      </div>
+
+                      <p class="slot-enunciado-p" [appKatex]="item.questaoTitulo"></p>
+
+                      <div class="slot-rodape-linha">
+                        <span class="slot-status-texto">
+                          {{ item.concluido ? '✓ Concluída na sua jornada' : '○ Aguardando resolução' }}
+                        </span>
+                        <span class="link-resolver-slot">Resolver Questão →</span>
+                      </div>
+                    </div>
+
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Ação de Exclusão (Apenas para o Autor) -->
+          @if (isAutor(trilha)) {
+            <div class="drawer-rodape-perigo">
+              <button 
+                type="button" 
+                class="btn-excluir-danger"
+                (click)="excluirTrilha(trilha.id, $event)"
+                [disabled]="idEmAcao() === trilha.id">
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                <span>Excluir esta Trilha</span>
+              </button>
+            </div>
+          }
+
+        }
+      </div>
+    </aside>
+  }
+
+</div>

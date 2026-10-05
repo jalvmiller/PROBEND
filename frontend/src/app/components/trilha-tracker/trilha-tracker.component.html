@@ -103,7 +103,10 @@
 
         <!-- 2. LEGENDA BÁSICA (CENTRO) -->
         <div class="legenda-container">
-          <span class="legenda-kicker">Trilha Ativa</span>
+          <div class="legenda-topo-row">
+            <span class="legenda-kicker">Trilha Ativa</span>
+            <a routerLink="/trilhas" class="link-trocar-trilha" title="Explorar e trocar de trilha">Trocar Trilha</a>
+          </div>
           <h2 class="legenda-titulo" [title]="trilha.titulo">
             {{ trilha.titulo }}
           </h2>
@@ -303,6 +306,9 @@
           <p class="inativo-descricao">
             Você não possui uma trilha ativa no momento.
           </p>
+          <a routerLink="/trilhas" class="btn-selecionar-trilha">
+            Explorar Trilhas
+          </a>
           <a routerLink="/trilhas/nova" class="btn-criar-trilha">
             + Criar Nova Trilha
           </a>

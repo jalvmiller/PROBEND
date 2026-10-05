@@ -64,6 +64,18 @@ export class TrilhaService {
     return this.http.get<TrilhaResumo[]>(this.baseUrl);
   }
 
+  public listarTodas(): Observable<TrilhaResumo[]> {
+    return this.http.get<TrilhaResumo[]>(this.baseUrl);
+  }
+
+  public buscarPorId(id: number): Observable<TrilhaResumo> {
+    return this.http.get<TrilhaResumo>(`${this.baseUrl}/${id}`);
+  }
+
+  public removerTrilha(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
+  }
+
   public criarTrilha(request: { titulo: string; descricao?: string; publica?: boolean; questaoIds: number[] }): Observable<TrilhaResumo> {
     return this.http.post<TrilhaResumo>(this.baseUrl, request).pipe(
       tap(() => {

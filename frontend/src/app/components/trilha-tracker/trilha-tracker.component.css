@@ -545,6 +545,49 @@
   color: var(--text-inverse, #0d1117);
 }
 
+.btn-selecionar-trilha {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.55rem 0.85rem;
+  background-color: var(--accent-amber, #f59e0b);
+  color: var(--text-inverse, #0d1117);
+  border: 1px solid var(--accent-amber, #f59e0b);
+  border-radius: var(--radius-sm, 5px);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+}
+
+.btn-selecionar-trilha:hover {
+  background-color: #fbbf24;
+  transform: translateY(-1px);
+}
+
+.legenda-topo-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.link-trocar-trilha {
+  font-size: 0.6875rem;
+  color: var(--accent-amber, #f59e0b);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+.link-trocar-trilha:hover {
+  text-decoration: underline;
+  opacity: 0.85;
+}
+
 .mini-inativo {
   border-style: dashed;
   opacity: 0.85;

@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
@@ -337,8 +339,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 				"Fundamentos de Exatas & Computação",
 				"Trilha essencial contendo cálculo, álgebra linear, física mecânica e algoritmos fundamentais.",
 				admin,
-				true
-		);
+				true);
 		trilha = trilhaRepository.save(trilha);
 
 		br.com.joaomu.entity.ItemTrilha it1 = new br.com.joaomu.entity.ItemTrilha(trilha, q1, 1);
@@ -350,8 +351,10 @@ public class DatabaseSeeder implements CommandLineRunner {
 		itemTrilhaRepository.saveAll(Arrays.asList(it1, it2, it3, it4, it5, it6));
 
 		// Ativar para o usuário admin e user
-		br.com.joaomu.entity.InscricaoTrilha inscricaoAdmin = new br.com.joaomu.entity.InscricaoTrilha(admin, trilha, true);
-		br.com.joaomu.entity.InscricaoTrilha inscricaoUser = new br.com.joaomu.entity.InscricaoTrilha(user, trilha, true);
+		br.com.joaomu.entity.InscricaoTrilha inscricaoAdmin = new br.com.joaomu.entity.InscricaoTrilha(admin, trilha,
+				true);
+		br.com.joaomu.entity.InscricaoTrilha inscricaoUser = new br.com.joaomu.entity.InscricaoTrilha(user, trilha,
+				true);
 		inscricaoTrilhaRepository.saveAll(Arrays.asList(inscricaoAdmin, inscricaoUser));
 
 		// Progresso inicial de exemplo (q1 e q2 concluídas para ambos)
@@ -384,8 +387,7 @@ public class DatabaseSeeder implements CommandLineRunner {
 				"Fundamentos de Exatas & Computação",
 				"Trilha essencial contendo cálculo, álgebra linear, física mecânica e algoritmos fundamentais.",
 				admin,
-				true
-		);
+				true);
 		trilha = trilhaRepository.save(trilha);
 
 		List<br.com.joaomu.entity.ItemTrilha> itens = new ArrayList<>();
@@ -394,16 +396,23 @@ public class DatabaseSeeder implements CommandLineRunner {
 		}
 		itemTrilhaRepository.saveAll(itens);
 
-		br.com.joaomu.entity.InscricaoTrilha inscricaoAdmin = new br.com.joaomu.entity.InscricaoTrilha(admin, trilha, true);
-		br.com.joaomu.entity.InscricaoTrilha inscricaoUser = new br.com.joaomu.entity.InscricaoTrilha(user, trilha, true);
+		br.com.joaomu.entity.InscricaoTrilha inscricaoAdmin = new br.com.joaomu.entity.InscricaoTrilha(admin, trilha,
+				true);
+		br.com.joaomu.entity.InscricaoTrilha inscricaoUser = new br.com.joaomu.entity.InscricaoTrilha(user, trilha,
+				true);
 		inscricaoTrilhaRepository.saveAll(Arrays.asList(inscricaoAdmin, inscricaoUser));
 
 		if (itens.size() >= 3) {
-			br.com.joaomu.entity.ProgressoItemTrilha p1 = new br.com.joaomu.entity.ProgressoItemTrilha(user, itens.get(0), true);
-			br.com.joaomu.entity.ProgressoItemTrilha p2 = new br.com.joaomu.entity.ProgressoItemTrilha(user, itens.get(1), true);
-			br.com.joaomu.entity.ProgressoItemTrilha pa1 = new br.com.joaomu.entity.ProgressoItemTrilha(admin, itens.get(0), true);
-			br.com.joaomu.entity.ProgressoItemTrilha pa2 = new br.com.joaomu.entity.ProgressoItemTrilha(admin, itens.get(1), true);
-			br.com.joaomu.entity.ProgressoItemTrilha pa3 = new br.com.joaomu.entity.ProgressoItemTrilha(admin, itens.get(2), true);
+			br.com.joaomu.entity.ProgressoItemTrilha p1 = new br.com.joaomu.entity.ProgressoItemTrilha(user,
+					itens.get(0), true);
+			br.com.joaomu.entity.ProgressoItemTrilha p2 = new br.com.joaomu.entity.ProgressoItemTrilha(user,
+					itens.get(1), true);
+			br.com.joaomu.entity.ProgressoItemTrilha pa1 = new br.com.joaomu.entity.ProgressoItemTrilha(admin,
+					itens.get(0), true);
+			br.com.joaomu.entity.ProgressoItemTrilha pa2 = new br.com.joaomu.entity.ProgressoItemTrilha(admin,
+					itens.get(1), true);
+			br.com.joaomu.entity.ProgressoItemTrilha pa3 = new br.com.joaomu.entity.ProgressoItemTrilha(admin,
+					itens.get(2), true);
 			progressoItemTrilhaRepository.saveAll(Arrays.asList(p1, p2, pa1, pa2, pa3));
 		}
 		System.out.println("Trilha modelo semeada e ativada para admin e user!");

@@ -38,4 +38,20 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resposta);
     }
+
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<Map<String, String>> handleSecurityException(SecurityException ex) {
+        Map<String, String> resposta = new HashMap<>();
+        resposta.put("erro", "Acesso não autorizado");
+        resposta.put("mensagem", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(resposta);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        Map<String, String> resposta = new HashMap<>();
+        resposta.put("erro", "Requisição inválida");
+        resposta.put("mensagem", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(resposta);
+    }
 }

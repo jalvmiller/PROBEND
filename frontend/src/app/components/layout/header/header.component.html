@@ -2,6 +2,7 @@
   @if (authService.isAuthenticated()) {
     <nav class="links">
       <a routerLink="/" class="nav-link" routerLinkActive="nav-link-active" [routerLinkActiveOptions]="{ exact: true }">Feed de Questões</a>
+      <a routerLink="/trilhas" class="nav-link" routerLinkActive="nav-link-active">Trilhas</a>
       <a routerLink="/trilhas/nova" class="nav-link" routerLinkActive="nav-link-active">+ Nova Trilha</a>
       
       <a routerLink="/questoes/nova" class="btn-nova-questao">

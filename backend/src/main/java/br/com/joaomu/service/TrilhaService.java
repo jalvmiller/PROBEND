@@ -208,14 +208,31 @@ public class TrilhaService {
     @Transactional(readOnly = true)
     public List<TrilhaResponse> listarTrilhas(Usuario usuario) {
         List<Trilha> trilhas;
+        Long trilhaAtivaId = null;
+        Map<Long, Long> concluidasPorTrilha = Collections.emptyMap();
+
         if (usuario != null) {
             trilhas = trilhaRepository.listarVisiveisParaUsuario(usuario.getId());
+            trilhaAtivaId = inscricaoTrilhaRepository.findByUsuarioIdAndAtivaTrue(usuario.getId())
+                    .map(i -> i.getTrilha().getId())
+                    .orElse(null);
+
+            concluidasPorTrilha = progressoItemTrilhaRepository.findByUsuarioIdAndConcluidoTrue(usuario.getId())
+                    .stream()
+                    .collect(Collectors.groupingBy(p -> p.getItemTrilha().getTrilha().getId(), Collectors.counting()));
         } else {
             trilhas = trilhaRepository.findByPublicaTrueOrderByCriadoEmDesc();
         }
 
+        final Long idAtivaFinal = trilhaAtivaId;
+        final Map<Long, Long> concluidasFinal = concluidasPorTrilha;
+
         return trilhas.stream()
-                .map(t -> TrilhaResponse.fromEntity(t, null))
+                .map(t -> {
+                    boolean ativa = idAtivaFinal != null && idAtivaFinal.equals(t.getId());
+                    int concluidas = concluidasFinal.getOrDefault(t.getId(), 0L).intValue();
+                    return TrilhaResponse.fromEntity(t, null, ativa, concluidas);
+                })
                 .toList();
     }
 
@@ -230,8 +247,13 @@ public class TrilhaService {
 
         List<ItemTrilha> itens = itemTrilhaRepository.findByTrilhaIdOrderByOrdemAsc(trilha.getId());
         Set<Long> concluidosIds = Collections.emptySet();
+        boolean ativa = false;
 
         if (usuario != null) {
+            ativa = inscricaoTrilhaRepository.findByUsuarioIdAndAtivaTrue(usuario.getId())
+                    .map(i -> i.getTrilha().getId().equals(trilha.getId()))
+                    .orElse(false);
+
             concluidosIds = progressoItemTrilhaRepository
                     .findByUsuarioIdAndItemTrilhaTrilhaId(usuario.getId(), trilha.getId())
                     .stream()
@@ -254,7 +276,7 @@ public class TrilhaService {
                 ))
                 .toList();
 
-        return TrilhaResponse.fromEntity(trilha, itensResponse);
+        return TrilhaResponse.fromEntity(trilha, itensResponse, ativa, finalConcluidos.size());
     }
 
     @Transactional

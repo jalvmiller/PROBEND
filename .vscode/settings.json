@@ -15,9 +15,18 @@
   "java.configuration.updateBuildConfiguration": "interactive",
   "typescript.tsdk": "frontend/node_modules/typescript/lib",
   "typescript.preferences.includePackageJsonAutoImports": "auto",
-  "html.format.wrapAttributes": "force-expand-multiline",
-  "html.format.preserveNewLines": true,
+  "editor.formatOnSave": true,
+  "prettier.prettierPath": "frontend/node_modules/prettier",
   "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }

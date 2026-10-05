@@ -1,3 +1,5 @@
+import { Usuario } from './auth.model';
+
 export interface ItemTrilhaSlot {
   itemId: number;
   numero: number;
@@ -31,6 +33,9 @@ export interface TrilhaResumo {
   descricao?: string;
   publica: boolean;
   criadoEm: string;
+  autor?: Usuario;
   totalQuestoes: number;
+  concluidas?: number;
+  ativa?: boolean;
   itens?: ItemTrilha[];
 }

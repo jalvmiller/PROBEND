@@ -186,6 +186,11 @@ export class SidebarComponent implements OnInit {
     this.router.navigate(['/configuracoes']);
   }
 
+  public navegarParaTrilhas(): void {
+    this.sidebarService.fechar();
+    this.router.navigate(['/trilhas']);
+  }
+
   public logout(): void {
     this.sidebarService.fechar();
     this.authService.logout();

@@ -46,6 +46,12 @@ export const routes: Routes = [
 
   // 4. Rotas de Trilhas
   {
+    path: 'trilhas',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/trilhas-catalogo/trilhas-catalogo.component').then(m => m.TrilhasCatalogoComponent)
+  },
+  {
     path: 'trilhas/nova',
     canActivate: [authGuard],
     loadComponent: () =>
