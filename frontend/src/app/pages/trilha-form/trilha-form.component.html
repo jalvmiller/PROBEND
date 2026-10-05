@@ -1,15 +1,18 @@
 <div class="trilha-form-container">
   <!-- Navegação de topo -->
   <div class="navegacao-topo">
-    <a routerLink="/" class="link-voltar">&larr; Voltar para o repositório</a>
+    <a routerLink="/" class="link-voltar" title="Voltar ao repositório">
+      <span class="seta-voltar" aria-hidden="true">←</span>
+      <span>Voltar ao repositório</span>
+    </a>
   </div>
 
-  <header class="form-header">
-    <h1 class="form-titulo">Criar Nova Trilha de Questões</h1>
-    <p class="form-subtitulo">
-      Monte sua sequência personalizada de estudo. Ao criar, esta trilha será ativada imediatamente no seu <strong>Quest Tracker</strong>.
+  <div class="form-topo">
+    <h1 class="page-title">Criar Nova Trilha de Questões</h1>
+    <p class="page-desc">
+      Monte sua sequência personalizada de estudo com acompanhamento no Quest Tracker.
     </p>
-  </header>
+  </div>
 
   @if (erro()) {
     <div class="alerta-erro" role="alert">
@@ -19,8 +22,8 @@
 
   <!-- Dados Gerais da Trilha -->
   <section class="card-metadados">
-    <div class="campo-grupo">
-      <label for="titulo-trilha" class="campo-label">Título da Trilha *</label>
+    <div class="form-group">
+      <label for="titulo-trilha" class="form-label">Título da Trilha *</label>
       <input 
         id="titulo-trilha" 
         type="text" 
@@ -28,18 +31,18 @@
         (ngModelChange)="titulo.set($event)"
         placeholder="Ex: Resistência dos Materiais — Tensões e Deformações" 
         maxlength="120"
-        class="input-texto" />
+        class="input-field" />
     </div>
 
-    <div class="campo-grupo">
-      <label for="descricao-trilha" class="campo-label">Descrição (Opcional)</label>
+    <div class="form-group">
+      <label for="descricao-trilha" class="form-label">Descrição (Opcional)</label>
       <textarea 
         id="descricao-trilha" 
         rows="2"
         [ngModel]="descricao()" 
         (ngModelChange)="descricao.set($event)"
         placeholder="Breve resumo pedagógico sobre os objetivos desta trilha..." 
-        class="textarea-texto"></textarea>
+        class="input-field textarea-field"></textarea>
     </div>
 
     <div class="campo-checkbox">

@@ -4,24 +4,12 @@
   padding: 2rem 1.5rem 4rem;
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 1.25rem;
 }
 
 .config-header {
-  margin-bottom: 0.5rem;
-}
-
-.link-voltar {
-  display: inline-block;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  text-decoration: none;
-  margin-bottom: 0.75rem;
-  transition: color 0.15s ease;
-}
-
-.link-voltar:hover {
-  color: var(--accent-amber);
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .page-title {
@@ -29,12 +17,15 @@
   font-size: 2rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 0.5rem;
+  letter-spacing: -0.015em;
+  margin-bottom: 0.4rem;
+  line-height: 1.2;
 }
 
 .page-desc {
   font-size: 0.95rem;
   color: var(--text-secondary);
+  line-height: 1.6;
 }
 
 /* Alertas */

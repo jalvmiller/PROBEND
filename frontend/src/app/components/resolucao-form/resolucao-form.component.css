@@ -1,4 +1,4 @@
-﻿:host { display: block; height: 100%; }
+:host { display: block; height: 100%; }
 .workspace-card {
   height: 100%;
   display: flex;
@@ -97,7 +97,7 @@
   background-color: transparent;
   border: 1px solid transparent;
   color: var(--text-primary);
-  font-family: var(--font-main);
+  font-family: var(--font-sans);
   font-size: 0.95rem;
   line-height: 1.6;
   resize: none;

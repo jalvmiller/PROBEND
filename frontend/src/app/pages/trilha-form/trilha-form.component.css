@@ -1,47 +1,32 @@
 .trilha-form-container {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 5rem;
+  padding: 2rem 1.5rem 4rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
-.navegacao-topo {
-  margin-bottom: -0.5rem;
+.form-topo {
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.link-voltar {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--text-muted, #64748b);
-  text-decoration: none;
-  font-size: 0.875rem;
-  transition: color 0.15s ease;
-}
-
-.link-voltar:hover {
-  color: var(--accent-amber, #f59e0b);
-}
-
-.form-header {
-  padding-bottom: 1.25rem;
-}
-
-.form-titulo {
-  font-size: 1.75rem;
+.page-title {
+  font-family: var(--font-serif);
+  font-size: 2rem;
   font-weight: 700;
-  color: var(--text-primary, #f0f6fc);
-  letter-spacing: -0.02em;
-  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+  margin: 0 0 0.4rem 0;
+  line-height: 1.2;
 }
 
-.form-subtitulo {
-  color: var(--text-secondary, #94a3b8);
-  font-size: 0.9375rem;
+.page-desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .alerta-erro {
@@ -55,38 +40,60 @@
 
 /* Card Metadados */
 .card-metadados {
-  background-color: var(--bg-surface, #151b23);
-  border: 1px solid var(--border-subtle, #212836);
-  border-radius: var(--radius-md, 6px);
-  padding: 1.5rem;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  box-shadow: var(--shadow-card, 0 4px 12px rgba(0, 0, 0, 0.3));
+  gap: 1.5rem;
+  box-shadow: var(--shadow-card);
 }
 
-.campo-grupo {
+.form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
-.campo-label {
-  font-size: 0.8125rem;
+.form-label {
+  font-size: 0.75rem;
   font-weight: 600;
-  color: var(--text-primary, #f0f6fc);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  color: var(--text-secondary);
 }
 
-.input-texto,
-.textarea-texto,
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-app);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: var(--font-sans);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: var(--accent-amber);
+  box-shadow: 0 0 0 3px var(--accent-amber-subtle);
+}
+
+.textarea-field {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.5;
+}
+
 .input-busca {
   width: 100%;
-  background-color: var(--bg-surface-raised, #1c2430);
-  border: 1px solid var(--border-default, #2d3748);
-  border-radius: var(--radius-sm, 4px);
-  color: var(--text-primary, #f0f6fc);
+  background-color: var(--bg-app);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
   outline: none;
@@ -94,15 +101,9 @@
   font-family: inherit;
 }
 
-.input-texto:focus,
-.textarea-texto:focus,
 .input-busca:focus {
-  border-color: var(--accent-amber, #f59e0b);
-  box-shadow: 0 0 0 2px var(--accent-amber-subtle, rgba(245, 158, 11, 0.15));
-}
-
-.textarea-texto {
-  resize: vertical;
+  border-color: var(--accent-amber);
+  box-shadow: 0 0 0 2px var(--accent-amber-subtle);
 }
 
 .campo-checkbox {
@@ -115,13 +116,15 @@
   gap: 0.625rem;
   cursor: pointer;
   font-size: 0.875rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary);
+  user-select: none;
 }
 
 .checkbox-label input {
-  accent-color: var(--accent-amber, #f59e0b);
+  accent-color: var(--accent-amber);
   width: 1rem;
   height: 1rem;
+  cursor: pointer;
 }
 
 /* Grid Builder */
@@ -139,18 +142,18 @@
 
 .coluna-trilha,
 .coluna-banco {
-  background-color: var(--bg-surface, #151b23);
-  border: 1px solid var(--border-subtle, #212836);
-  border-radius: var(--radius-md, 6px);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: var(--shadow-card, 0 4px 12px rgba(0, 0, 0, 0.3));
+  box-shadow: var(--shadow-card);
 }
 
 .coluna-header {
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border-subtle, #212836);
+  border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -159,7 +162,7 @@
 .coluna-titulo {
   font-size: 1.125rem;
   font-weight: 700;
-  color: var(--text-primary, #f0f6fc);
+  color: var(--text-primary);
   margin: 0;
   display: inline-block;
   vertical-align: middle;
@@ -168,10 +171,10 @@
 .contador-badge {
   display: inline-block;
   margin-left: 0.5rem;
-  background-color: var(--accent-amber-subtle, rgba(245, 158, 11, 0.15));
-  color: var(--accent-amber, #f59e0b);
+  background-color: var(--accent-amber-subtle);
+  color: var(--accent-amber);
   border: 1px solid rgba(245, 158, 11, 0.3);
-  border-radius: var(--radius-sm, 4px);
+  border-radius: var(--radius-sm);
   padding: 0.15rem 0.5rem;
   font-size: 0.75rem;
   font-weight: 700;
@@ -179,12 +182,12 @@
 
 .contador-disponiveis {
   font-size: 0.75rem;
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted);
 }
 
 .dica-ordem {
   font-size: 0.75rem;
-  color: var(--text-muted, #64748b);
+  color: var(--text-muted);
 }
 
 .busca-container {
@@ -204,9 +207,9 @@
 /* Cards das Questões */
 .card-slot-trilha,
 .card-questao-disponivel {
-  background-color: var(--bg-surface-raised, #1c2430);
-  border: 1px solid var(--border-default, #2d3748);
-  border-radius: var(--radius-sm, 4px);
+  background-color: var(--bg-surface-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
   padding: 0.875rem 1rem;
   display: flex;
   align-items: center;
@@ -216,22 +219,22 @@
 
 .card-slot-trilha:hover,
 .card-questao-disponivel:hover {
-  border-color: var(--border-strong, #4a5568);
+  border-color: var(--border-strong);
 }
 
 .slot-ordem-badge {
   width: 2rem;
   height: 2rem;
-  border-radius: var(--radius-sm, 4px);
-  background-color: var(--accent-amber-subtle, rgba(245, 158, 11, 0.15));
-  border: 1px solid var(--accent-amber, #f59e0b);
-  color: var(--accent-amber, #f59e0b);
+  border-radius: var(--radius-sm);
+  background-color: var(--accent-amber-subtle);
+  border: 1px solid var(--accent-amber);
+  color: var(--accent-amber);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.875rem;
   font-weight: 800;
-  font-family: var(--font-mono, monospace);
+  font-family: var(--font-mono);
   flex-shrink: 0;
 }
 
@@ -257,25 +260,25 @@
   font-size: 0.6875rem;
   font-weight: 600;
   padding: 0.15rem 0.45rem;
-  border-radius: var(--radius-sm, 4px);
+  border-radius: var(--radius-sm);
   border: 1px solid transparent;
 }
 
 .badge-materia {
-  background-color: var(--border-subtle, #212836);
-  color: var(--text-secondary, #94a3b8);
+  background-color: var(--border-subtle);
+  color: var(--text-secondary);
 }
 
 .badge-assunto {
-  background-color: var(--bg-surface, #151b23);
-  color: var(--text-muted, #64748b);
-  border-color: var(--border-subtle, #212836);
+  background-color: var(--bg-surface);
+  color: var(--text-muted);
+  border-color: var(--border-subtle);
 }
 
 .slot-enunciado,
 .disponivel-enunciado {
   font-size: 0.8125rem;
-  color: var(--text-primary, #f0f6fc);
+  color: var(--text-primary);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -292,9 +295,9 @@
 
 .btn-mover,
 .btn-remover {
-  background-color: var(--bg-surface, #151b23);
-  border: 1px solid var(--border-default, #2d3748);
-  color: var(--text-secondary, #94a3b8);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
   border-radius: var(--radius-sm, 4px);
   width: 1.75rem;
   height: 1.75rem;
@@ -401,29 +404,29 @@
   justify-content: flex-end;
   gap: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-subtle, #212836);
+  border-top: 1px solid var(--border-subtle);
 }
 
 .btn-cancelar {
   padding: 0.75rem 1.5rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary);
   text-decoration: none;
   font-size: 0.875rem;
   font-weight: 600;
-  border-radius: var(--radius-sm, 4px);
+  border-radius: var(--radius-md);
   transition: color 0.15s ease;
 }
 
 .btn-cancelar:hover {
-  color: var(--text-primary, #f0f6fc);
+  color: var(--text-primary);
 }
 
 .btn-salvar-trilha {
   padding: 0.75rem 1.75rem;
-  background-color: var(--accent-amber, #f59e0b);
-  color: var(--text-inverse, #0d1117);
+  background-color: var(--accent-amber);
+  color: var(--text-inverse);
   border: none;
-  border-radius: var(--radius-sm, 4px);
+  border-radius: var(--radius-md);
   font-size: 0.875rem;
   font-weight: 700;
   cursor: pointer;
@@ -432,7 +435,7 @@
 }
 
 .btn-salvar-trilha:hover:not(:disabled) {
-  background-color: var(--accent-amber-hover, #d97706);
+  background-color: var(--accent-amber-hover);
   transform: translateY(-1px);
 }
 
