@@ -20,7 +20,7 @@ public class GeminiService {
 	private String apiKey;
 
 	// Pega o modelo do Gemini do arquivo application.properties via anotação
-	@Value("${gemini.api.model:gemini-3.5-flash}")
+	@Value("${gemini.api.model:gemini-2.0-flash}")
 	private String apiModel;
 
 
