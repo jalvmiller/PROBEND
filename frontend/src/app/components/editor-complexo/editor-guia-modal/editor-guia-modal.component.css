@@ -1,0 +1,210 @@
+/* ========================================================================= */
+/* MODAL DE GUIA DO EDITOR                                                   */
+/* ========================================================================= */
+
+.modal-guia-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(13, 17, 23, 0.85);
+  backdrop-filter: blur(6px);
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.995);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-guia-card {
+  background-color: var(--bg-surface, #151b23);
+  border: 1px solid var(--border-default, #30363d);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+  width: 100%;
+  max-width: 720px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+  animation: modalScaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-guia-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-default, #30363d);
+  background-color: var(--bg-surface-raised, #161b22);
+}
+
+.modal-guia-titulo-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.modal-guia-badge {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--accent-amber, #f59e0b);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modal-guia-titulo {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary, #e6edf3);
+  margin: 0;
+}
+
+.btn-fechar-modal-guia {
+  background: transparent;
+  border: none;
+  color: var(--text-muted, #8b949e);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.btn-fechar-modal-guia:hover {
+  color: var(--text-primary, #e6edf3);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.modal-guia-corpo {
+  padding: 1.25rem 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.guia-secao-titulo {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-primary, #e6edf3);
+  margin: 0 0 0.65rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.guia-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.65rem;
+}
+
+.guia-item {
+  background-color: var(--bg-app, #0d1117);
+  border: 1px solid var(--border-default, #30363d);
+  border-radius: var(--radius-sm, 6px);
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.guia-item-rotulo {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary, #8b949e);
+}
+
+.guia-codigo {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.82rem;
+  color: var(--accent-amber, #f59e0b);
+  background-color: rgba(245, 158, 11, 0.08);
+  padding: 0.2rem 0.45rem;
+  border-radius: 4px;
+  display: inline-block;
+  word-break: break-all;
+}
+
+.guia-item-desc {
+  font-size: 0.72rem;
+  color: var(--text-muted, #8b949e);
+}
+
+.guia-tabela-atalhos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  background-color: var(--bg-app, #0d1117);
+  border: 1px solid var(--border-default, #30363d);
+  border-radius: var(--radius-sm, 6px);
+  padding: 0.75rem;
+}
+
+.atalho-linha {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary, #c9d1d9);
+}
+
+.atalho-linha kbd {
+  background-color: var(--bg-surface, #21262d);
+  border: 1px solid var(--border-default, #30363d);
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  color: var(--accent-amber, #f59e0b);
+  flex-shrink: 0;
+}
+
+.modal-guia-rodape {
+  padding: 0.85rem 1.5rem;
+  background-color: var(--bg-surface-raised, #161b22);
+  border-top: 1px solid var(--border-default, #30363d);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-entendi-guia {
+  padding: 0.45rem 1.15rem;
+  background-color: var(--accent-amber, #f59e0b);
+  color: #000000;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-entendi-guia:hover {
+  background-color: var(--accent-amber-hover, #d97706);
+}

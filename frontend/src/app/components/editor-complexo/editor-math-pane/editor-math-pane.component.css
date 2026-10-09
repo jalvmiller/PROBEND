@@ -1,0 +1,474 @@
+/* Coluna Esquerda: Edição e Barra de Símbolos */
+.coluna-painel.painel-editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-surface);
+  border-right: 1px solid var(--border-default);
+  overflow: hidden;
+  min-width: 0;
+  height: 100%;
+}
+
+/* Painel Compositor MathLive */
+.compositor-painel {
+  background-color: var(--bg-surface-raised);
+  border-bottom: 2px solid var(--border-default);
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Abas do Compositor */
+.compositor-abas {
+  display: flex;
+  padding: 0.35rem 0.75rem 0;
+  gap: 0.15rem;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.compositor-aba {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: -1px;
+}
+
+.compositor-aba:hover:not(.ativa) {
+  color: var(--text-secondary);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.compositor-aba.ativa {
+  color: var(--accent-amber);
+  border-bottom-color: var(--accent-amber);
+  background-color: rgba(245, 158, 11, 0.06);
+}
+
+.aba-icone {
+  font-size: 1rem;
+  font-family: var(--font-serif);
+}
+
+.aba-rotulo {
+  font-family: var(--font-sans);
+}
+
+/* Teclado Grid */
+.compositor-teclado {
+  padding: 0.5rem 0.75rem;
+  min-height: 60px;
+}
+
+.teclado-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.teclado-grid.gregas-grid {
+  gap: 0.25rem;
+}
+
+/* Teclas Individuais */
+.tecla {
+  background-color: var(--bg-surface-raised);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  padding: 0.35rem 0.55rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  min-width: 36px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tecla:hover {
+  background-color: var(--bg-surface-hover);
+  border-color: var(--accent-amber);
+  color: var(--accent-amber);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.tecla:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.tecla-larga {
+  min-width: 70px;
+  padding: 0.35rem 0.65rem;
+}
+
+.tecla-xl {
+  min-width: 65px;
+  padding: 0.35rem 0.6rem;
+}
+
+.tecla-visual {
+  font-family: var(--font-serif);
+  font-size: 0.85rem;
+  font-style: italic;
+  white-space: nowrap;
+}
+
+.tecla-visual.grega {
+  font-size: 1rem;
+  font-style: normal;
+}
+
+/* Math-Field WYSIWYG Composer */
+.compositor-campo {
+  padding: 0.5rem 0.75rem 0.65rem;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.compositor-mathfield-wrapper {
+  border-radius: var(--radius-md, 6px);
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+  transition: border-color 0.2s ease;
+}
+
+.compositor-mathfield-wrapper:focus-within {
+  border-color: var(--accent-amber);
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
+}
+
+/* MathLive math-field tema escuro */
+.compositor-mathfield {
+  width: 100%;
+  min-height: 48px;
+  font-size: 1.2rem;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--bg-app) !important;
+  color: var(--text-primary);
+  border: none;
+  outline: none;
+  display: block;
+
+  /* CSS Custom Properties do MathLive para tema dark */
+  --_hue: 38;
+  --_text-font-family: var(--font-serif);
+  --_keyboard-background: var(--bg-surface);
+  --caret-color: var(--accent-amber);
+  --selection-background-color: rgba(245, 158, 11, 0.2);
+  --selection-color: var(--text-primary);
+  --placeholder-color: var(--text-muted);
+  --smart-fence-color: var(--accent-blue);
+  --contains-highlight-background-color: rgba(245, 158, 11, 0.08);
+}
+
+/* Ações do Compositor */
+.compositor-acoes {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-compositor-limpar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm, 4px);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-compositor-limpar:hover {
+  color: var(--accent-rose);
+  border-color: var(--accent-rose);
+  background-color: rgba(244, 63, 94, 0.08);
+}
+
+.btn-inserir-inline,
+.btn-inserir-bloco {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm, 4px);
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-inserir-inline {
+  background-color: var(--accent-amber);
+  color: #000;
+}
+
+.btn-inserir-inline:hover:not(:disabled) {
+  background-color: var(--accent-amber-hover);
+  transform: translateY(-1px);
+}
+
+.btn-inserir-bloco {
+  background-color: transparent;
+  border: 1px solid var(--accent-amber);
+  color: var(--accent-amber);
+}
+
+.btn-inserir-bloco:hover:not(:disabled) {
+  background-color: rgba(245, 158, 11, 0.12);
+  transform: translateY(-1px);
+}
+
+.btn-inserir-inline:disabled,
+.btn-inserir-bloco:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-inserir-doc {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  background-color: var(--bg-surface-raised, #21262d);
+  border: 1px solid var(--border-default, #30363d);
+  border-radius: var(--radius-sm, 6px);
+  color: var(--text-secondary, #8b949e);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-inserir-doc:hover:not(:disabled) {
+  color: var(--accent-amber, #f59e0b);
+  border-color: rgba(245, 158, 11, 0.4);
+  background-color: rgba(245, 158, 11, 0.08);
+}
+
+.btn-inserir-doc:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.alerta-upload-erro {
+  margin: 0.5rem 1rem 0;
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-sm, 6px);
+  color: #fca5a5;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-fechar-alerta {
+  background: transparent;
+  border: none;
+  color: #fca5a5;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+/* Barra de Ferramentas de Inserção Rápida */
+.toolbar-insercao-rapida {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  background-color: var(--bg-surface-raised, #161b22);
+  border-bottom: 1px solid var(--border-default, #30363d);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.grupo-insercao-itens {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.toolbar-secao-rotulo {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted, #8b949e);
+  text-transform: uppercase;
+  margin-right: 0.2rem;
+  user-select: none;
+}
+
+.btn-ferramenta {
+  background: var(--bg-surface, #21262d);
+  border: 1px solid var(--border-default, #30363d);
+  border-radius: var(--radius-sm, 4px);
+  color: var(--text-secondary, #c9d1d9);
+  font-size: 0.74rem;
+  padding: 0.22rem 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+}
+
+.btn-ferramenta:hover {
+  background-color: var(--bg-app, #0d1117);
+  color: var(--text-primary, #ffffff);
+  border-color: var(--accent-amber, #f59e0b);
+}
+
+.btn-ferramenta-math {
+  color: var(--accent-amber, #f59e0b);
+  border-color: rgba(245, 158, 11, 0.35);
+  background-color: rgba(245, 158, 11, 0.06);
+  font-weight: 600;
+}
+
+.btn-ferramenta-math:hover {
+  background-color: rgba(245, 158, 11, 0.15);
+  border-color: var(--accent-amber, #f59e0b);
+}
+
+.toolbar-divisor {
+  width: 1px;
+  height: 18px;
+  background-color: var(--border-default, #30363d);
+  margin: 0 0.3rem;
+  flex-shrink: 0;
+}
+
+/* Campo Textarea do Editor - Ocupa todo o espaço rente às bordas */
+.campo-edicao-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+/* Container de IDE - Encaixado de ponta a ponta sem recuos ou bordas flutuantes */
+.editor-ide-container {
+  position: relative;
+  display: flex;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background-color: var(--bg-app);
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  cursor: text;
+}
+
+/* Faixa Contínua de Destaque da Linha Ativa (Engloba Gutter + Textarea) */
+.faixa-linha-ativa {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 24px;
+  background: rgba(245, 158, 11, 0.16);
+  border-top: 1px solid rgba(245, 158, 11, 0.35);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.35);
+  border-left: 4px solid var(--accent-amber);
+  box-shadow: inset 0 0 16px rgba(245, 158, 11, 0.08);
+  pointer-events: none;
+  z-index: 1;
+  transition: top 0.05s ease-out;
+}
+
+/* Régua de Contagem de Linhas (Gutter) ancorada na lateral esquerda */
+.editor-gutter {
+  position: relative;
+  z-index: 2;
+  background-color: rgba(22, 27, 34, 0.82);
+  border-right: 1px solid var(--border-default);
+  color: var(--text-muted);
+  user-select: none;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-gutter.gutter-math {
+  background-color: transparent !important;
+  min-width: 42px;
+  padding: 14px 0.65rem 14px 0.4rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 15px;
+  line-height: 24px;
+  text-align: right;
+}
+
+.gutter-numero {
+  height: 24px;
+  line-height: 24px;
+  opacity: 0.42;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.gutter-numero:hover {
+  opacity: 0.85;
+  color: var(--accent-amber);
+}
+
+.gutter-numero.ativo {
+  opacity: 1;
+  color: #000000;
+  background-color: var(--accent-amber);
+  font-weight: 800;
+  border-radius: 3px;
+  padding: 0 4px;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+}
+
+/* Textarea Integrado à Régua */
+.textarea-fullscreen {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  height: 100%;
+  background: transparent !important;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  resize: none;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+.textarea-fullscreen.textarea-math {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 24px;
+  padding: 14px 1rem;
+  white-space: pre;
+  overflow-x: auto;
+  caret-color: var(--accent-amber, #f59e0b);
+}

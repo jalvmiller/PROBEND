@@ -1,0 +1,124 @@
+/* Coluna Esquerda: Editor de Código com Seletor e Suporte a Tab */
+.coluna-painel.painel-editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-surface);
+  border-right: 1px solid var(--border-default);
+  overflow: hidden;
+  min-width: 0;
+  height: 100%;
+}
+
+/* Toolbar Modo Código */
+.toolbar-codigo {
+  padding: 0.65rem 1rem;
+  background-color: var(--bg-surface-raised);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.grupo-linguagem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.label-linguagem {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.select-linguagem {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+}
+
+.select-linguagem:focus {
+  outline: none;
+  border-color: var(--accent-amber);
+}
+
+/* Campo Textarea do Editor - Ocupa todo o espaço rente às bordas */
+.campo-edicao-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+.campo-edicao-wrapper.codigo-wrapper {
+  padding: 0;
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.campo-edicao-wrapper.codigo-wrapper app-code-mirror-editor {
+  display: block;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Área de Explicação Opcional no Modo Algoritmo */
+.secao-explicacao-algoritmo {
+  border-top: 1px solid var(--border-default);
+  background-color: var(--bg-surface-raised);
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.sub-header-explicacao {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sub-rotulo {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.dica-katex-sm {
+  font-size: 0.7rem;
+  color: var(--accent-amber);
+  font-family: var(--font-mono);
+}
+
+.textarea-explicacao {
+  width: 100%;
+  background-color: var(--bg-app);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm, 6px);
+  color: var(--text-primary);
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.textarea-explicacao:focus {
+  outline: none;
+  border-color: var(--accent-amber);
+}

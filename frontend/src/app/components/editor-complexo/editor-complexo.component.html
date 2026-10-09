@@ -1,135 +1,35 @@
 <div class="editor-fullscreen-overlay">
   <!-- Barra de Topo Fixa (Header do Editor) -->
-  <header class="editor-topo">
-    <div class="topo-esquerda">
-      <button
-        type="button"
-        class="btn-fechar"
-        (click)="minimizarEFechar()"
-        title="Minimizar e voltar à questão (preserva o que você digitou)"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-
-      <div class="info-questao">
-        <div class="titulo-linha">
-          <span class="badge-questao-id">{{ badgeModo }}</span>
-          <h1 class="titulo-questao-truncado" [title]="titulo">
-            {{ titulo }}
-          </h1>
-        </div>
-        <div class="metadados-chips">
-          <span class="chip-materia">{{ subtitulo }}</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Seletor de Modo (Matemática x Algoritmo) -->
-    <div class="seletor-modos">
-      <button
-        type="button"
-        class="btn-modo"
-        [class.ativo]="modoAtivo() === 'MATEMATICA'"
-        (click)="alternarModo('MATEMATICA')"
-      >
-        <span class="modo-label">Modo Matemática</span>
-      </button>
-      <button
-        type="button"
-        class="btn-modo"
-        [class.ativo]="modoAtivo() === 'ALGORITMO'"
-        (click)="alternarModo('ALGORITMO')"
-      >
-        <span class="modo-label">Modo Algoritmo</span>
-      </button>
-    </div>
-
-    <!-- Ações à Direita -->
-    <div class="topo-direita">
-      @if (mostrarVerEnunciado) {
-        <button
-          type="button"
-          class="btn-toggle-enunciado"
-          [class.ativo]="enunciadoAberto()"
-          (click)="toggleEnunciado()"
-          title="Consultar enunciado original da questão"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-          </svg>
-          <span>{{ enunciadoAberto() ? 'Ocultar Enunciado' : 'Ver Enunciado' }}</span>
-        </button>
-      }
-
-      <button
-        type="button"
-        class="btn-guia-topo"
-        (click)="abrirModalGuia()"
-        title="Abrir guia de formatação, fórmulas e atalhos"
-      >
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-          <line x1="12" y1="17" x2="12.01" y2="17"></line>
-        </svg>
-        <span>Guia</span>
-      </button>
-
-      <div class="stats-contadores">
-        <span class="stat-item">{{ totalLinhas() }} lin</span>
-        <span class="stat-div">·</span>
-        <span class="stat-item">{{ totalCaracteres() }} carac</span>
-      </div>
-
-      <div class="editor-anexo-pdf">
-        <label class="btn-topo-pdf" [class.anexado]="selectedPdfFile()" title="Anexar PDF da Resolução">
-          <input type="file" accept="application/pdf" (change)="onPdfSelected($event)" style="display: none;">
-          <span class="icone-pdf">📄</span>
-          @if (selectedPdfFile(); as file) {
-            <span class="pdf-nome">{{ file.name }}</span>
-          }
-        </label>
-        @if (selectedPdfFile()) {
-          <button type="button" class="btn-remover-pdf-topo" (click)="removerArquivoPdf()" title="Remover PDF">&times;</button>
-        }
-      </div>
-
-      <button
-        type="button"
-        class="btn-publicar-topo"
-        (click)="submeter()"
-        [disabled]="submetendo() || (!conteudo().trim() && !trechoCodigo().trim())"
-      >
-        @if (submetendo()) {
-          <span class="spinner-sm"></span>
-          <span>Processando...</span>
-        } @else {
-          <span>{{ textoBotaoAcao }}</span>
-        }
-      </button>
-    </div>
-  </header>
+  <app-editor-header
+    [badgeModo]="badgeModo"
+    [titulo]="titulo"
+    [subtitulo]="subtitulo"
+    [modoAtivo]="modoAtivo()"
+    [mostrarVerEnunciado]="mostrarVerEnunciado"
+    [enunciadoAberto]="enunciadoAberto()"
+    [totalLinhas]="totalLinhas()"
+    [totalCaracteres]="totalCaracteres()"
+    [selectedPdfFile]="selectedPdfFile()"
+    [submetendo]="submetendo()"
+    [textoBotaoAcao]="textoBotaoAcao"
+    [podeSubmeter]="!!conteudo().trim() || !!trechoCodigo().trim()"
+    (fechar)="minimizarEFechar()"
+    (modoAlterado)="alternarModo($event)"
+    (alternarEnunciado)="toggleEnunciado()"
+    (abrirGuia)="abrirModalGuia()"
+    (pdfSelecionado)="onPdfSelected($event)"
+    (removerPdf)="removerArquivoPdf()"
+    (submeter)="submeter()"
+  ></app-editor-header>
 
   <!-- Drawer Deslizante de Enunciado -->
-  @if (mostrarVerEnunciado && enunciadoAberto()) {
-    <section class="drawer-enunciado">
-      <div class="drawer-conteudo">
-        <div class="drawer-header">
-          <span class="drawer-tag">Enunciado da Questão Original</span>
-          <button type="button" class="btn-fechar-drawer" (click)="enunciadoAberto.set(false)">✕</button>
-        </div>
-        <div class="drawer-corpo" [appKatex]="enunciadoOriginal"></div>
-        @if (codigoOriginal) {
-          <div class="drawer-codigo">
-            <pre class="codigo-pre"><code>{{ codigoOriginal }}</code></pre>
-          </div>
-        }
-      </div>
-    </section>
+  @if (mostrarVerEnunciado) {
+    <app-editor-enunciado-drawer
+      [aberto]="enunciadoAberto()"
+      [enunciado]="enunciadoOriginal"
+      [codigoOriginal]="codigoOriginal"
+      (fechar)="enunciadoAberto.set(false)"
+    ></app-editor-enunciado-drawer>
   }
 
   <!-- Corpo Principal: Split-Screen Lado a Lado -->
@@ -139,415 +39,29 @@
     <!-- ==================================================== -->
     @if (modoAtivo() === 'MATEMATICA') {
       <div class="split-screen">
-        <!-- Coluna Esquerda: Edição e Barra de Símbolos -->
-        <div class="coluna-painel painel-editor">
-          <!-- Painel Compositor MathLive (Sempre Ativo no Modo Matemática) -->
-          <div class="compositor-painel">
-            <!-- Abas do Teclado Matemático -->
-            <div class="compositor-abas">
-              @for (aba of abasCompositor; track aba.id) {
-                <button
-                  type="button"
-                  class="compositor-aba"
-                  [class.ativa]="abaCompositorAtiva() === aba.id"
-                  (click)="abaCompositorAtiva.set(aba.id)"
-                >
-                  <span class="aba-icone">{{ aba.icone }}</span>
-                  <span class="aba-rotulo">{{ aba.rotulo }}</span>
-                </button>
-              }
-            </div>
+        <app-editor-math-pane
+          #mathPane
+          [conteudo]="conteudo()"
+          [placeholderMatematica]="placeholderMatematica()"
+          (conteudoChange)="conteudo.set($event)"
+          (cursorAlterado)="sincronizarPaginaComCursor($event)"
+          (linhaAlterada)="sincronizarPaginaComLinha($event)"
+        ></app-editor-math-pane>
 
-            <!-- Teclado por Abas -->
-            <div class="compositor-teclado">
-              @if (abaCompositorAtiva() === 'basico') {
-                <div class="teclado-grid">
-                  @for (t of teclasBasico; track t.visual) {
-                    <button type="button" class="tecla" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
-                      <span class="tecla-visual">{{ t.visual }}</span>
-                    </button>
-                  }
-                </div>
-              }
-
-              @if (abaCompositorAtiva() === 'calculo') {
-                <div class="teclado-grid">
-                  @for (t of teclasCalculo; track t.visual) {
-                    <button type="button" class="tecla" [class.tecla-larga]="t.largo" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
-                      <span class="tecla-visual">{{ t.visual }}</span>
-                    </button>
-                  }
-                </div>
-              }
-
-              @if (abaCompositorAtiva() === 'gregas') {
-                <div class="teclado-grid gregas-grid">
-                  @for (t of teclasGregas; track t.visual) {
-                    <button type="button" class="tecla" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
-                      <span class="tecla-visual grega">{{ t.visual }}</span>
-                    </button>
-                  }
-                </div>
-              }
-
-              @if (abaCompositorAtiva() === 'matrizes') {
-                <div class="teclado-grid">
-                  @for (t of teclasMatrizes; track t.visual) {
-                    <button type="button" class="tecla tecla-xl" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
-                      <span class="tecla-visual">{{ t.visual }}</span>
-                    </button>
-                  }
-                </div>
-              }
-            </div>
-
-            <!-- Math-Field WYSIWYG + Ações de Inserção / Aplicação -->
-            <div class="compositor-campo">
-              <div class="compositor-mathfield-wrapper">
-                <math-field
-                  #mathFieldComposer
-                  class="compositor-mathfield"
-                ></math-field>
-              </div>
-              <div class="compositor-acoes">
-                <button
-                  type="button"
-                  class="btn-compositor-limpar"
-                  (click)="limparCompositor()"
-                  title="Limpar campo do compositor"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
-                </button>
-                <input
-                  #inputArquivoImagem
-                  type="file"
-                  accept="image/*"
-                  (change)="onArquivoSelecionado($event)"
-                  style="display: none;"
-                />
-                <button
-                  type="button"
-                  class="btn-inserir-doc"
-                  (click)="acionarSelecaoImagem()"
-                  [disabled]="uploadingImagem()"
-                  title="Inserir imagem (suporta seleção, arrastar e soltar ou Ctrl + V)"
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                    <polyline points="21 15 16 10 5 21"></polyline>
-                  </svg>
-                  <span>{{ uploadingImagem() ? 'Enviando...' : 'Imagem' }}</span>
-                </button>
-                <button
-                  type="button"
-                  class="btn-inserir-doc"
-                  (click)="inserirQuebraPagina()"
-                  title="Inserir quebra de página"
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="9" y1="15" x2="15" y2="15"></line>
-                  </svg>
-                  <span>Nova Página</span>
-                </button>
-                <button
-                  type="button"
-                  class="btn-inserir-doc"
-                  (click)="puxarLinhaParaCompositor()"
-                  title="Puxar fórmula da linha ativa para o compositor"
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="1 4 1 10 7 10"></polyline>
-                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-                  </svg>
-                  <span>Puxar Linha</span>
-                </button>
-                <button
-                  type="button"
-                  class="btn-inserir-inline"
-                  (click)="aplicarCompositorNaLinhaAtual('inline')"
-                  [disabled]="!compositorLatex().trim()"
-                  title="Aplicar na linha atual como fórmula inline ($...$) [Alt + ↑]"
-                >
-                  Aplicar Inline ($...$)
-                </button>
-                <button
-                  type="button"
-                  class="btn-inserir-bloco"
-                  (click)="aplicarCompositorNaLinhaAtual('bloco')"
-                  [disabled]="!compositorLatex().trim()"
-                  title="Aplicar na linha atual como equação em bloco ($$...$$) [Alt + ↓]"
-                >
-                  Aplicar Bloco ($$...$$)
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Alerta de Erro no Upload de Imagens se houver -->
-          @if (erroUpload()) {
-            <div class="alerta-upload-erro">
-              <span>{{ erroUpload() }}</span>
-              <button type="button" class="btn-fechar-alerta" (click)="erroUpload.set('')">✕</button>
-            </div>
-          }
-
-          <!-- Barra de Ferramentas de Inserção Rápida (Markdown & Fórmulas) -->
-          <div class="toolbar-insercao-rapida">
-            <div class="grupo-insercao-itens">
-              <span class="toolbar-secao-rotulo">Formatação:</span>
-              <button type="button" class="btn-ferramenta" (click)="inserirFormatacao('h2')" title="Título H2 (## )">
-                <strong>H2</strong>
-              </button>
-              <button type="button" class="btn-ferramenta" (click)="inserirFormatacao('bold')" title="Negrito (**texto**)">
-                <strong>B</strong>
-              </button>
-              <button type="button" class="btn-ferramenta" (click)="inserirFormatacao('italic')" title="Itálico (*texto*)">
-                <em>I</em>
-              </button>
-              <button type="button" class="btn-ferramenta" (click)="inserirFormatacao('lista')" title="Lista com marcadores (- )">
-                • Lista
-              </button>
-              <button type="button" class="btn-ferramenta" (click)="inserirFormatacao('citacao')" title="Citação ou teorema (> )">
-                ” Citação
-              </button>
-            </div>
-
-            <div class="toolbar-divisor"></div>
-
-            <div class="grupo-insercao-itens">
-              <span class="toolbar-secao-rotulo">Fórmulas:</span>
-              <button type="button" class="btn-ferramenta btn-ferramenta-math" (click)="inserirFormatacao('math-inline')" title="Fórmula inline ($...$)">
-                $x$ Inline
-              </button>
-              <button type="button" class="btn-ferramenta btn-ferramenta-math" (click)="inserirFormatacao('math-bloco')" title="Equação destacada ($$...$$)">
-                $$ Bloco
-              </button>
-              <button type="button" class="btn-ferramenta" (click)="inserirSimbolo('\\frac{a}{b}')" title="Inserir fração">
-                ᵃ⁄ᵦ
-              </button>
-              <button type="button" class="btn-ferramenta" (click)="inserirSimbolo('\\sqrt{x}')" title="Inserir raiz">
-                √x
-              </button>
-              <button type="button" class="btn-ferramenta" (click)="inserirSimbolo('\\int_{a}^{b} f(x) \\, dx')" title="Inserir integral">
-                ∫
-              </button>
-              <button type="button" class="btn-ferramenta" (click)="inserirSimbolo('\\sum_{i=1}^{n}')" title="Inserir somatório">
-                ∑
-              </button>
-              <button type="button" class="btn-ferramenta" (click)="inserirSimbolo('\\lim_{x \\to 0}')" title="Inserir limite">
-                lim
-              </button>
-              <button type="button" class="btn-ferramenta" (click)="inserirSimbolo('\\infty')" title="Inserir infinito">
-                ∞
-              </button>
-            </div>
-          </div>
-
-          <!-- Textarea Matemática com Régua IDE e Destaque da Linha Ativa -->
-          <div class="campo-edicao-wrapper">
-            <div
-              class="editor-ide-container"
-              [class.drag-over]="dragOver()"
-              (click)="focarTextareaMatematica($event)"
-            >
-              <!-- Faixa Contínua de Destaque da Linha Ativa (Gutter + Textarea) -->
-              <div
-                class="faixa-linha-ativa"
-                [style.top.px]="posicaoTopLinhaAtiva()"
-              ></div>
-
-              <div #gutterMatematica class="editor-gutter gutter-math" aria-hidden="true">
-                @for (num of linhasMatematica(); track num) {
-                  <div
-                    class="gutter-numero"
-                    [class.ativo]="linhaAtiva() === num"
-                    (click)="navegarParaLinha(num)"
-                  >
-                    {{ num }}
-                  </div>
-                }
-              </div>
-              <textarea
-                #textareaMatematica
-                class="textarea-fullscreen textarea-math"
-                [placeholder]="placeholderMatematica()"
-                [ngModel]="conteudo()"
-                (ngModelChange)="onConteudoChange($event)"
-                (keydown)="tratarTab($event)"
-                (click)="onInteracaoTextareaMatematica()"
-                (keyup)="onInteracaoTextareaMatematica()"
-                (select)="onInteracaoTextareaMatematica()"
-                (paste)="onPasteEditor($event)"
-                (dragover)="onDragOver($event)"
-                (dragleave)="onDragLeave($event)"
-                (drop)="onDropEditor($event)"
-                (scroll)="sincronizarScroll(textareaMatematica, gutterMatematica)"
-                spellcheck="false"
-              ></textarea>
-            </div>
-          </div>
-        </div>
-
-        <!-- Coluna Direita: Live Preview (Documento Paginado x Página Corrida) -->
-        <div class="coluna-painel painel-preview">
-          <div class="preview-barra-topo">
-            <div class="preview-titulo-grupo">
-              <span class="preview-rotulo">Documento</span>
-              @if (modoVisualizacao() === 'DOCUMENTO') {
-                <span class="preview-badge-paginas">Página {{ paginaAtualIndex() + 1 }} de {{ totalPaginas() }}</span>
-              }
-            </div>
-
-            <!-- Seletor de Modo de Exibição -->
-            <div class="preview-seletor-modo">
-              <button
-                type="button"
-                class="btn-seletor-modo"
-                [class.ativo]="modoVisualizacao() === 'DOCUMENTO'"
-                (click)="alternarModoVisualizacao('DOCUMENTO')"
-                title="Visualizar em formato de documento paginado com folhas e navegação lateral"
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                </svg>
-                <span>Paginado</span>
-              </button>
-              <button
-                type="button"
-                class="btn-seletor-modo"
-                [class.ativo]="modoVisualizacao() === 'CORRIDO'"
-                (click)="alternarModoVisualizacao('CORRIDO')"
-                title="Visualizar em formato de página contínua"
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="8" y1="6" x2="21" y2="6"></line>
-                  <line x1="8" y1="12" x2="21" y2="12"></line>
-                  <line x1="8" y1="18" x2="21" y2="18"></line>
-                  <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                  <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                  <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                </svg>
-                <span>Corrido</span>
-              </button>
-            </div>
-          </div>
-
-          @if (conteudo().trim()) {
-            @if (modoVisualizacao() === 'DOCUMENTO') {
-              <!-- MODO DOCUMENTO PAGINADO COM NAVEGAÇÃO LATERAL -->
-              <div class="preview-documento-layout">
-                <!-- Seta Lateral Esquerda (Anterior) -->
-                <button
-                  type="button"
-                  class="btn-nav-lateral esquerda"
-                  [disabled]="paginaAtualIndex() === 0"
-                  (click)="paginaAnterior()"
-                  title="Página anterior (Alt + Seta Esquerda)"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="15 18 9 12 15 6"></polyline>
-                  </svg>
-                </button>
-
-                <!-- Folha de Papel do Documento -->
-                <div class="folha-container-scroll">
-                  <div class="folha-documento">
-                    <div class="folha-cabecalho-tecnico">
-                      <span class="folha-tag-doc">Por: {{ autorExibicao() }}</span>
-                      <span class="folha-numero-pagina">Pág. {{ paginaAtualIndex() + 1 }} / {{ totalPaginas() }}</span>
-                    </div>
-
-                    <div class="folha-corpo-renderizado" [appKatex]="conteudoPaginaAtiva()"></div>
-                  </div>
-                </div>
-
-                <!-- Seta Lateral Direita (Próxima) -->
-                <button
-                  type="button"
-                  class="btn-nav-lateral direita"
-                  [disabled]="paginaAtualIndex() >= totalPaginas() - 1"
-                  (click)="proximaPagina()"
-                  title="Próxima página (Alt + Seta Direita)"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                  </svg>
-                </button>
-              </div>
-
-              <!-- Barra de Paginação Inferior -->
-              <div class="preview-paginacao-rodape">
-                <button
-                  type="button"
-                  class="btn-paginacao-acao"
-                  [disabled]="paginaAtualIndex() === 0"
-                  (click)="paginaAnterior()"
-                >
-                  Anterior
-                </button>
-
-                <div class="paginacao-indicadores">
-                  @for (pag of paginas(); track $index) {
-                    <button
-                      type="button"
-                      class="btn-pagina-pills"
-                      [class.ativo]="paginaAtualIndex() === $index"
-                      (click)="irParaPagina($index)"
-                    >
-                      {{ $index + 1 }}
-                    </button>
-                  }
-                </div>
-
-                <button
-                  type="button"
-                  class="btn-paginacao-acao"
-                  [disabled]="paginaAtualIndex() >= totalPaginas() - 1"
-                  (click)="proximaPagina()"
-                >
-                  Próxima
-                </button>
-
-                <button
-                  type="button"
-                  class="btn-adicionar-pagina"
-                  (click)="inserirQuebraPagina()"
-                  title="Adicionar nova folha ao documento"
-                >
-                  + Nova Folha
-                </button>
-              </div>
-            } @else {
-              <!-- MODO PÁGINA CORRIDA -->
-              <div class="preview-conteudo-scroll">
-                <div class="preview-renderizado" [appKatex]="conteudo()"></div>
-              </div>
-            }
-          } @else {
-            <div class="preview-vazio">
-              <div class="icone-vazio-svg">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-              </div>
-              <p class="titulo-vazio">Documento Vazio</p>
-              <p class="sub-vazio">
-                Digite sua resolução no painel anterior, que conta com LaTeX e Markdown
-              </p>
-            </div>
-          }
-        </div>
+        <app-editor-documento-preview
+          [conteudo]="conteudo()"
+          [trechoCodigo]="trechoCodigo()"
+          [linguagemCodigo]="linguagemCodigo()"
+          [titulo]="titulo"
+          [subtitulo]="subtitulo"
+          [autorExibicao]="autorExibicao()"
+          [paginas]="paginas()"
+          [paginaAtualIndex]="paginaAtualIndex()"
+          [modoVisualizacao]="modoVisualizacao()"
+          (paginaAtualIndexChange)="paginaAtualIndex.set($event)"
+          (modoVisualizacaoChange)="modoVisualizacao.set($event)"
+          (adicionarPagina)="inserirQuebraPagina()"
+        ></app-editor-documento-preview>
       </div>
     }
 
@@ -556,194 +70,29 @@
     <!-- ==================================================== -->
     @if (modoAtivo() === 'ALGORITMO') {
       <div class="split-screen">
-        <!-- Coluna Esquerda: Editor de Código com Seletor e Suporte a Tab -->
-        <div class="coluna-painel painel-editor">
-          <!-- Barra de Configuração de Código -->
-          <div class="toolbar-codigo">
-            <div class="grupo-linguagem">
-              <label for="seletorLinguagem" class="label-linguagem">Linguagem:</label>
-              <select
-                id="seletorLinguagem"
-                class="select-linguagem"
-                [ngModel]="linguagemCodigo()"
-                (ngModelChange)="linguagemCodigo.set($event)"
-              >
-                @for (lang of linguagens; track lang.valor) {
-                  <option [value]="lang.valor">{{ lang.rotulo }}</option>
-                }
-              </select>
-            </div>
-          </div>
+        <app-editor-code-pane
+          [trechoCodigo]="trechoCodigo()"
+          [linguagemCodigo]="linguagemCodigo()"
+          [placeholderCodigo]="placeholderCodigo()"
+          [conteudoExplicacao]="conteudo()"
+          (trechoCodigoChange)="trechoCodigo.set($event)"
+          (linguagemCodigoChange)="linguagemCodigo.set($event)"
+          (conteudoExplicacaoChange)="conteudo.set($event)"
+        ></app-editor-code-pane>
 
-          <!-- Textarea Código com Régua IDE -->
-          <div class="campo-edicao-wrapper codigo-wrapper">
-            <div class="editor-ide-container">
-              <div #gutterCodigo class="editor-gutter gutter-code" aria-hidden="true">
-                @for (num of linhasCodigo(); track num) {
-                  <div class="gutter-numero">{{ num }}</div>
-                }
-              </div>
-              <textarea
-                #textareaCodigo
-                class="textarea-fullscreen textarea-code"
-                [placeholder]="placeholderCodigo()"
-                [ngModel]="trechoCodigo()"
-                (ngModelChange)="trechoCodigo.set($event)"
-                (keydown)="tratarTab($event)"
-                (scroll)="sincronizarScroll(textareaCodigo, gutterCodigo)"
-                spellcheck="false"
-              ></textarea>
-            </div>
-          </div>
-
-          <!-- Explicação Teórica Opcional do Algoritmo -->
-          <div class="secao-explicacao-algoritmo">
-            <div class="sub-header-explicacao">
-              <span class="sub-rotulo">Explicação Conceitual / Anotações (Opcional):</span>
-              <span class="dica-katex-sm">Suporta fórmulas KaTeX</span>
-            </div>
-            <textarea
-              class="textarea-explicacao"
-              rows="3"
-              placeholder="Explique a lógica do algoritmo ou a complexidade de tempo e espaço..."
-              [ngModel]="conteudo()"
-              (ngModelChange)="conteudo.set($event)"
-            ></textarea>
-          </div>
-        </div>
-
-        <!-- Coluna Direita: Live Code Preview PrismJS + Explicação KaTeX -->
-        <div class="coluna-painel painel-preview">
-          <div class="preview-barra-topo">
-            <span class="preview-rotulo">Realce de Sintaxe ({{ linguagemCodigo().toUpperCase() }})</span>
-            <span class="preview-status code">PrismJS</span>
-          </div>
-
-          <div class="preview-conteudo-scroll">
-            @if (trechoCodigo().trim()) {
-              <div class="bloco-codigo-preview">
-                <pre class="codigo-pre"><code [innerHTML]="codigoDestacado()"></code></pre>
-              </div>
-            } @else {
-              <div class="preview-vazio">
-                <div class="icone-vazio-svg">
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="16 18 22 12 16 6"></polyline>
-                    <polyline points="8 6 2 12 8 18"></polyline>
-                  </svg>
-                </div>
-                <p class="titulo-vazio">Prévia do Código</p>
-                <p class="sub-vazio">Digite sua implementação no painel à esquerda para ver o realce de sintaxe em tempo real.</p>
-              </div>
-            }
-
-            @if (conteudo().trim()) {
-              <div class="preview-explicacao-box">
-                <span class="tag-explicacao">Análise & Explicação:</span>
-                <div class="corpo-explicacao" [appKatex]="conteudo()"></div>
-              </div>
-            }
-          </div>
-        </div>
+        <app-editor-code-preview
+          [trechoCodigo]="trechoCodigo()"
+          [linguagemCodigo]="linguagemCodigo()"
+          [codigoDestacado]="codigoDestacado()"
+          [conteudoExplicacao]="conteudo()"
+        ></app-editor-code-preview>
       </div>
     }
   </main>
 
   <!-- Modal de Guia do Editor -->
-  @if (modalGuiaAberto()) {
-    <div class="modal-guia-overlay" (click)="fecharModalGuia()">
-      <div class="modal-guia-card" (click)="$event.stopPropagation()">
-        <header class="modal-guia-header">
-          <div class="modal-guia-titulo-grupo">
-            <span class="modal-guia-badge">GUIA DO EDITOR</span>
-            <h2 class="modal-guia-titulo">Como Formatar Resoluções e Fórmulas</h2>
-          </div>
-          <button type="button" class="btn-fechar-modal-guia" (click)="fecharModalGuia()" title="Fechar guia">&times;</button>
-        </header>
-
-        <div class="modal-guia-corpo">
-          <div class="guia-secao">
-            <h3 class="guia-secao-titulo">
-              <span class="icone-secao">📐</span> Fórmulas Matemáticas (KaTeX / LaTeX)
-            </h3>
-            <div class="guia-grade">
-              <div class="guia-item">
-                <span class="guia-item-rotulo">Fórmula na Linha (Inline):</span>
-                <code class="guia-codigo">$E = mc^2$</code>
-                <span class="guia-item-desc">Use um único cifrão para equações no meio do texto.</span>
-              </div>
-              <div class="guia-item">
-                <span class="guia-item-rotulo">Fórmula em Bloco (Destaque):</span>
-                <code class="guia-codigo">$$\int_&#123;0&#125;^&#123;1&#125; x^2 \, dx = \frac&#123;1&#125;&#123;3&#125;$$</code>
-                <span class="guia-item-desc">Use dois cifrões para equações centralizadas e em destaque.</span>
-              </div>
-              <div class="guia-item">
-                <span class="guia-item-rotulo">Frações e Raízes:</span>
-                <code class="guia-codigo">\frac&#123;a&#125;&#123;b&#125;, \sqrt&#123;x&#125;, \sqrt[n]&#123;x&#125;</code>
-              </div>
-              <div class="guia-item">
-                <span class="guia-item-rotulo">Letras Gregas:</span>
-                <code class="guia-codigo">\alpha, \beta, \theta, \pi, \lambda, \Delta</code>
-              </div>
-            </div>
-          </div>
-
-          <div class="guia-secao">
-            <h3 class="guia-secao-titulo">
-              <span class="icone-secao">✍️</span> Estrutura de Documento (Markdown)
-            </h3>
-            <div class="guia-grade">
-              <div class="guia-item">
-                <span class="guia-item-rotulo">Títulos e Seções:</span>
-                <code class="guia-codigo">## Subtítulo &nbsp;|&nbsp; ### Tópico</code>
-              </div>
-              <div class="guia-item">
-                <span class="guia-item-rotulo">Ênfase de Texto:</span>
-                <code class="guia-codigo">**negrito** &nbsp;|&nbsp; *itálico*</code>
-              </div>
-              <div class="guia-item">
-                <span class="guia-item-rotulo">Listas e Citações:</span>
-                <code class="guia-codigo">- Item da lista &nbsp;|&nbsp; > Citação</code>
-              </div>
-              <div class="guia-item">
-                <span class="guia-item-rotulo">Quebra Manual de Folha:</span>
-                <code class="guia-codigo">&lt;!-- pagebreak --&gt;</code>
-                <span class="guia-item-desc">Cria uma nova folha imediatamente no preview da direita.</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="guia-secao">
-            <h3 class="guia-secao-titulo">
-              <span class="icone-secao">⌨️</span> Atalhos de Teclado
-            </h3>
-            <div class="guia-tabela-atalhos">
-              <div class="atalho-linha">
-                <kbd>Alt + ↑</kbd>
-                <span>Aplica a fórmula do compositor visual como inline ($...$) na linha atual</span>
-              </div>
-              <div class="atalho-linha">
-                <kbd>Alt + ↓</kbd>
-                <span>Aplica a fórmula do compositor visual como bloco ($$...$$) na linha atual</span>
-              </div>
-              <div class="atalho-linha">
-                <kbd>Ctrl + ↑ / ↓</kbd>
-                <span>Navega entre linhas e destaca a linha ativa</span>
-              </div>
-              <div class="atalho-linha">
-                <kbd>Ctrl + V</kbd>
-                <span>Cola imagem da área de transferência diretamente no documento</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <footer class="modal-guia-rodape">
-          <button type="button" class="btn-entendi-guia" (click)="fecharModalGuia()">
-            Entendi, voltar ao editor
-          </button>
-        </footer>
-      </div>
-    </div>
-  }
+  <app-editor-guia-modal
+    [aberto]="modalGuiaAberto()"
+    (fechar)="fecharModalGuia()"
+  ></app-editor-guia-modal>
 </div>

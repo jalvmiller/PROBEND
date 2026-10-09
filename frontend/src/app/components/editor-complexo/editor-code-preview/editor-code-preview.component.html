@@ -1,0 +1,33 @@
+<!-- Coluna Direita: Live Code Preview PrismJS + Explicação KaTeX -->
+<div class="coluna-painel painel-preview">
+  <div class="preview-barra-topo">
+    <span class="preview-rotulo">Realce de Sintaxe ({{ linguagemCodigo.toUpperCase() }})</span>
+    <span class="preview-status code">PrismJS</span>
+  </div>
+
+  <div class="preview-conteudo-scroll">
+    @if (trechoCodigo.trim()) {
+      <div class="bloco-codigo-preview">
+        <pre class="codigo-pre"><code [innerHTML]="codigoDestacado"></code></pre>
+      </div>
+    } @else {
+      <div class="preview-vazio">
+        <div class="icone-vazio-svg">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+        </div>
+        <p class="titulo-vazio">Prévia do Código</p>
+        <p class="sub-vazio">Digite sua implementação no painel à esquerda para ver o realce de sintaxe em tempo real.</p>
+      </div>
+    }
+
+    @if (conteudoExplicacao.trim()) {
+      <div class="preview-explicacao-box">
+        <span class="tag-explicacao">Análise & Explicação:</span>
+        <div class="corpo-explicacao" [appKatex]="conteudoExplicacao"></div>
+      </div>
+    }
+  </div>
+</div>

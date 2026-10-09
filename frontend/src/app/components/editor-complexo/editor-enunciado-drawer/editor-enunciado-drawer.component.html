@@ -1,0 +1,17 @@
+<!-- Drawer Deslizante de Enunciado -->
+@if (aberto) {
+  <section class="drawer-enunciado">
+    <div class="drawer-conteudo">
+      <div class="drawer-header">
+        <span class="drawer-tag">Enunciado da Questão Original</span>
+        <button type="button" class="btn-fechar-drawer" (click)="fechar.emit()">✕</button>
+      </div>
+      <div class="drawer-corpo" [appKatex]="enunciado"></div>
+      @if (codigoOriginal) {
+        <div class="drawer-codigo">
+          <pre class="codigo-pre"><code>{{ codigoOriginal }}</code></pre>
+        </div>
+      }
+    </div>
+  </section>
+}

@@ -1,0 +1,204 @@
+<!-- Coluna Esquerda: Edição e Barra de Símbolos -->
+<div class="coluna-painel painel-editor">
+  <!-- Painel Compositor MathLive (Sempre Ativo no Modo Matemática) -->
+  <div class="compositor-painel">
+    <!-- Abas do Teclado Matemático -->
+    <div class="compositor-abas">
+      @for (aba of abasCompositor; track aba.id) {
+        <button
+          type="button"
+          class="compositor-aba"
+          [class.ativa]="abaCompositorAtiva === aba.id"
+          (click)="selecionarAba(aba.id)"
+        >
+          <span class="aba-icone">{{ aba.icone }}</span>
+          <span class="aba-rotulo">{{ aba.rotulo }}</span>
+        </button>
+      }
+    </div>
+
+    <!-- Teclado por Abas -->
+    <div class="compositor-teclado">
+      @if (abaCompositorAtiva === 'basico') {
+        <div class="teclado-grid">
+          @for (t of teclasBasico; track t.visual) {
+            <button type="button" class="tecla" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
+              <span class="tecla-visual">{{ t.visual }}</span>
+            </button>
+          }
+        </div>
+      }
+
+      @if (abaCompositorAtiva === 'calculo') {
+        <div class="teclado-grid">
+          @for (t of teclasCalculo; track t.visual) {
+            <button type="button" class="tecla" [class.tecla-larga]="t.largo" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
+              <span class="tecla-visual">{{ t.visual }}</span>
+            </button>
+          }
+        </div>
+      }
+
+      @if (abaCompositorAtiva === 'gregas') {
+        <div class="teclado-grid gregas-grid">
+          @for (t of teclasGregas; track t.visual) {
+            <button type="button" class="tecla" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
+              <span class="tecla-visual grega">{{ t.visual }}</span>
+            </button>
+          }
+        </div>
+      }
+
+      @if (abaCompositorAtiva === 'matrizes') {
+        <div class="teclado-grid">
+          @for (t of teclasMatrizes; track t.visual) {
+            <button type="button" class="tecla tecla-xl" (click)="inserirNoCompositor(t.latex)" [title]="t.dica">
+              <span class="tecla-visual">{{ t.visual }}</span>
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Math-Field WYSIWYG + Ações de Inserção / Aplicação -->
+    <div class="compositor-campo">
+      <div class="compositor-mathfield-wrapper">
+        <math-field
+          #mathFieldComposer
+          class="compositor-mathfield"
+        ></math-field>
+      </div>
+      <div class="compositor-acoes">
+        <button
+          type="button"
+          class="btn-compositor-limpar"
+          (click)="limparCompositor()"
+          title="Limpar campo do compositor"
+        >
+          <app-icon name="trash" [size]="14"></app-icon>
+        </button>
+        <input
+          #inputArquivoImagem
+          type="file"
+          accept="image/*"
+          (change)="onArquivoSelecionado($event)"
+          style="display: none;"
+        />
+        <button
+          type="button"
+          class="btn-inserir-doc"
+          (click)="acionarSelecaoImagem()"
+          [disabled]="uploadingImagem"
+          title="Inserir imagem (suporta seleção, arrastar e soltar ou Ctrl + V)"
+        >
+          <app-icon name="image" [size]="13"></app-icon>
+          <span>{{ uploadingImagem ? 'Enviando...' : 'Imagem' }}</span>
+        </button>
+        <button
+          type="button"
+          class="btn-inserir-inline"
+          (click)="aplicarCompositorNaLinhaAtual('inline')"
+          [disabled]="!compositorLatex.trim()"
+          title="Aplicar na linha atual como fórmula inline ($...$) [Alt + ↑]"
+        >
+          Aplicar Inline ($...$)
+        </button>
+        <button
+          type="button"
+          class="btn-inserir-bloco"
+          (click)="aplicarCompositorNaLinhaAtual('bloco')"
+          [disabled]="!compositorLatex.trim()"
+          title="Aplicar na linha atual como equação em bloco ($$...$$) [Alt + ↓]"
+        >
+          Aplicar Bloco ($$...$$)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alerta de Erro no Upload de Imagens se houver -->
+  @if (erroUpload) {
+    <div class="alerta-upload-erro">
+      <span>{{ erroUpload }}</span>
+      <button type="button" class="btn-fechar-alerta" (click)="fecharAlertaErro()">✕</button>
+    </div>
+  }
+
+  <!-- Barra de Ferramentas de Inserção Rápida (Markdown & Fórmulas) -->
+  <div class="toolbar-insercao-rapida">
+    <div class="grupo-insercao-itens">
+      <span class="toolbar-secao-rotulo">Formatação:</span>
+      <button type="button" class="btn-ferramenta" (click)="inserirFormatacao('h2')" title="Título H2 (## )">
+        <strong>H2</strong>
+      </button>
+      <button type="button" class="btn-ferramenta" (click)="inserirFormatacao('bold')" title="Negrito (**texto**)">
+        <strong>B</strong>
+      </button>
+      <button type="button" class="btn-ferramenta" (click)="inserirFormatacao('italic')" title="Itálico (*texto*)">
+        <em>I</em>
+      </button>
+      <button type="button" class="btn-ferramenta" (click)="inserirFormatacao('lista')" title="Lista com marcadores (- )">
+        • Lista
+      </button>
+      <button type="button" class="btn-ferramenta" (click)="inserirFormatacao('citacao')" title="Citação ou teorema (> )">
+        ” Citação
+      </button>
+    </div>
+
+    <div class="toolbar-divisor"></div>
+
+    <div class="grupo-insercao-itens">
+      <span class="toolbar-secao-rotulo">Fórmulas:</span>
+      <button type="button" class="btn-ferramenta btn-ferramenta-math" (click)="inserirFormatacao('math-inline')" title="Fórmula inline ($...$)">
+        $x$ Inline
+      </button>
+      <button type="button" class="btn-ferramenta btn-ferramenta-math" (click)="inserirFormatacao('math-bloco')" title="Equação destacada ($$...$$)">
+        $$ Bloco
+      </button>
+    </div>
+  </div>
+
+  <!-- Textarea Matemática com Régua IDE e Destaque da Linha Ativa -->
+  <div class="campo-edicao-wrapper">
+    <div
+      class="editor-ide-container"
+      [class.drag-over]="dragOver"
+      (click)="focarTextareaMatematica($event)"
+    >
+      <!-- Faixa Contínua de Destaque da Linha Ativa (Gutter + Textarea) -->
+      <div
+        class="faixa-linha-ativa"
+        [style.top.px]="posicaoTopLinhaAtiva"
+      ></div>
+
+      <div #gutterMatematica class="editor-gutter gutter-math" aria-hidden="true">
+        @for (num of linhasMatematica; track num) {
+          <div
+            class="gutter-numero"
+            [class.ativo]="linhaAtiva === num"
+            (click)="navegarParaLinha(num)"
+          >
+            {{ num }}
+          </div>
+        }
+      </div>
+      <textarea
+        #textareaMatematica
+        class="textarea-fullscreen textarea-math"
+        [placeholder]="placeholderMatematica"
+        [ngModel]="conteudo"
+        (ngModelChange)="onConteudoChange($event)"
+        (keydown)="tratarKeydown($event)"
+        (click)="onInteracaoTextareaMatematica()"
+        (keyup)="onInteracaoTextareaMatematica()"
+        (select)="onInteracaoTextareaMatematica()"
+        (paste)="onPasteEditor($event)"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDropEditor($event)"
+        (scroll)="sincronizarScroll(textareaMatematica, gutterMatematica)"
+        spellcheck="false"
+      ></textarea>
+    </div>
+  </div>
+</div>

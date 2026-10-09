@@ -1,0 +1,44 @@
+<!-- Coluna Esquerda: Editor de Código com Seletor e Suporte a Tab -->
+<div class="coluna-painel painel-editor">
+  <!-- Barra de Configuração de Código -->
+  <div class="toolbar-codigo">
+    <div class="grupo-linguagem">
+      <label for="seletorLinguagem" class="label-linguagem">Linguagem:</label>
+      <select
+        id="seletorLinguagem"
+        class="select-linguagem"
+        [ngModel]="linguagemCodigo"
+        (ngModelChange)="linguagemCodigoChange.emit($event)"
+      >
+        @for (lang of linguagens; track lang.valor) {
+          <option [value]="lang.valor">{{ lang.rotulo }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <!-- CodeMirror Editor (Modo Algoritmo) -->
+  <div class="campo-edicao-wrapper codigo-wrapper">
+    <app-code-mirror-editor
+      [value]="trechoCodigo"
+      (valueChange)="trechoCodigoChange.emit($event)"
+      [language]="linguagemCodigo"
+      [placeholderText]="placeholderCodigo"
+    ></app-code-mirror-editor>
+  </div>
+
+  <!-- Explicação Teórica Opcional do Algoritmo -->
+  <div class="secao-explicacao-algoritmo">
+    <div class="sub-header-explicacao">
+      <span class="sub-rotulo">Explicação Conceitual / Anotações (Opcional):</span>
+      <span class="dica-katex-sm">Suporta fórmulas KaTeX</span>
+    </div>
+    <textarea
+      class="textarea-explicacao"
+      rows="3"
+      placeholder="Explique a lógica do algoritmo ou a complexidade de tempo e espaço..."
+      [ngModel]="conteudoExplicacao"
+      (ngModelChange)="conteudoExplicacaoChange.emit($event)"
+    ></textarea>
+  </div>
+</div>

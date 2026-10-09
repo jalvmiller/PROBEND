@@ -1,0 +1,104 @@
+<!-- Barra de Topo Fixa (Header do Editor) -->
+<header class="editor-topo">
+  <div class="topo-esquerda">
+    <button
+      type="button"
+      class="btn-fechar"
+      (click)="fechar.emit()"
+      title="Minimizar e voltar à questão (preserva o que você digitou)"
+    >
+      <app-icon name="x" [size]="18"></app-icon>
+    </button>
+
+    <div class="info-questao">
+      <div class="titulo-linha">
+        <span class="badge-questao-id">{{ badgeModo }}</span>
+        <h1 class="titulo-questao-truncado" [title]="titulo">
+          {{ titulo }}
+        </h1>
+      </div>
+      <div class="metadados-chips">
+        <span class="chip-materia">{{ subtitulo }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seletor de Modo (Matemática x Algoritmo) -->
+  <div class="seletor-modos">
+    <button
+      type="button"
+      class="btn-modo"
+      [class.ativo]="modoAtivo === 'MATEMATICA'"
+      (click)="modoAlterado.emit('MATEMATICA')"
+    >
+      <span class="modo-label">Modo Matemática</span>
+    </button>
+    <button
+      type="button"
+      class="btn-modo"
+      [class.ativo]="modoAtivo === 'ALGORITMO'"
+      (click)="modoAlterado.emit('ALGORITMO')"
+    >
+      <span class="modo-label">Modo Algoritmo</span>
+    </button>
+  </div>
+
+  <!-- Ações à Direita -->
+  <div class="topo-direita">
+    @if (mostrarVerEnunciado) {
+      <button
+        type="button"
+        class="btn-toggle-enunciado"
+        [class.ativo]="enunciadoAberto"
+        (click)="alternarEnunciado.emit()"
+        title="Consultar enunciado original da questão"
+      >
+        <app-icon name="book" [size]="16"></app-icon>
+        <span>{{ enunciadoAberto ? 'Ocultar Enunciado' : 'Ver Enunciado' }}</span>
+      </button>
+    }
+
+    <button
+      type="button"
+      class="btn-guia-topo"
+      (click)="abrirGuia.emit()"
+      title="Abrir guia de formatação, fórmulas e atalhos"
+    >
+      <app-icon name="help" [size]="15"></app-icon>
+      <span>Guia</span>
+    </button>
+
+    <div class="stats-contadores">
+      <span class="stat-item">{{ totalLinhas }} lin</span>
+      <span class="stat-div">·</span>
+      <span class="stat-item">{{ totalCaracteres }} carac</span>
+    </div>
+
+    <div class="editor-anexo-pdf">
+      <label class="btn-topo-pdf" [class.anexado]="selectedPdfFile" title="Anexar PDF da Resolução">
+        <input type="file" accept="application/pdf" (change)="pdfSelecionado.emit($event)" style="display: none;">
+        <span class="icone-pdf">📄</span>
+        @if (selectedPdfFile; as file) {
+          <span class="pdf-nome">{{ file.name }}</span>
+        }
+      </label>
+      @if (selectedPdfFile) {
+        <button type="button" class="btn-remover-pdf-topo" (click)="removerPdf.emit()" title="Remover PDF">&times;</button>
+      }
+    </div>
+
+    <button
+      type="button"
+      class="btn-publicar-topo"
+      (click)="submeter.emit()"
+      [disabled]="submetendo || !podeSubmeter"
+    >
+      @if (submetendo) {
+        <span class="spinner-sm"></span>
+        <span>Processando...</span>
+      } @else {
+        <span>{{ textoBotaoAcao }}</span>
+      }
+    </button>
+  </div>
+</header>

@@ -1,0 +1,116 @@
+/* Live Code Preview PrismJS + Explicação KaTeX */
+.coluna-painel.painel-preview {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-surface);
+  overflow: hidden;
+  min-width: 0;
+  height: 100%;
+}
+
+.preview-barra-topo {
+  padding: 0.65rem 1.25rem;
+  background-color: var(--bg-surface-raised);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.preview-rotulo {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.preview-status {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--accent-emerald, #10b981);
+  background-color: rgba(16, 185, 129, 0.12);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+.preview-status.code {
+  color: var(--accent-blue);
+  background-color: rgba(56, 189, 248, 0.12);
+}
+
+.preview-conteudo-scroll {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.bloco-codigo-preview {
+  margin-bottom: 1rem;
+}
+
+.bloco-codigo-preview .codigo-pre {
+  margin: 0;
+  background-color: #0d1117 !important;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md, 6px);
+  padding: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  overflow-x: auto;
+}
+
+.preview-explicacao-box {
+  margin-top: 1.5rem;
+  border-top: 1px dashed var(--border-default);
+  padding-top: 1rem;
+}
+
+.tag-explicacao {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent-amber);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.corpo-explicacao {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Estado Vazio do Preview */
+.preview-vazio {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-muted);
+}
+
+.icone-vazio-svg {
+  color: var(--text-muted);
+  opacity: 0.4;
+  margin-bottom: 0.75rem;
+}
+
+.titulo-vazio {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
+}
+
+.sub-vazio {
+  font-size: 0.85rem;
+  max-width: 380px;
+  line-height: 1.5;
+}

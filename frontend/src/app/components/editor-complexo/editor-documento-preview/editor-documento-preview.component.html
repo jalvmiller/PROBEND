@@ -1,0 +1,134 @@
+<!-- Coluna Direita: Live Preview (Documento Paginado x Página Corrida) -->
+<div class="coluna-painel painel-preview">
+  <div class="preview-barra-topo">
+    <div class="preview-titulo-grupo">
+      <span class="preview-rotulo">Documento</span>
+      @if (modoVisualizacao === 'DOCUMENTO') {
+        <span class="preview-badge-paginas">Página {{ paginaAtualIndex + 1 }} de {{ totalPaginas }}</span>
+      }
+    </div>
+
+    <!-- Controles à Direita do Preview: Baixar PDF + Seletor de Modo -->
+    <div class="preview-controles-direita">
+      <button
+        type="button"
+        class="btn-baixar-pdf-preview"
+        (click)="baixarPdfDocumento()"
+        [disabled]="exportandoPdf || (!conteudo.trim() && !trechoCodigo.trim())"
+        title="Exportar resolução paginada para PDF (respeitando quebras de página)"
+      >
+        @if (exportandoPdf) {
+          <span class="spinner-sm"></span>
+          <span>Gerando...</span>
+        } @else {
+          <app-icon name="download" [size]="13"></app-icon>
+          <span>Baixar PDF</span>
+        }
+      </button>
+
+      <div class="preview-seletor-modo">
+        <button
+          type="button"
+          class="btn-seletor-modo"
+          [class.ativo]="modoVisualizacao === 'DOCUMENTO'"
+          (click)="alternarModoVisualizacao('DOCUMENTO')"
+          title="Visualizar em formato de documento paginado com folhas e navegação lateral"
+        >
+          <app-icon name="file-text" [size]="13"></app-icon>
+          <span>Paginado</span>
+        </button>
+        <button
+          type="button"
+          class="btn-seletor-modo"
+          [class.ativo]="modoVisualizacao === 'CORRIDO'"
+          (click)="alternarModoVisualizacao('CORRIDO')"
+          title="Visualizar em formato de página contínua"
+        >
+          <app-icon name="list" [size]="13"></app-icon>
+          <span>Corrido</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  @if (conteudo.trim()) {
+    @if (modoVisualizacao === 'DOCUMENTO') {
+      <!-- MODO DOCUMENTO PAGINADO COM NAVEGAÇÃO LATERAL -->
+      <div class="preview-documento-layout">
+        <!-- Seta Lateral Esquerda (Anterior) -->
+        <button
+          type="button"
+          class="btn-nav-lateral esquerda"
+          [disabled]="paginaAtualIndex === 0"
+          (click)="paginaAnterior()"
+          title="Página anterior (Alt + Seta Esquerda)"
+        >
+          <app-icon name="chevron-left" [size]="20" [strokeWidth]="2.5"></app-icon>
+        </button>
+
+        <!-- Folha de Papel do Documento -->
+        <div class="folha-container-scroll">
+          <div class="folha-documento doc-tema-claro">
+            <div class="folha-cabecalho-tecnico">
+              <span class="folha-tag-doc">Por: {{ autorExibicao }}</span>
+              <span class="folha-numero-pagina">Pág. {{ paginaAtualIndex + 1 }} / {{ totalPaginas }}</span>
+            </div>
+
+            <div class="folha-corpo-renderizado" [appKatex]="conteudoPaginaAtiva"></div>
+          </div>
+        </div>
+
+        <!-- Seta Lateral Direita (Próxima) -->
+        <button
+          type="button"
+          class="btn-nav-lateral direita"
+          [disabled]="paginaAtualIndex >= totalPaginas - 1"
+          (click)="proximaPagina()"
+          title="Próxima página (Alt + Seta Direita)"
+        >
+          <app-icon name="chevron-right" [size]="20" [strokeWidth]="2.5"></app-icon>
+        </button>
+      </div>
+
+      <!-- Barra de Paginação Inferior -->
+      <div class="preview-paginacao-rodape">
+        <div class="paginacao-indicadores">
+          @for (pag of paginas; track $index) {
+            <button
+              type="button"
+              class="btn-pagina-pills"
+              [class.ativo]="paginaAtualIndex === $index"
+              (click)="irParaPagina($index)"
+            >
+              {{ $index + 1 }}
+            </button>
+          }
+        </div>
+
+        <button
+          type="button"
+          class="btn-adicionar-pagina"
+          (click)="adicionarPagina.emit()"
+          title="Adicionar nova folha ao documento"
+        >
+          + Nova Folha
+        </button>
+      </div>
+    } @else {
+      <!-- MODO PÁGINA CORRIDA -->
+      <div class="preview-conteudo-scroll">
+        <div class="preview-renderizado" [appKatex]="conteudo"></div>
+      </div>
+    }
+  } @else {
+    <div class="preview-vazio">
+      <div class="icone-vazio-svg">
+        <app-icon name="file-text" [size]="40" [strokeWidth]="1.5"></app-icon>
+      </div>
+      <p class="titulo-vazio">Documento Vazio</p>
+      <p class="sub-vazio">
+        Digite sua resolução no painel anterior, que conta com LaTeX e Markdown
+      </p>
+    </div>
+  }
+</div>
