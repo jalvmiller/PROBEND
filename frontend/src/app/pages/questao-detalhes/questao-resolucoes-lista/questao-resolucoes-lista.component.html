@@ -1,0 +1,132 @@
+<div class="resolucoes-secao">
+  <!-- Barra de Ordenação -->
+  <div class="resolucoes-subcabecalho">
+    <span class="contador-resolucoes-texto">
+      {{ resolucoes.length }}
+      {{
+        resolucoes.length === 1
+          ? 'demonstração publicada'
+          : 'demonstrações publicadas'
+      }}
+    </span>
+
+    <div class="seletor-ordenacao">
+      <span class="label-ordem">Ordenar por:</span>
+      <button
+        type="button"
+        class="btn-ordem"
+        [class.ativo]="ordenacao === 'upvotes'"
+        (click)="alterarOrdenacao.emit('upvotes')"
+      >
+        Mais Votadas
+      </button>
+      <button
+        type="button"
+        class="btn-ordem"
+        [class.ativo]="ordenacao === 'recentes'"
+        (click)="alterarOrdenacao.emit('recentes')"
+      >
+        Mais Recentes
+      </button>
+    </div>
+  </div>
+
+  <!-- Lista de Resoluções -->
+  @if (resolucoes.length === 0) {
+    <div class="sem-resolucoes">
+      <span class="icone-vazio">📝</span>
+      <h3>Nenhuma resolução submetida ainda</h3>
+      <p>
+        Escreva o passo a passo matemático no painel ao lado e seja o primeiro a
+        demonstrar a solução!
+      </p>
+    </div>
+  } @else {
+    <div class="lista-cards-resolucoes">
+      @for (res of resolucoesOrdenadas; track res.id) {
+        <article class="card-resolucao">
+          <div class="res-topo">
+            <div class="res-autor-detalhes">
+              <app-avatar
+                [usuario]="res.autor"
+                tamanho="mini"
+              ></app-avatar>
+              <div class="res-nome-data">
+                <span class="res-nome">
+                  {{ res.autor?.nome || res.autor?.username }}
+                </span>
+                @if (res.dataCriacao || res.criadoEm) {
+                  <span class="res-data">
+                    {{ res.dataCriacao || res.criadoEm | date: 'dd/MM/yyyy HH:mm' }}
+                  </span>
+                }
+              </div>
+            </div>
+
+            <div class="res-acoes-botoes">
+              <!-- Upvote na Resolução -->
+              <button
+                type="button"
+                (click)="upvoteResolucao.emit(res)"
+                class="btn-res-upvote"
+                [class.ativo]="isResolucaoUpvoted(res.id)"
+                title="Curtir resolução"
+              >
+                <span class="icone-seta">▲</span>
+                {{ res.upvotesCount ?? res.upvotes ?? 0 }}
+              </button>
+
+              <!-- Abrir Modal de Comentários -->
+              <button
+                type="button"
+                (click)="abrirComentarios.emit(res)"
+                class="btn-res-comentarios"
+                title="Ver e adicionar comentários"
+              >
+                💬 {{ res.qtdComentarios ?? res.comentarios?.length ?? 0 }}
+              </button>
+
+              <!-- Baixar Resolução em PDF -->
+              <button
+                type="button"
+                (click)="baixarPdf.emit(res)"
+                class="btn-res-pdf"
+                title="Baixar resolução em PDF formatado (respeita quebras de página)"
+              >
+                <app-icon name="download" [size]="12"></app-icon>
+                <span>PDF</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Conteúdo da Demonstração com KaTeX -->
+          <div
+            class="res-corpo"
+            [appKatex]="res.conteudo"
+          ></div>
+
+          <!-- PDF da Resolução -->
+          @if (res.arquivoPdfUrl) {
+            <div class="bloco-pdf">
+              <a
+                [href]="res.arquivoPdfUrl"
+                target="_blank"
+                class="btn-abrir-pdf-resolucao"
+              >
+                <span class="icone-pdf">📄</span>
+                Abrir Memória de Cálculo (PDF)
+              </a>
+            </div>
+          }
+
+          <!-- Código da Resolução -->
+          @if (res.trechoCodigo) {
+            <div class="bloco-codigo">
+              <pre class="codigo-conteudo"><code>{{ res.trechoCodigo }}</code></pre>
+            </div>
+          }
+        </article>
+      }
+    </div>
+  }
+</div>

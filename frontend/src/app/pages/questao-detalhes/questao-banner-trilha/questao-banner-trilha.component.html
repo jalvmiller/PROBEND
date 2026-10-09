@@ -1,0 +1,67 @@
+<!-- BANNER CONTEXTUAL: Trilha de Estudos Ativa -->
+@if (slotTrilha) {
+  <aside
+    class="banner-trilha-ativa"
+    [class.banner-concluido]="slotTrilha.concluida"
+    aria-label="Contexto da Trilha de Estudos"
+  >
+    <div class="banner-trilha-lado-esq">
+      <div class="banner-trilha-info">
+        <span
+          class="banner-trilha-nome"
+          [title]="trilhaAtiva?.titulo"
+        >
+          {{ trilhaAtiva?.titulo }}
+        </span>
+        <span class="banner-trilha-passo font-mono">
+          Questão {{ slotTrilha.numero }} de {{ trilhaAtiva?.totalQuestoes }}
+        </span>
+      </div>
+    </div>
+
+    <div class="banner-trilha-lado-dir">
+      @if (anteriorSlot) {
+        <a
+          [routerLink]="['/questoes', anteriorSlot.questaoId]"
+          class="btn-nav-trilha"
+          title="Questão anterior da trilha"
+        >
+          ← Anterior
+        </a>
+      }
+
+      <button
+        type="button"
+        (click)="alternarConclusao.emit()"
+        class="btn-trilha-toggle"
+        [class.concluido]="slotTrilha.concluida"
+        [disabled]="alternandoTrilha"
+        [title]="
+          slotTrilha.concluida
+            ? 'Clique para desmarcar conclusão desta questão na trilha'
+            : 'Clique para marcar esta questão como concluída na trilha'
+        "
+      >
+        @if (alternandoTrilha) {
+          <span class="spinner-trilha"></span>
+        } @else if (slotTrilha.concluida) {
+          <app-icon name="check" [size]="16" class="icone-check-banner"></app-icon>
+          <span>Concluída na Trilha</span>
+        } @else {
+          <span class="icone-circulo-banner">○</span>
+          <span>Marcar Concluída na Trilha</span>
+        }
+      </button>
+
+      @if (proximoSlot) {
+        <a
+          [routerLink]="['/questoes', proximoSlot.questaoId]"
+          class="btn-nav-trilha btn-nav-destaque"
+          title="Próxima questão da trilha"
+        >
+          Próxima →
+        </a>
+      }
+    </div>
+  </aside>
+}

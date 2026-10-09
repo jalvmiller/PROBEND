@@ -1,0 +1,114 @@
+<article class="artigo-enunciado">
+  <!-- Tags acima do nome do problema -->
+  @if (questao.tags && questao.tags.length > 0) {
+    <div class="tags-container tags-acima">
+      @for (tag of getTagsArray(questao.tags); track tag) {
+        <span class="tag-item">#{{ tag }}</span>
+      }
+    </div>
+  }
+
+  <!-- Título da Questão com KaTeX e Upvote no estilo QuestaoCard à direita -->
+  <div class="titulo-e-upvote-linha">
+    <div class="badges-row">
+      @if (questao.materia) {
+        <span class="badge-materia">{{ questao.materia }}</span>
+      }
+      @if (questao.assunto) {
+        <span class="badge-assunto">{{ questao.assunto }}</span>
+      }
+      <span
+        class="badge-dificuldade"
+        [ngClass]="getDificuldadeClasse(questao.dificuldade)"
+      >
+        {{ getDificuldadeTexto(questao.dificuldade) }}
+      </span>
+    </div>
+
+    <div>
+      <span
+        class="badge-status"
+        [class.status-solucionada]="questao.solucionada"
+        [class.status-pendente]="!questao.solucionada"
+      >
+        @if (questao.solucionada) {
+          <app-icon name="circle-check" [size]="16" [strokeWidth]="2.5" class="status-icon"></app-icon>
+          <span>Solucionada</span>
+        } @else {
+          <app-icon name="clock" [size]="16" [strokeWidth]="2.5" class="status-icon"></app-icon>
+          <span>Pendente</span>
+        }
+      </span>
+    </div>
+
+    <button
+      type="button"
+      class="btn-upvote-questao"
+      [class.upvoted]="isUpvoted"
+      (click)="upvote.emit()"
+      [title]="isUpvoted ? 'Remover Upvote' : 'Dar Upvote'"
+      [attr.aria-pressed]="isUpvoted"
+    >
+      <app-icon
+        name="thumbs-up"
+        [size]="18"
+        [fill]="isUpvoted ? 'currentColor' : 'none'"
+        class="icone-thumbs"
+      ></app-icon>
+      <span>{{ upvotesCount }}</span>
+    </button>
+  </div>
+
+  <!-- Metadados do Autor -->
+  <div class="meta-autor-linha">
+    <div class="autor-info">
+      <app-avatar
+        [usuario]="questao.autor"
+        tamanho="circulo"
+      ></app-avatar>
+      <div class="autor-detalhes">
+        <span class="autor-nome">
+          Por
+          <strong>{{ questao.autor?.nome || questao.autor?.username || 'Anônimo' }}</strong>
+        </span>
+        @if (questao.dataInsercao) {
+          <span class="data-post">{{ questao.dataInsercao | date: 'dd/MM/yyyy' }}</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Corpo do Enunciado com KaTeX -->
+  <div
+    class="corpo-enunciado"
+    [appKatex]="questao.enunciado"
+  ></div>
+
+  <!-- Imagem / Diagrama da Questão -->
+  @if (questao.imagemUrl) {
+    <div class="container-imagem">
+      <img
+        [src]="questao.imagemUrl"
+        alt="Diagrama da questão"
+        class="imagem-problema"
+      />
+    </div>
+  }
+
+  <!-- Trecho de Código (se houver) -->
+  @if (questao.trechoCodigo) {
+    <div class="bloco-codigo">
+      <div class="codigo-topo">
+        <span>{{ questao.linguagemCodigo || 'Código' }}</span>
+      </div>
+      <pre class="codigo-conteudo"><code>{{ questao.trechoCodigo }}</code></pre>
+    </div>
+  }
+
+  <!-- Fonte do Problema -->
+  @if (questao.fonte) {
+    <div class="fonte-info">
+      <span>Fonte: {{ questao.fonte }}</span>
+    </div>
+  }
+</article>

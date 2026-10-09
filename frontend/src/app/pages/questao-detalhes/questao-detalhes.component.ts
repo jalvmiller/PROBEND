@@ -11,6 +11,12 @@ import { ComentarioModalComponent } from '../../components/comentario-modal/come
 import { EditorComplexoResolucaoComponent } from '../../components/editor-complexo/editor-complexo-resolucao/editor-complexo-resolucao.component';
 import { RespostaEditorComplexo } from '../../components/editor-complexo/editor-complexo.component';
 import { AvatarComponent } from '../../components/avatar/avatar.component';
+import { exportarResolucaoPdf } from '../../utils/pdf-export.util';
+
+import { QuestaoBannerTrilhaComponent } from './questao-banner-trilha/questao-banner-trilha.component';
+import { QuestaoEnunciadoArtigoComponent } from './questao-enunciado-artigo/questao-enunciado-artigo.component';
+import { QuestaoResolucoesListaComponent } from './questao-resolucoes-lista/questao-resolucoes-lista.component';
+import { QuestaoWorkspaceResolucaoComponent } from './questao-workspace-resolucao/questao-workspace-resolucao.component';
 
 @Component({
   selector: 'app-questao-detalhes',
@@ -19,10 +25,12 @@ import { AvatarComponent } from '../../components/avatar/avatar.component';
     CommonModule,
     FormsModule,
     RouterLink,
-    KatexDirective,
     ComentarioModalComponent,
     EditorComplexoResolucaoComponent,
-    AvatarComponent
+    QuestaoBannerTrilhaComponent,
+    QuestaoEnunciadoArtigoComponent,
+    QuestaoResolucoesListaComponent,
+    QuestaoWorkspaceResolucaoComponent
   ],
   templateUrl: './questao-detalhes.component.html',
   styleUrl: './questao-detalhes.component.css'
@@ -474,6 +482,28 @@ export class QuestaoDetalhesComponent implements OnInit {
 
   public isResolucaoUpvoted(resolucaoId: number): boolean {
     return this.meusUpvotesResolucoes().includes(resolucaoId);
+  }
+
+  public async baixarResolucaoPdf(res: Resolucao): Promise<void> {
+    if (!res.conteudo && !res.trechoCodigo) return;
+
+    let conteudoParaExportar = res.conteudo || '';
+    if (!conteudoParaExportar && res.trechoCodigo) {
+      conteudoParaExportar = '```' + (res.linguagemCodigo || 'java') + '\n' + res.trechoCodigo + '\n```';
+    }
+
+    try {
+      const q = this.questao();
+      const autorNome = res.autor?.nome || res.autor?.username || 'Autor';
+      await exportarResolucaoPdf(conteudoParaExportar, {
+        titulo: q?.titulo || 'Resolução Probend',
+        autor: autorNome,
+        subtitulo: q?.materia
+      });
+    } catch (err) {
+      console.error('Erro ao gerar PDF da resolução:', err);
+      alert('Não foi possível gerar o PDF desta resolução.');
+    }
   }
 
   public abrirModalComentarios(res: Resolucao): void {

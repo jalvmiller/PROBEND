@@ -1,0 +1,147 @@
+<div class="workspace-card">
+  <!-- Cabeçalho do Workspace -->
+  <div class="workspace-cabecalho">
+    <div class="cabecalho-texto">
+      <h2 class="subtitulo-workspace">Sua Demonstração Técnica</h2>
+      <p class="instrucao-latex">
+        Suporta fórmulas em LaTeX:
+        <code>$fórmula$</code>
+        (inline) ou
+        <code>$$fórmula$$</code>
+        (bloco).
+      </p>
+    </div>
+
+    <!-- Botão do Editor Completo -->
+    <button
+      type="button"
+      class="btn-editor-expandir"
+      (click)="abrirEditorExpandido.emit()"
+      title="Abrir editor complexo com teclado virtual MathLive e PrismJS"
+    >
+      Editor MathLive ⛶
+    </button>
+  </div>
+
+  <!-- Corpo do Workspace -->
+  @if (isAutenticado) {
+    <div class="workspace-conteudo-scroll">
+      <div class="campo-edicao">
+        <textarea
+          [ngModel]="novaResolucao"
+          (ngModelChange)="novaResolucaoChange.emit($event)"
+          rows="9"
+          placeholder="Explique os passos da demonstração matemática ou algoritmo...&#10;Ex: Seja a função $$f(x) = \lim_{n \to \infty} \left(1 + \frac{x}{n}\right)^n = e^x$$..."
+          class="textarea-resolucao"
+        ></textarea>
+      </div>
+
+      <!-- Prévia KaTeX em Tempo Real -->
+      @if (novaResolucao.trim()) {
+        <div class="caixa-live-preview">
+          <div class="preview-topo">
+            <span class="preview-badge">Prévia Matemática em Tempo Real</span>
+            <span class="preview-engine font-mono">KaTeX Engine</span>
+          </div>
+          <div
+            class="preview-conteudo"
+            [appKatex]="novaResolucao"
+          ></div>
+        </div>
+      }
+
+      <!-- Anexo de Arquivo PDF -->
+      <div class="campo-anexo-pdf">
+        <label
+          class="btn-anexar-pdf"
+          [class.anexado]="selectedPdfFile"
+        >
+          <input
+            type="file"
+            accept="application/pdf"
+            (change)="pdfSelecionado.emit($event)"
+            style="display: none"
+          />
+          <span class="icone-pdf">📄</span>
+          @if (selectedPdfFile; as file) {
+            <span class="nome-arquivo">{{ file.name }}</span>
+          } @else {
+            <span>Anexar Memória de Cálculo (PDF)</span>
+          }
+        </label>
+        @if (selectedPdfFile) {
+          <button
+            type="button"
+            class="btn-remover-anexo"
+            (click)="removerPdf.emit()"
+            title="Remover PDF anexado"
+          >
+            &times;
+          </button>
+        }
+      </div>
+
+      <!-- Botão para alternar campo de código opcional -->
+      @if (!mostrarCampoCodigo) {
+        <button
+          type="button"
+          class="btn-toggle-codigo"
+          (click)="mostrarCampoCodigoChange.emit(true)"
+        >
+          + Incluir trecho de código ou script de verificação
+        </button>
+      } @else {
+        <div class="bloco-insercao-codigo">
+          <div class="codigo-cabecalho-edicao">
+            <span class="font-mono text-xs">Script de Verificação (Opcional):</span>
+            <button
+              type="button"
+              class="btn-fechar-campo-codigo"
+              (click)="mostrarCampoCodigoChange.emit(false)"
+            >
+              &times;
+            </button>
+          </div>
+          <textarea
+            [ngModel]="codigoResolucao"
+            (ngModelChange)="codigoResolucaoChange.emit($event)"
+            rows="4"
+            placeholder="// Insira seu algoritmo ou script Python/Java..."
+            class="textarea-codigo"
+          ></textarea>
+        </div>
+      }
+    </div>
+
+    <!-- Rodapé Fixo com Botão de Publicação -->
+    <div class="workspace-rodape">
+      <button
+        type="button"
+        class="btn-publicar"
+        [disabled]="(!novaResolucao.trim() && !selectedPdfFile) || submetendo"
+        (click)="submeter.emit()"
+      >
+        @if (submetendo) {
+          <span class="spinner-inline"></span>
+          Submetendo Resolução...
+        } @else {
+          Submeter Resolução
+        }
+      </button>
+    </div>
+  } @else {
+    <div class="box-login-requerido">
+      <span class="icone-bloqueio">🔒</span>
+      <h3>Autenticação Necessária</h3>
+      <p>
+        Você precisa estar autenticado para enviar uma demonstração ou resolução técnica.
+      </p>
+      <a
+        routerLink="/login"
+        class="btn-ir-login"
+      >
+        Fazer Login
+      </a>
+    </div>
+  }
+</div>
