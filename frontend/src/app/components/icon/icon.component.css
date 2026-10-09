@@ -1,0 +1,14 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.probend-icon {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, stroke 0.15s ease;
+}

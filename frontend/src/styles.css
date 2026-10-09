@@ -558,3 +558,328 @@ pre,
 .doc-link:hover {
   color: var(--accent-amber);
 }
+
+/* ==========================================================================
+   TEMA CLARO PARA RENDERIZAÇÃO DE DOCUMENTO (FOLHA A4 / PDF / PAPEL)
+   ========================================================================== */
+.doc-tema-claro {
+  color: #1e293b;
+  background-color: #ffffff;
+}
+
+.doc-tema-claro .doc-h1 {
+  color: #0f172a;
+  border-bottom: 1.5px solid #e2e8f0;
+}
+
+.doc-tema-claro .doc-h2 {
+  color: #1e293b;
+}
+
+.doc-tema-claro .doc-h3 {
+  color: #334155;
+}
+
+.doc-tema-claro .doc-h4 {
+  color: #475569;
+}
+
+.doc-tema-claro .doc-p {
+  color: #1e293b;
+}
+
+.doc-tema-claro .doc-strong {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.doc-tema-claro .doc-em {
+  color: #1e293b;
+}
+
+.doc-tema-claro .doc-del {
+  color: #64748b;
+}
+
+.doc-tema-claro .doc-list-item {
+  color: #1e293b;
+}
+
+.doc-tema-claro .doc-blockquote {
+  border-left: 3px solid #cbd5e1;
+  background-color: #f8fafc;
+  color: #334155;
+}
+
+.doc-tema-claro .doc-inline-code {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+}
+
+.doc-tema-claro .doc-code-block {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+}
+
+.doc-tema-claro .doc-figure-img {
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.doc-tema-claro .doc-figure-caption {
+  color: #64748b;
+}
+
+.doc-tema-claro .doc-hr {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+}
+
+.doc-tema-claro .doc-link {
+  color: #2563eb;
+}
+
+.doc-tema-claro .doc-link:hover {
+  color: #1d4ed8;
+}
+
+.doc-tema-claro .doc-pagebreak-divider {
+  border-top: 1px dashed #cbd5e1;
+}
+
+.doc-tema-claro .doc-pagebreak-label {
+  background-color: #f8fafc;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+}
+
+.doc-tema-claro .katex {
+  color: #0f172a;
+}
+
+/* ==========================================================================
+   UTILITÁRIOS BASE COMPARTILHADOS (PROBEND UI TOKENS)
+   ========================================================================== */
+
+/* Badges e Chips */
+.probend-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm, 4px);
+  user-select: none;
+}
+
+.probend-badge.badge-amber {
+  background-color: var(--accent-amber-subtle);
+  color: var(--accent-amber);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.probend-badge.badge-blue {
+  background-color: var(--accent-blue-subtle);
+  color: var(--accent-blue);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.probend-badge.badge-emerald {
+  background-color: var(--accent-emerald-subtle);
+  color: var(--accent-emerald);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.probend-badge.badge-rose {
+  background-color: var(--accent-rose-subtle);
+  color: var(--accent-rose);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+}
+
+.probend-badge.badge-purple {
+  background-color: var(--accent-purple-subtle);
+  color: var(--accent-purple);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+/* Cards Padrão */
+.probend-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md, 6px);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.15s ease;
+}
+
+.probend-card:hover {
+  border-color: var(--border-default);
+}
+
+/* Modal Overlay & Container */
+.probend-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--bg-overlay, rgba(13, 17, 23, 0.85));
+  backdrop-filter: blur(6px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.probend-modal-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-modal);
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Spinners */
+.probend-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: probendSpin 0.6s linear infinite;
+}
+
+@keyframes probendSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Utilitários de Layout & Flexbox */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+
+/* Tipografia Utilitária */
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Botões de Ação com Ícone */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background-color: var(--bg-surface-raised);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+.btn-icon.sm {
+  width: 24px;
+  height: 24px;
+}
+
+.btn-icon.lg {
+  width: 40px;
+  height: 40px;
+}
+
+/* Scrollbar Utilitária Suave */
+.probend-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-default) transparent;
+}
+
+.probend-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.probend-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.probend-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--border-default);
+  border-radius: 3px;
+}
+
+.probend-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--border-strong);
+}
+
+/* Componentes de Estado Vazio (Empty State) */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--text-muted);
+}
+
+.empty-state-icon {
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.empty-state-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.empty-state-desc {
+  font-size: 0.875rem;
+  max-width: 380px;
+  line-height: 1.5;
+}
+
+

@@ -8,6 +8,7 @@ import { PerfilService } from '../../../services/perfil.service';
 import { KatexDirective } from '../../../directives/katex.directive';
 import { AvatarComponent } from '../../avatar/avatar.component';
 import { RoleBadgeComponent } from '../../role-badge/role-badge.component';
+import { IconComponent } from '../../icon/icon.component';
 import { Questao } from '../../../models/questao.model';
 import { MinhaResolucao, MeuComentario, PainelSidebar } from '../../../models/perfil.model';
 
@@ -19,7 +20,8 @@ import { MinhaResolucao, MeuComentario, PainelSidebar } from '../../../models/pe
     FormsModule,
     KatexDirective,
     AvatarComponent,
-    RoleBadgeComponent
+    RoleBadgeComponent,
+    IconComponent
   ],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css'
