@@ -5,6 +5,86 @@
   gap: 1rem;
 }
 
+/* Barra de Pesquisa de Resoluções */
+.resolucoes-barra-busca {
+  width: 100%;
+}
+
+.campo-busca-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.icone-busca-input {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--text-muted);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.input-busca-resolucao {
+  width: 100%;
+  background-color: var(--bg-surface-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 2rem 0.45rem 2.2rem;
+  font-size: 0.8125rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input-busca-resolucao::placeholder {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+.input-busca-resolucao:focus {
+  border-color: var(--accent-amber);
+  box-shadow: 0 0 0 1px var(--accent-amber-subtle, rgba(245, 158, 11, 0.2));
+}
+
+.btn-limpar-busca {
+  position: absolute;
+  right: 0.5rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s ease;
+}
+
+.btn-limpar-busca:hover {
+  color: var(--text-primary);
+}
+
+.btn-limpar-busca-inline {
+  background-color: var(--bg-surface-raised);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  margin-top: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-limpar-busca-inline:hover {
+  border-color: var(--accent-amber);
+  color: var(--accent-amber);
+}
+
 .resolucoes-subcabecalho {
   display: flex;
   align-items: center;
@@ -236,3 +316,52 @@
   color: var(--accent-emerald);
   line-height: 1.5;
 }
+
+/* Botão no subcabeçalho para recolher/expandir todas */
+.btn-toggle-todas {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: var(--bg-surface-raised);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: 0.35rem;
+}
+
+.btn-toggle-todas:hover {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+/* Botão individual de fold em cada card */
+.btn-res-fold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-surface-raised);
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  padding: 0.25rem 0.45rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-res-fold:hover {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+/* Estilo do card quando recolhido */
+.card-resolucao.recolhido {
+  padding: 0.85rem 1.15rem;
+  gap: 0;
+}
+

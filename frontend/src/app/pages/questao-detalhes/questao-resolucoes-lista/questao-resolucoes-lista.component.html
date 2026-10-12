@@ -1,35 +1,82 @@
 <div class="resolucoes-secao">
-  <!-- Barra de Ordenação -->
-  <div class="resolucoes-subcabecalho">
-    <span class="contador-resolucoes-texto">
-      {{ resolucoes.length }}
-      {{
-        resolucoes.length === 1
-          ? 'demonstração publicada'
-          : 'demonstrações publicadas'
-      }}
-    </span>
-
-    <div class="seletor-ordenacao">
-      <span class="label-ordem">Ordenar por:</span>
-      <button
-        type="button"
-        class="btn-ordem"
-        [class.ativo]="ordenacao === 'upvotes'"
-        (click)="alterarOrdenacao.emit('upvotes')"
-      >
-        Mais Votadas
-      </button>
-      <button
-        type="button"
-        class="btn-ordem"
-        [class.ativo]="ordenacao === 'recentes'"
-        (click)="alterarOrdenacao.emit('recentes')"
-      >
-        Mais Recentes
-      </button>
+  @if (resolucoes.length > 0) {
+    <!-- Barra Superior: Campo de Pesquisa -->
+    <div class="resolucoes-barra-busca">
+      <div class="campo-busca-wrapper">
+        <app-icon name="search" [size]="14" class="icone-busca-input"></app-icon>
+        <input
+          type="text"
+          class="input-busca-resolucao"
+          placeholder="Pesquisar por autor ou conteúdo..."
+          [value]="termoBusca()"
+          (input)="atualizarBusca($event)"
+          aria-label="Pesquisar resoluções"
+        />
+        @if (termoBusca().trim()) {
+          <button
+            type="button"
+            class="btn-limpar-busca"
+            (click)="limparBusca()"
+            title="Limpar pesquisa"
+            aria-label="Limpar pesquisa"
+          >
+            <app-icon name="x" [size]="12"></app-icon>
+          </button>
+        }
+      </div>
     </div>
-  </div>
+
+    <!-- Barra de Ordenação e Fold Geral -->
+    <div class="resolucoes-subcabecalho">
+      <span class="contador-resolucoes-texto">
+        @if (termoBusca().trim()) {
+          {{ resolucoesExibidas().length }} de {{ resolucoes.length }} {{ resolucoes.length === 1 ? 'demonstração' : 'demonstrações' }}
+        } @else {
+          {{ resolucoes.length }}
+          {{
+            resolucoes.length === 1
+              ? 'demonstração publicada'
+              : 'demonstrações publicadas'
+          }}
+        }
+      </span>
+
+      <div class="seletor-ordenacao">
+        <span class="label-ordem">Ordenar por:</span>
+        <button
+          type="button"
+          class="btn-ordem"
+          [class.ativo]="ordenacao === 'upvotes'"
+          (click)="alterarOrdenacao.emit('upvotes')"
+        >
+          Mais Votadas
+        </button>
+        <button
+          type="button"
+          class="btn-ordem"
+          [class.ativo]="ordenacao === 'recentes'"
+          (click)="alterarOrdenacao.emit('recentes')"
+        >
+          Mais Recentes
+        </button>
+
+        @if (resolucoesExibidas().length > 1) {
+          <button
+            type="button"
+            class="btn-toggle-todas"
+            (click)="alternarTodas()"
+            [title]="todasRecolhidas() ? 'Expandir demonstrações visíveis' : 'Recolher demonstrações visíveis'"
+          >
+            <app-icon
+              [name]="todasRecolhidas() ? 'chevron-down' : 'chevron-up'"
+              [size]="12"
+            ></app-icon>
+            <span>{{ todasRecolhidas() ? 'Expandir todas' : 'Recolher todas' }}</span>
+          </button>
+        }
+      </div>
+    </div>
+  }
 
   <!-- Lista de Resoluções -->
   @if (resolucoes.length === 0) {
@@ -41,10 +88,25 @@
         demonstrar a solução!
       </p>
     </div>
+  } @else if (resolucoesExibidas().length === 0) {
+    <div class="sem-resolucoes">
+      <span class="icone-vazio">🔍</span>
+      <h3>Nenhuma resolução encontrada</h3>
+      <p>
+        Não encontramos resultados correspondentes a "<strong>{{ termoBusca() }}</strong>".
+      </p>
+      <button
+        type="button"
+        class="btn-limpar-busca-inline"
+        (click)="limparBusca()"
+      >
+        Limpar pesquisa
+      </button>
+    </div>
   } @else {
     <div class="lista-cards-resolucoes">
-      @for (res of resolucoesOrdenadas; track res.id) {
-        <article class="card-resolucao">
+      @for (res of resolucoesExibidas(); track res.id) {
+        <article class="card-resolucao" [class.recolhido]="isRecolhido(res.id)">
           <div class="res-topo">
             <div class="res-autor-detalhes">
               <app-avatar
@@ -96,34 +158,51 @@
                 <app-icon name="download" [size]="12"></app-icon>
                 <span>PDF</span>
               </button>
+
+              <!-- Botão de Fold (Recolher / Expandir Card) -->
+              <button
+                type="button"
+                (click)="alternarFold(res.id)"
+                class="btn-res-fold"
+                [title]="isRecolhido(res.id) ? 'Expandir resolução' : 'Recolher resolução'"
+                [attr.aria-expanded]="!isRecolhido(res.id)"
+              >
+                <app-icon
+                  [name]="isRecolhido(res.id) ? 'chevron-down' : 'chevron-up'"
+                  [size]="13"
+                ></app-icon>
+              </button>
             </div>
           </div>
 
-          <!-- Conteúdo da Demonstração com KaTeX -->
-          <div
-            class="res-corpo"
-            [appKatex]="res.conteudo"
-          ></div>
+          <!-- Corpo da Resolução (Visível apenas quando expandido) -->
+          @if (!isRecolhido(res.id)) {
+            <!-- Conteúdo da Demonstração com KaTeX -->
+            <div
+              class="res-corpo"
+              [appKatex]="res.conteudo"
+            ></div>
 
-          <!-- PDF da Resolução -->
-          @if (res.arquivoPdfUrl) {
-            <div class="bloco-pdf">
-              <a
-                [href]="res.arquivoPdfUrl"
-                target="_blank"
-                class="btn-abrir-pdf-resolucao"
-              >
-                <span class="icone-pdf">📄</span>
-                Abrir Memória de Cálculo (PDF)
-              </a>
-            </div>
-          }
+            <!-- PDF da Resolução -->
+            @if (res.arquivoPdfUrl) {
+              <div class="bloco-pdf">
+                <a
+                  [href]="res.arquivoPdfUrl"
+                  target="_blank"
+                  class="btn-abrir-pdf-resolucao"
+                >
+                  <span class="icone-pdf">📄</span>
+                  Abrir Memória de Cálculo (PDF)
+                </a>
+              </div>
+            }
 
-          <!-- Código da Resolução -->
-          @if (res.trechoCodigo) {
-            <div class="bloco-codigo">
-              <pre class="codigo-conteudo"><code>{{ res.trechoCodigo }}</code></pre>
-            </div>
+            <!-- Código da Resolução -->
+            @if (res.trechoCodigo) {
+              <div class="bloco-codigo">
+                <pre class="codigo-conteudo"><code>{{ res.trechoCodigo }}</code></pre>
+              </div>
+            }
           }
         </article>
       }
