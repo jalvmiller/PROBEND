@@ -23,6 +23,7 @@ public record QuestaoResponse(
         Boolean solucionada,
         LocalDateTime dataInsercao,
         Integer upvotes,
+        Integer numeroResolucoes,
         boolean seederContent,
         AutorResumoResponse autor) {
 
@@ -44,6 +45,7 @@ public record QuestaoResponse(
                 q.isSolucionada(),
                 q.getDataInsercao(),
                 q.getUpvotes(),
+                q.getNumeroResolucoes(),
                 q.isSeederContent(),
                 AutorResumoResponse.fromEntity(q.getAutor()));
     }

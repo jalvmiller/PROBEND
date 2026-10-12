@@ -53,6 +53,10 @@ public class Questao {
     @Column(name = "is_seeder_content", nullable = false)
     private boolean seederContent = false;
 
+    // Contagem otimizada de resoluções calculada diretamente no SELECT via subquery (evita N+1 e Lazy Loading)
+    @org.hibernate.annotations.Formula("(SELECT COUNT(r.id) FROM resolucoes r WHERE r.questao_id = id)")
+    private Integer numeroResolucoes = 0;
+
     // Cascade = todas as ações que acontecerem na
     // questão vão acontecer nas resoluções
     // orphanRemoval = true = se deletar uma questão, deleta as resoluções
@@ -187,8 +191,11 @@ public class Questao {
         this.seederContent = seederContent;
     }
 
-    @JsonIgnore
-    public int getNumeroResolucoes() {
-        return this.resolucoes != null ? this.resolucoes.size() : 0;
+    public Integer getNumeroResolucoes() {
+        return this.numeroResolucoes != null ? this.numeroResolucoes : 0;
+    }
+
+    public void setNumeroResolucoes(Integer numeroResolucoes) {
+        this.numeroResolucoes = numeroResolucoes;
     }
 }
