@@ -1,70 +1,327 @@
-/* Coluna Esquerda: Editor de Código com Seletor e Suporte a Tab */
+/* O host ocupa toda a altura do painel pai e pode encolher (min-*: 0) */
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+/* Coluna Esquerda: Editor de Código com Action Bar e CodeMirror */
 .coluna-painel.painel-editor {
   flex: 1;
   display: flex;
   flex-direction: column;
   background-color: var(--bg-surface);
-  border-right: 1px solid var(--border-default);
   overflow: hidden;
   min-width: 0;
+  min-height: 0;
   height: 100%;
 }
 
-/* Toolbar Modo Código */
-.toolbar-codigo {
-  padding: 0.65rem 1rem;
+/* ==========================================================
+   Action Bar Superior do Editor
+   ========================================================== */
+.action-bar-codigo {
+  height: 44px;
+  padding: 0 0.85rem;
   background-color: var(--bg-surface-raised);
   border-bottom: 1px solid var(--border-default);
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
+  gap: 0.75rem;
+  position: relative;
+  z-index: 10;
 }
 
-.grupo-linguagem {
+.acoes-grupo-esquerda,
+.acoes-grupo-direita {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.label-linguagem {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-}
-
-.select-linguagem {
+/* Badge de Linguagem Fixa */
+.badge-linguagem-fixa {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.25rem 0.65rem;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm, 6px);
+  cursor: default;
+  user-select: none;
+}
+
+.ponto-status-lang {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--accent-amber);
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+}
+
+.nome-lang {
+  font-size: 0.8rem;
+  font-weight: 700;
   color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+}
+
+/* Divisor Vertical da Action Bar */
+.divisor-vertical-action {
+  width: 1px;
+  height: 18px;
+  background-color: var(--border-default);
+  margin: 0 0.2rem;
+}
+
+/* Botão Play (Piston API Sandbox) */
+.btn-action-play {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   padding: 0.3rem 0.65rem;
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--accent-emerald, #10b981);
+  border-radius: var(--radius-sm, 6px);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: not-allowed;
+  opacity: 0.85;
+  transition: all 0.15s;
+}
+
+.badge-em-breve {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.35rem;
+  background-color: rgba(16, 185, 129, 0.18);
+  border-radius: 4px;
+  color: var(--accent-emerald, #10b981);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Botões de Ação Utilitários */
+.btn-action-util {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  background-color: transparent;
+  border: 1px solid var(--border-default);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm, 6px);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-action-util:hover,
+.btn-action-util.ativo {
+  color: var(--text-primary);
+  border-color: var(--accent-amber);
+  background-color: var(--bg-surface);
+}
+
+.label-btn-action {
+  font-size: 0.78rem;
+}
+
+/* Grupo Undo / Redo e Botões Icon */
+.grupo-history-botoes {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.btn-action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
   border-radius: var(--radius-sm, 6px);
   cursor: pointer;
+  transition: all 0.15s;
 }
 
-.select-linguagem:focus {
-  outline: none;
+.btn-action-icon:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-surface);
+  border-color: var(--border-default);
+}
+
+.btn-action-icon.ativo {
+  color: var(--accent-amber);
   border-color: var(--accent-amber);
+  background-color: var(--bg-surface);
 }
 
-/* Campo Textarea do Editor - Ocupa todo o espaço rente às bordas */
-.campo-edicao-wrapper {
+/* ==========================================================
+   Dropdowns e Popovers da Action Bar
+   ========================================================== */
+.dropdown-docs-wrapper {
+  position: relative;
+}
+
+.backdrop-menu-docs {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+}
+
+.popover-menu-docs {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 280px;
+  background-color: var(--bg-surface-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  z-index: 100;
+  overflow: hidden;
+  animation: popoverFadeIn 0.12s ease-out;
+}
+
+@keyframes popoverFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popover-cabecalho {
+  padding: 0.65rem 0.85rem;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.popover-titulo {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.popover-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.lista-links-docs {
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0;
+}
+
+.link-doc-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0.85rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: all 0.15s;
+}
+
+.link-doc-item:hover {
+  background-color: var(--bg-surface);
+  color: var(--accent-amber);
+}
+
+.link-doc-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.link-doc-titulo {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.link-doc-sub {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+.icone-link-externo {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Popover de Atalhos */
+.popover-atalhos {
+  width: 290px;
+}
+
+.tabela-atalhos {
+  padding: 0.5rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.linha-atalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+}
+
+.descricao-atalho {
+  color: var(--text-secondary);
+}
+
+.combo-kbd {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+.tecla-kbd {
+  padding: 0.15rem 0.4rem;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-primary);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* ==========================================================
+   CodeMirror Editor Wrapper (Ocupa 100% da altura restante)
+   ========================================================== */
+.campo-edicao-wrapper.codigo-wrapper {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   padding: 0;
   margin: 0;
-}
-
-.campo-edicao-wrapper.codigo-wrapper {
-  padding: 0;
-  display: flex;
-  flex: 1;
   min-height: 0;
+  height: 100%;
 }
 
 .campo-edicao-wrapper.codigo-wrapper app-code-mirror-editor {
@@ -73,52 +330,4 @@
   width: 100%;
   height: 100%;
   min-height: 0;
-}
-
-/* Área de Explicação Opcional no Modo Algoritmo */
-.secao-explicacao-algoritmo {
-  border-top: 1px solid var(--border-default);
-  background-color: var(--bg-surface-raised);
-  padding: 0.75rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  flex-shrink: 0;
-}
-
-.sub-header-explicacao {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.sub-rotulo {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
-.dica-katex-sm {
-  font-size: 0.7rem;
-  color: var(--accent-amber);
-  font-family: var(--font-mono);
-}
-
-.textarea-explicacao {
-  width: 100%;
-  background-color: var(--bg-app);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm, 6px);
-  color: var(--text-primary);
-  padding: 0.5rem 0.75rem;
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  resize: none;
-  box-sizing: border-box;
-}
-
-.textarea-explicacao:focus {
-  outline: none;
-  border-color: var(--accent-amber);
 }

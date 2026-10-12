@@ -18,7 +18,7 @@ import { Questao } from '../../../models/questao.model';
       [textoBotaoAcao]="'Submeter Resolução'"
       [conteudoInicial]="conteudoInicial"
       [codigoInicial]="codigoInicial"
-      [linguagemInicial]="linguagemInicial"
+      [linguagemInicial]="questao.linguagemCodigo || linguagemInicial"
       (fechar)="fechar.emit($event)"
       (publicar)="publicar.emit($event)"
     ></app-editor-complexo>

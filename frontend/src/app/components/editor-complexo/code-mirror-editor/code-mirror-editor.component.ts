@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 
 import { EditorState, Compartment, Extension } from '@codemirror/state';
 import { EditorView, keymap, highlightActiveLine, highlightActiveLineGutter, lineNumbers, placeholder as cmPlaceholder } from '@codemirror/view';
-import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
+import { defaultKeymap, history, historyKeymap, indentWithTab, undo, redo } from '@codemirror/commands';
 import { bracketMatching, indentOnInput } from '@codemirror/language';
 import { oneDark } from '@codemirror/theme-one-dark';
 
@@ -131,6 +131,22 @@ export class CodeMirrorEditorComponent implements OnInit, OnChanges, OnDestroy {
   ngOnDestroy(): void {
     if (this.editorView) {
       this.editorView.destroy();
+    }
+  }
+
+  /** Ação acionada pela action bar: Desfazer */
+  public desfazer(): void {
+    if (this.editorView) {
+      undo(this.editorView);
+      this.editorView.focus();
+    }
+  }
+
+  /** Ação acionada pela action bar: Refazer */
+  public refazer(): void {
+    if (this.editorView) {
+      redo(this.editorView);
+      this.editorView.focus();
     }
   }
 

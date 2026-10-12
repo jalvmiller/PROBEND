@@ -43,3 +43,94 @@
   min-height: 0;
   height: 100%;
 }
+
+/* ==========================================================
+   Split Workspace Unificado (Modos Matemática & Algoritmo)
+   ========================================================== */
+.split-workspace {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/*
+ * REGRA-CHAVE: itens flex têm min-width: auto por padrão, ou seja,
+ * não encolhem abaixo da largura do conteúdo (uma linha longa de código, por exemplo).
+ * min-width: 0 libera o encolhimento e o conteúdo passa a rolar por dentro.
+ */
+.painel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* O componente filho (host) preenche o painel */
+.painel > * {
+  flex: 1;
+}
+
+/* Painel Esquerdo: largura controlada pelo splitter via variável CSS */
+.painel-editor-col {
+  flex: 0 0 var(--largura-editor, 58%);
+}
+
+/* Painel Direito: ocupa o que sobrar */
+.painel-preview-col {
+  flex: 1 1 0;
+}
+
+/* Divisor arrastável */
+.divisor {
+  flex: 0 0 6px;
+  position: relative;
+  z-index: 1;
+  cursor: col-resize;
+  background-color: var(--border-default);
+  transition: background-color 0.15s;
+}
+
+.divisor:hover,
+.divisor:focus-visible,
+.split-workspace.redimensionando .divisor {
+  background-color: var(--accent-amber);
+  outline: none;
+}
+
+/* Área de clique maior que a linha visível (mais fácil de "pegar") */
+.divisor::before {
+  content: '';
+  position: absolute;
+  inset: 0 -4px;
+}
+
+/*
+ * Durante o arraste, os painéis ignoram o mouse: editores não selecionam texto
+ * nem trocam o cursor enquanto o ponteiro passa por cima dele.
+ */
+.split-workspace.redimensionando .painel {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Telas estreitas: empilha (editor em cima, preview embaixo) e esconde o divisor */
+@media (max-width: 900px) {
+  .split-workspace {
+    flex-direction: column;
+  }
+
+  .painel-editor-col {
+    flex: 1 1 55%;
+  }
+
+  .painel-preview-col {
+    flex: 1 1 45%;
+    border-top: 1px solid var(--border-default);
+  }
+
+  .divisor {
+    display: none;
+  }
+}

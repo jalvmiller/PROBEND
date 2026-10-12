@@ -1,0 +1,98 @@
+<!-- Painel Direito do Modo Algoritmo: Contexto do Problema & Anotações Teóricas -->
+<div class="painel-contexto">
+  <!-- Abas (WAI-ARIA) -->
+  <div class="contexto-abas" role="tablist" aria-label="Informações do problema e anotações">
+    <button
+      type="button"
+      role="tab"
+      id="aba-enunciado"
+      class="aba-btn"
+      aria-controls="painel-enunciado"
+      [attr.aria-selected]="abaAtiva() === 'enunciado'"
+      [class.ativo]="abaAtiva() === 'enunciado'"
+      (click)="selecionarAba('enunciado')"
+    >
+      Enunciado
+    </button>
+    <button
+      type="button"
+      role="tab"
+      id="aba-anotacoes"
+      class="aba-btn"
+      aria-controls="painel-anotacoes"
+      [attr.aria-selected]="abaAtiva() === 'anotacoes'"
+      [class.ativo]="abaAtiva() === 'anotacoes'"
+      (click)="selecionarAba('anotacoes')"
+    >
+      Suas Anotações
+      @if (anotacoes.trim()) {
+        <span class="ponto-badge-preenchido"></span>
+      }
+    </button>
+  </div>
+
+  <div class="contexto-scroll">
+    <!-- ABA 1: ENUNCIADO DO PROBLEMA -->
+    @if (abaAtiva() === 'enunciado') {
+      <section id="painel-enunciado" role="tabpanel" aria-labelledby="aba-enunciado">
+        <header class="contexto-cabecalho">
+          @if (subtitulo) {
+            <span class="chip-materia">{{ subtitulo }}</span>
+          }
+          <h2 class="contexto-titulo">{{ titulo }}</h2>
+        </header>
+
+        @if (enunciado.trim()) {
+          <div class="contexto-enunciado" [appKatex]="enunciado"></div>
+        } @else {
+          <p class="contexto-vazio">Nenhum enunciado vinculado a este editor.</p>
+        }
+
+        @if (codigoOriginal.trim()) {
+          <div class="contexto-bloco">
+            <span class="contexto-rotulo">Código fornecido no enunciado</span>
+            <pre class="contexto-codigo"><code>{{ codigoOriginal }}</code></pre>
+          </div>
+        }
+      </section>
+    }
+
+    <!-- ABA 2: SUAS ANOTAÇÕES E COMPLEXIDADE -->
+    @if (abaAtiva() === 'anotacoes') {
+      <section id="painel-anotacoes" role="tabpanel" aria-labelledby="aba-anotacoes" class="secao-anotacoes-interativa">
+        <div class="cabecalho-campo-anotacoes">
+          <div>
+            <h3 class="titulo-anotacoes">Raciocínio & Complexidade</h3>
+            <p class="sub-anotacoes">Documente as invariantes, passos lógicos ou complexidade de tempo/espaço ($O(N)$, $\Omega(1)$).</p>
+          </div>
+          <span class="badge-katex-suporte font-mono">KaTeX Engine</span>
+        </div>
+
+        <div class="caixa-edicao-anotacoes">
+          <textarea
+            class="textarea-anotacoes"
+            rows="5"
+            placeholder="Exemplo: O algoritmo utiliza dois ponteiros para atingir complexidade de tempo $$O(n \\log n)$$ e memória auxiliar $$O(1)$$..."
+            [ngModel]="anotacoes"
+            (ngModelChange)="anotacoesChange.emit($event)"
+          ></textarea>
+        </div>
+
+        <!-- Prévia ao Vivo das Anotações -->
+        <div class="preview-anotacoes-bloco">
+          <div class="preview-anotacoes-header">
+            <span class="tag-preview-anotacao">Prévia Formatada</span>
+          </div>
+
+          @if (anotacoes.trim()) {
+            <div class="corpo-preview-anotacoes" [appKatex]="anotacoes"></div>
+          } @else {
+            <p class="contexto-vazio">
+              A prévia com renderização LaTeX aparecerá aqui conforme você digita no campo acima.
+            </p>
+          }
+        </div>
+      </section>
+    }
+  </div>
+</div>

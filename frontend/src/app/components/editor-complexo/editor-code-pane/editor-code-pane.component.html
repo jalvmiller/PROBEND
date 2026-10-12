@@ -1,44 +1,174 @@
-<!-- Coluna Esquerda: Editor de Código com Seletor e Suporte a Tab -->
+<!-- Painel Esquerdo: Ambiente de Código com Action Bar e CodeMirror ocupando 100% -->
 <div class="coluna-painel painel-editor">
-  <!-- Barra de Configuração de Código -->
-  <div class="toolbar-codigo">
-    <div class="grupo-linguagem">
-      <label for="seletorLinguagem" class="label-linguagem">Linguagem:</label>
-      <select
-        id="seletorLinguagem"
-        class="select-linguagem"
-        [ngModel]="linguagemCodigo"
-        (ngModelChange)="linguagemCodigoChange.emit($event)"
+  <!-- Action Bar Superior -->
+  <div class="action-bar-codigo">
+    <!-- Bloco Esquerdo: Badge da Linguagem Fixa & Botão Play Piston (Mock) -->
+    <div class="acoes-grupo-esquerda">
+      <div
+        class="badge-linguagem-fixa"
+        title="Linguagem definida pelo autor da questão"
       >
-        @for (lang of linguagens; track lang.valor) {
-          <option [value]="lang.valor">{{ lang.rotulo }}</option>
+        <span class="ponto-status-lang"></span>
+        <span class="nome-lang font-mono">{{ nomeLinguagemFormatado() }}</span>
+      </div>
+
+      <div class="divisor-vertical-action"></div>
+
+      <!-- Botão Play (Piston API Sandbox) -->
+      <button
+        type="button"
+        class="btn-action-play"
+        title="Executar código via Piston API Sandbox (Em breve)"
+        disabled
+      >
+        <app-icon name="play" [size]="13"></app-icon>
+        <span class="label-btn-action">Executar</span>
+        <span class="badge-em-breve font-mono">Piston API</span>
+      </button>
+    </div>
+
+    <!-- Bloco Direito: Documentação, Undo/Redo e Atalhos -->
+    <div class="acoes-grupo-direita">
+      <!-- Menu de Documentação Oficial & W3Schools -->
+      <div class="dropdown-docs-wrapper">
+        <button
+          type="button"
+          class="btn-action-util"
+          [class.ativo]="menuDocsAberto()"
+          (click)="alternarMenuDocs()"
+          title="Consultar documentação da linguagem"
+        >
+          <app-icon name="book" [size]="14"></app-icon>
+          <span class="label-btn-action">Documentação</span>
+          <app-icon name="chevron-down" [size]="12"></app-icon>
+        </button>
+
+        @if (menuDocsAberto()) {
+          <!-- Backdrop para fechar ao clicar fora -->
+          <div class="backdrop-menu-docs" (click)="fecharMenuDocs()"></div>
+
+          <div class="popover-menu-docs">
+            <div class="popover-cabecalho">
+              <span class="popover-titulo">Guias de {{ nomeLinguagemFormatado() }}</span>
+              <span class="popover-sub">Links externos de referência</span>
+            </div>
+
+            <ul class="lista-links-docs">
+              @for (item of linksDocumentacao(); track item.url) {
+                <li>
+                  <a
+                    [href]="item.url"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="link-doc-item"
+                    (click)="fecharMenuDocs()"
+                  >
+                    <div class="link-doc-info">
+                      <span class="link-doc-titulo">{{ item.rotulo }}</span>
+                      <span class="link-doc-sub">{{ item.subtitulo }}</span>
+                    </div>
+                    <span class="icone-link-externo" aria-hidden="true">↗</span>
+                  </a>
+                </li>
+              }
+            </ul>
+          </div>
         }
-      </select>
+      </div>
+
+      <div class="divisor-vertical-action"></div>
+
+      <!-- Botões Desfazer / Refazer (Undo / Redo) -->
+      <div class="grupo-history-botoes">
+        <button
+          type="button"
+          class="btn-action-icon"
+          (click)="acionarDesfazer()"
+          title="Desfazer (Ctrl+Z)"
+          aria-label="Desfazer alteração no código"
+        >
+          <app-icon name="undo" [size]="14"></app-icon>
+        </button>
+
+        <button
+          type="button"
+          class="btn-action-icon"
+          (click)="acionarRefazer()"
+          title="Refazer (Ctrl+Y / Ctrl+Shift+Z)"
+          aria-label="Refazer alteração no código"
+        >
+          <app-icon name="redo" [size]="14"></app-icon>
+        </button>
+      </div>
+
+      <div class="divisor-vertical-action"></div>
+
+      <!-- Modal/Popover de Atalhos de Teclado -->
+      <div class="dropdown-docs-wrapper">
+        <button
+          type="button"
+          class="btn-action-icon"
+          [class.ativo]="modalAtalhosAberto()"
+          (click)="alternarModalAtalhos()"
+          title="Atalhos do editor"
+          aria-label="Ver atalhos de teclado do editor"
+        >
+          <app-icon name="help" [size]="14"></app-icon>
+        </button>
+
+        @if (modalAtalhosAberto()) {
+          <div class="backdrop-menu-docs" (click)="fecharModalAtalhos()"></div>
+
+          <div class="popover-menu-docs popover-atalhos">
+            <div class="popover-cabecalho">
+              <span class="popover-titulo">Atalhos do CodeMirror</span>
+              <span class="popover-sub">Produtividade no código</span>
+            </div>
+
+            <div class="tabela-atalhos">
+              <div class="linha-atalho">
+                <span class="descricao-atalho">Indentar linha ou bloco</span>
+                <kbd class="tecla-kbd">Tab</kbd>
+              </div>
+              <div class="linha-atalho">
+                <span class="descricao-atalho">Recuar indentação</span>
+                <span class="combo-kbd">
+                  <kbd class="tecla-kbd">Shift</kbd> + <kbd class="tecla-kbd">Tab</kbd>
+                </span>
+              </div>
+              <div class="linha-atalho">
+                <span class="descricao-atalho">Desfazer alteração</span>
+                <span class="combo-kbd">
+                  <kbd class="tecla-kbd">Ctrl</kbd> + <kbd class="tecla-kbd">Z</kbd>
+                </span>
+              </div>
+              <div class="linha-atalho">
+                <span class="descricao-atalho">Refazer alteração</span>
+                <span class="combo-kbd">
+                  <kbd class="tecla-kbd">Ctrl</kbd> + <kbd class="tecla-kbd">Y</kbd>
+                </span>
+              </div>
+              <div class="linha-atalho">
+                <span class="descricao-atalho">Buscar no código</span>
+                <span class="combo-kbd">
+                  <kbd class="tecla-kbd">Ctrl</kbd> + <kbd class="tecla-kbd">F</kbd>
+                </span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
     </div>
   </div>
 
-  <!-- CodeMirror Editor (Modo Algoritmo) -->
+  <!-- CodeMirror Editor dominando todo o restante da altura vertical -->
   <div class="campo-edicao-wrapper codigo-wrapper">
     <app-code-mirror-editor
+      #cmEditor
       [value]="trechoCodigo"
       (valueChange)="trechoCodigoChange.emit($event)"
       [language]="linguagemCodigo"
       [placeholderText]="placeholderCodigo"
     ></app-code-mirror-editor>
-  </div>
-
-  <!-- Explicação Teórica Opcional do Algoritmo -->
-  <div class="secao-explicacao-algoritmo">
-    <div class="sub-header-explicacao">
-      <span class="sub-rotulo">Explicação Conceitual / Anotações (Opcional):</span>
-      <span class="dica-katex-sm">Suporta fórmulas KaTeX</span>
-    </div>
-    <textarea
-      class="textarea-explicacao"
-      rows="3"
-      placeholder="Explique a lógica do algoritmo ou a complexidade de tempo e espaço..."
-      [ngModel]="conteudoExplicacao"
-      (ngModelChange)="conteudoExplicacaoChange.emit($event)"
-    ></textarea>
   </div>
 </div>

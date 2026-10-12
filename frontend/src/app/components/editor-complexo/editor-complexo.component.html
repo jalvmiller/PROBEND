@@ -5,7 +5,7 @@
     [titulo]="titulo"
     [subtitulo]="subtitulo"
     [modoAtivo]="modoAtivo()"
-    [mostrarVerEnunciado]="mostrarVerEnunciado"
+    [mostrarVerEnunciado]="mostrarVerEnunciado && modoAtivo() === 'MATEMATICA'"
     [enunciadoAberto]="enunciadoAberto()"
     [totalLinhas]="totalLinhas()"
     [totalCaracteres]="totalCaracteres()"
@@ -22,8 +22,8 @@
     (submeter)="submeter()"
   ></app-editor-header>
 
-  <!-- Drawer Deslizante de Enunciado -->
-  @if (mostrarVerEnunciado) {
+  <!-- Drawer Deslizante de Enunciado (só no Modo Matemática; no Algoritmo o enunciado fica no painel direito) -->
+  @if (mostrarVerEnunciado && modoAtivo() === 'MATEMATICA') {
     <app-editor-enunciado-drawer
       [aberto]="enunciadoAberto()"
       [enunciado]="enunciadoOriginal"
@@ -38,30 +38,63 @@
     <!-- MODO MATEMÁTICA (LaTeX)                              -->
     <!-- ==================================================== -->
     @if (modoAtivo() === 'MATEMATICA') {
-      <div class="split-screen">
-        <app-editor-math-pane
-          #mathPane
-          [conteudo]="conteudo()"
-          [placeholderMatematica]="placeholderMatematica()"
-          (conteudoChange)="conteudo.set($event)"
-          (cursorAlterado)="sincronizarPaginaComCursor($event)"
-          (linhaAlterada)="sincronizarPaginaComLinha($event)"
-        ></app-editor-math-pane>
+      <div
+        class="split-workspace"
+        [class.redimensionando]="redimensionando()"
+        [style.--largura-editor]="larguraEditorPct() + '%'"
+      >
+        <!-- PAINEL ESQUERDO: Editor LaTeX com Toolbar e MathLive Retrátil -->
+        <div class="painel painel-editor-col">
+          <app-editor-math-pane
+            #mathPane
+            [conteudo]="conteudo()"
+            [placeholderMatematica]="placeholderMatematica()"
+            (conteudoChange)="conteudo.set($event)"
+            (cursorAlterado)="sincronizarPaginaComCursor($event)"
+            (linhaAlterada)="sincronizarPaginaComLinha($event)"
+          ></app-editor-math-pane>
+        </div>
 
-        <app-editor-documento-preview
-          [conteudo]="conteudo()"
-          [trechoCodigo]="trechoCodigo()"
-          [linguagemCodigo]="linguagemCodigo()"
-          [titulo]="titulo"
-          [subtitulo]="subtitulo"
-          [autorExibicao]="autorExibicao()"
-          [paginas]="paginas()"
-          [paginaAtualIndex]="paginaAtualIndex()"
-          [modoVisualizacao]="modoVisualizacao()"
-          (paginaAtualIndexChange)="paginaAtualIndex.set($event)"
-          (modoVisualizacaoChange)="modoVisualizacao.set($event)"
-          (adicionarPagina)="inserirQuebraPagina()"
-        ></app-editor-documento-preview>
+        <!-- DIVISOR ARRASTÁVEL (Splitter com suporte a mouse e teclado) -->
+        <div
+          class="divisor"
+          appSplitResizer
+          containerSelector=".split-workspace"
+          [minLeftPct]="LARGURA_MIN_PCT"
+          [maxLeftPct]="LARGURA_MAX_PCT"
+          (resizePct)="larguraEditorPct.set($event)"
+          (resizeStart)="redimensionando.set(true)"
+          (resizeEnd)="finalizarRedimensionamento()"
+          (keydown)="redimensionarPorTeclado($event)"
+          tabindex="0"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Redimensionar editor e documento"
+          [attr.aria-valuenow]="larguraEditorArredondada()"
+          [attr.aria-valuemin]="LARGURA_MIN_PCT"
+          [attr.aria-valuemax]="LARGURA_MAX_PCT"
+          title="Arraste ou use as setas ← → para redimensionar"
+        >
+          <div class="divisor-linha"></div>
+        </div>
+
+        <!-- PAINEL DIREITO: Documento Paginado e Prévia KaTeX -->
+        <div class="painel painel-preview-col">
+          <app-editor-documento-preview
+            [conteudo]="conteudo()"
+            [trechoCodigo]="trechoCodigo()"
+            [linguagemCodigo]="linguagemCodigo()"
+            [titulo]="titulo"
+            [subtitulo]="subtitulo"
+            [autorExibicao]="autorExibicao()"
+            [paginas]="paginas()"
+            [paginaAtualIndex]="paginaAtualIndex()"
+            [modoVisualizacao]="modoVisualizacao()"
+            (paginaAtualIndexChange)="paginaAtualIndex.set($event)"
+            (modoVisualizacaoChange)="modoVisualizacao.set($event)"
+            (adicionarPagina)="inserirQuebraPagina()"
+          ></app-editor-documento-preview>
+        </div>
       </div>
     }
 
@@ -69,23 +102,55 @@
     <!-- MODO ALGORITMO / CÓDIGO                              -->
     <!-- ==================================================== -->
     @if (modoAtivo() === 'ALGORITMO') {
-      <div class="split-screen">
-        <app-editor-code-pane
-          [trechoCodigo]="trechoCodigo()"
-          [linguagemCodigo]="linguagemCodigo()"
-          [placeholderCodigo]="placeholderCodigo()"
-          [conteudoExplicacao]="conteudo()"
-          (trechoCodigoChange)="trechoCodigo.set($event)"
-          (linguagemCodigoChange)="linguagemCodigo.set($event)"
-          (conteudoExplicacaoChange)="conteudo.set($event)"
-        ></app-editor-code-pane>
+      <div
+        class="split-workspace"
+        [class.redimensionando]="redimensionando()"
+        [style.--largura-editor]="larguraEditorPct() + '%'"
+      >
+        <!-- PAINEL ESQUERDO: Ambiente de Código -->
+        <div class="painel painel-editor-col">
+          <app-editor-code-pane
+            [trechoCodigo]="trechoCodigo()"
+            [linguagemCodigo]="linguagemCodigo()"
+            [placeholderCodigo]="placeholderCodigo()"
+            (trechoCodigoChange)="trechoCodigo.set($event)"
+          ></app-editor-code-pane>
+        </div>
 
-        <app-editor-code-preview
-          [trechoCodigo]="trechoCodigo()"
-          [linguagemCodigo]="linguagemCodigo()"
-          [codigoDestacado]="codigoDestacado()"
-          [conteudoExplicacao]="conteudo()"
-        ></app-editor-code-preview>
+        <!-- DIVISOR ARRASTÁVEL (mouse via diretiva, teclado via setas) -->
+        <div
+          class="divisor"
+          appSplitResizer
+          containerSelector=".split-workspace"
+          [minLeftPct]="LARGURA_MIN_PCT"
+          [maxLeftPct]="LARGURA_MAX_PCT"
+          (resizePct)="larguraEditorPct.set($event)"
+          (resizeStart)="redimensionando.set(true)"
+          (resizeEnd)="finalizarRedimensionamento()"
+          (keydown)="redimensionarPorTeclado($event)"
+          tabindex="0"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Redimensionar editor e contexto do problema"
+          [attr.aria-valuenow]="larguraEditorArredondada()"
+          [attr.aria-valuemin]="LARGURA_MIN_PCT"
+          [attr.aria-valuemax]="LARGURA_MAX_PCT"
+          title="Arraste ou use as setas ← → para redimensionar"
+        >
+          <div class="divisor-linha"></div>
+        </div>
+
+        <!-- PAINEL DIREITO: Contexto do Problema -->
+        <div class="painel painel-preview-col">
+          <app-editor-contexto-problema
+            [titulo]="titulo"
+            [subtitulo]="subtitulo"
+            [enunciado]="enunciadoOriginal"
+            [codigoOriginal]="codigoOriginal"
+            [anotacoes]="conteudo()"
+            (anotacoesChange)="conteudo.set($event)"
+          ></app-editor-contexto-problema>
+        </div>
       </div>
     }
   </main>

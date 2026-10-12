@@ -17,21 +17,9 @@ import { EditorEnunciadoDrawerComponent } from './editor-enunciado-drawer/editor
 import { EditorMathPaneComponent } from './editor-math-pane/editor-math-pane.component';
 import { EditorDocumentoPreviewComponent } from './editor-documento-preview/editor-documento-preview.component';
 import { EditorCodePaneComponent } from './editor-code-pane/editor-code-pane.component';
-import { EditorCodePreviewComponent } from './editor-code-preview/editor-code-preview.component';
+import { EditorContextoProblemaComponent } from './editor-contexto-problema/editor-contexto-problema.component';
 import { EditorGuiaModalComponent } from './editor-guia-modal/editor-guia-modal.component';
-
-import * as Prism from 'prismjs';
-import 'prismjs/components/prism-clike';
-import 'prismjs/components/prism-c';
-import 'prismjs/components/prism-cpp';
-import 'prismjs/components/prism-csharp';
-import 'prismjs/components/prism-java';
-import 'prismjs/components/prism-python';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/components/prism-typescript';
-import 'prismjs/components/prism-sql';
-import 'prismjs/components/prism-rust';
-import 'prismjs/components/prism-go';
+import { SplitResizerDirective } from '../../directives/split-resizer.directive';
 
 export interface RespostaEditorComplexo {
   conteudo: string;
@@ -50,8 +38,9 @@ export interface RespostaEditorComplexo {
     EditorMathPaneComponent,
     EditorDocumentoPreviewComponent,
     EditorCodePaneComponent,
-    EditorCodePreviewComponent,
-    EditorGuiaModalComponent
+    EditorContextoProblemaComponent,
+    EditorGuiaModalComponent,
+    SplitResizerDirective
   ],
   templateUrl: './editor-complexo.component.html',
   styleUrl: './editor-complexo.component.css',
@@ -174,19 +163,52 @@ $$\\int_{0}^{\\infty} e^{-x^2} \\, dx = \\frac{\\sqrt{\\pi}}{2}$$`;
     return texto ? texto.split('\n').length : 0;
   });
 
-  // Código com syntax highlighting via PrismJS
-  public codigoDestacado = computed(() => {
-    const code = this.trechoCodigo();
-    const lang = this.linguagemCodigo();
-    if (!code) return '';
+  // ==========================================================
+  // Split do Modo Algoritmo (editor à esquerda, contexto à direita)
+  // ==========================================================
+  public readonly LARGURA_MIN_PCT = 30;
+  public readonly LARGURA_MAX_PCT = 75;
+  private readonly LARGURA_PADRAO_PCT = 58;
+  private readonly PASSO_TECLADO_PCT = 5;
+  private readonly CHAVE_STORAGE_SPLIT = 'probend_editor_algoritmo_split_pct';
 
-    try {
-      const grammar = Prism.languages[lang] || Prism.languages['clike'] || Prism.languages['javascript'];
-      return Prism.highlight(code, grammar, lang);
-    } catch {
-      return code;
-    }
-  });
+  /** Largura do painel de código em %. O painel de contexto ocupa o restante. */
+  public larguraEditorPct = signal<number>(this.lerLarguraSalva());
+  public larguraEditorArredondada = computed(() => Math.round(this.larguraEditorPct()));
+
+  /** true enquanto o usuário arrasta o divisor (usado pelo CSS para bloquear interações). */
+  public redimensionando = signal<boolean>(false);
+
+  public finalizarRedimensionamento(): void {
+    this.redimensionando.set(false);
+    this.salvarLargura();
+  }
+
+  /** Acessibilidade: setas ← → movem o divisor quando ele está com foco. */
+  public redimensionarPorTeclado(event: KeyboardEvent): void {
+    let delta = 0;
+    if (event.key === 'ArrowLeft') delta = -this.PASSO_TECLADO_PCT;
+    if (event.key === 'ArrowRight') delta = this.PASSO_TECLADO_PCT;
+    if (delta === 0) return;
+
+    event.preventDefault();
+    this.larguraEditorPct.set(this.limitarLargura(this.larguraEditorPct() + delta));
+    this.salvarLargura();
+  }
+
+  private limitarLargura(pct: number): number {
+    return Math.min(this.LARGURA_MAX_PCT, Math.max(this.LARGURA_MIN_PCT, pct));
+  }
+
+  /** localStorage pode conter lixo (valor antigo, editado à mão): validamos antes de usar. */
+  private lerLarguraSalva(): number {
+    const salvo = Number(localStorage.getItem(this.CHAVE_STORAGE_SPLIT));
+    return Number.isFinite(salvo) && salvo > 0 ? this.limitarLargura(salvo) : this.LARGURA_PADRAO_PCT;
+  }
+
+  private salvarLargura(): void {
+    localStorage.setItem(this.CHAVE_STORAGE_SPLIT, String(this.larguraEditorArredondada()));
+  }
 
   ngOnInit(): void {
     if (this.conteudoInicial && this.conteudoInicial.trim()) {
