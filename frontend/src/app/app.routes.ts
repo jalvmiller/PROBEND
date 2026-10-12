@@ -6,14 +6,13 @@ export const routes: Routes = [
   {
     path: 'login',
     canActivate: [publicGuard],
-    loadComponent: () =>
-      import('./pages/login/login.component').then(m => m.LoginComponent)
+    loadComponent: () => import('./pages/login/login.component').then((m) => m.LoginComponent),
   },
   {
     path: 'register',
     canActivate: [publicGuard],
     loadComponent: () =>
-      import('./pages/register/register.component').then(m => m.RegisterComponent)
+      import('./pages/register/register.component').then((m) => m.RegisterComponent),
   },
 
   // 2. Rota Raiz Protegida: Feed de Questões com Lazy Loading
@@ -21,7 +20,7 @@ export const routes: Routes = [
     path: '',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent)
+      import('./pages/dashboard/dashboard.component').then((m) => m.DashboardComponent),
   },
 
   // 3. Rotas de Questões
@@ -29,19 +28,21 @@ export const routes: Routes = [
     path: 'questoes/nova',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/questao-form/questao-form.component').then(m => m.QuestaoFormComponent)
+      import('./pages/questao-form/questao-form.component').then((m) => m.QuestaoFormComponent),
   },
   {
     path: 'questoes/:id/editar',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/questao-form/questao-form.component').then(m => m.QuestaoFormComponent)
+      import('./pages/questao-form/questao-form.component').then((m) => m.QuestaoFormComponent),
   },
   {
     path: 'questoes/:id',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/questao-detalhes/questao-detalhes.component').then(m => m.QuestaoDetalhesComponent)
+      import('./pages/questao-detalhes/questao-detalhes.component').then(
+        (m) => m.QuestaoDetalhesComponent,
+      ),
   },
 
   // 4. Rotas de Trilhas
@@ -49,27 +50,33 @@ export const routes: Routes = [
     path: 'trilhas',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/trilhas-catalogo/trilhas-catalogo.component').then(m => m.TrilhasCatalogoComponent)
+      import('./pages/trilhas-catalogo/trilhas-catalogo.component').then(
+        (m) => m.TrilhasCatalogoComponent,
+      ),
   },
   {
     path: 'trilhas/nova',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/trilha-form/trilha-form.component').then(m => m.TrilhaFormComponent)
+      import('./pages/trilha-form/trilha-form.component').then((m) => m.TrilhaFormComponent),
   },
 
   // 5. Rota de Perfil & Configurações
   {
+    path: 'perfil',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/perfil/perfil.component').then((m) => m.PerfilComponent),
+  },
+  {
     path: 'configuracoes',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/configuracoes/configuracoes.component').then(m => m.ConfiguracoesComponent)
+      import('./pages/configuracoes/configuracoes.component').then((m) => m.ConfiguracoesComponent),
   },
 
   // 5. Fallback: Qualquer rota desconhecida redireciona para a raiz
   {
     path: '**',
-    redirectTo: ''
-  }
+    redirectTo: '',
+  },
 ];
-

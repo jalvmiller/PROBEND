@@ -1,0 +1,204 @@
+<div class="perfil-container">
+  <!-- Navegação de topo (Padrão PROBEND) -->
+  <div class="navegacao-topo">
+    <a routerLink="/" class="link-voltar" title="Voltar ao repositório">
+      <span class="seta-voltar" aria-hidden="true">←</span>
+      <span>Voltar ao repositório</span>
+    </a>
+  </div>
+
+  <!-- Cabeçalho da Página (Padrão page-title / page-desc) -->
+  <div class="perfil-header">
+    <h1 class="page-title">Perfil do Usuário</h1>
+    <p class="page-desc">Acompanhe suas questões criadas, demonstrações técnicas e discussões no repositório.</p>
+  </div>
+
+  <!-- CARD 1: Identidade do Usuário (Hero) -->
+  <section class="card-perfil">
+    <div class="perfil-topo">
+      <div class="avatar-coluna">
+        <app-avatar [usuario]="auth.currentUser()" tamanho="circulo"></app-avatar>
+      </div>
+
+      <div class="perfil-info">
+        <h2 class="perfil-nome">{{ auth.currentUser()?.nome || auth.currentUser()?.username }}</h2>
+        <span class="perfil-username font-mono">@{{ auth.currentUser()?.username }}</span>
+        
+        <div class="perfil-badges-row">
+          <app-role-badge [usuario]="auth.currentUser()"></app-role-badge>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BARRA DE ABAS (TABS) -->
+  <nav class="perfil-tabs" role="tablist" aria-label="Abas de atividades">
+    <button
+      type="button"
+      role="tab"
+      class="tab-btn"
+      [class.tab-ativa]="abaAtiva() === 'questoes'"
+      [attr.aria-selected]="abaAtiva() === 'questoes'"
+      (click)="selecionarAba('questoes')"
+    >
+      <app-icon name="file-text" [size]="18"></app-icon>
+      <span>Minhas Questões</span>
+      <span class="tab-contador">{{ questoes().length }}</span>
+    </button>
+
+    <button
+      type="button"
+      role="tab"
+      class="tab-btn"
+      [class.tab-ativa]="abaAtiva() === 'resolucoes'"
+      [attr.aria-selected]="abaAtiva() === 'resolucoes'"
+      (click)="selecionarAba('resolucoes')"
+    >
+      <app-icon name="star" [size]="18"></app-icon>
+      <span>Minhas Resoluções</span>
+      <span class="tab-contador">{{ resolucoes().length }}</span>
+    </button>
+
+    <button
+      type="button"
+      role="tab"
+      class="tab-btn"
+      [class.tab-ativa]="abaAtiva() === 'comentarios'"
+      [attr.aria-selected]="abaAtiva() === 'comentarios'"
+      (click)="selecionarAba('comentarios')"
+    >
+      <app-icon name="message-square" [size]="18"></app-icon>
+      <span>Meus Comentários</span>
+      <span class="tab-contador">{{ comentarios().length }}</span>
+    </button>
+  </nav>
+
+  <!-- CONTEÚDO PRINCIPAL (CONDICIONAL COM @switch) -->
+  <main class="perfil-conteudo">
+    @if (carregando()) {
+      <div class="perfil-loading">
+        <div class="loading-spinner"></div>
+        <span>Carregando atividades...</span>
+      </div>
+    } @else {
+      @switch (abaAtiva()) {
+
+        <!-- ============================================== -->
+        <!-- ABA 1: MINHAS QUESTÕES                         -->
+        <!-- ============================================== -->
+        @case ('questoes') {
+          <div class="lista-cards">
+            @for (q of questoes(); track q.id) {
+              <article class="card-item" (click)="navegarParaQuestao(q.id)">
+                <div class="card-cabecalho">
+                  <div class="materia-tag">{{ q.materia }}</div>
+
+                  <!-- Status: Solucionada ou Aberta -->
+                  <div class="status-tag" [class.solucionada]="q.solucionada">
+                    @if (q.solucionada) {
+                      <app-icon name="circle-check" [size]="14"></app-icon>
+                      <span>Solucionada</span>
+                    } @else {
+                      <app-icon name="clock" [size]="14"></app-icon>
+                      <span>Aberta</span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Enunciado com KaTeX -->
+                <div class="card-enunciado" [appKatex]="q.enunciado"></div>
+
+                <footer class="card-rodape">
+                  <span class="card-meta">Dificuldade: Nível {{ q.dificuldade }}</span>
+                  <span class="link-acao">Acessar questão →</span>
+                </footer>
+              </article>
+            } @empty {
+              <div class="empty-state">
+                <app-icon name="file-text" [size]="32" class="empty-icon"></app-icon>
+                <h3 class="empty-titulo">Nenhuma questão criada</h3>
+                <p class="empty-desc">Você ainda não submeteu problemas ao repositório acadêmico.</p>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- ============================================== -->
+        <!-- ABA 2: MINHAS RESOLUÇÕES                       -->
+        <!-- ============================================== -->
+        @case ('resolucoes') {
+          <div class="lista-cards">
+            @for (r of resolucoes(); track r.id) {
+              <article class="card-item" (click)="navegarParaQuestao(r.questaoId)">
+                <div class="card-cabecalho">
+                  <span class="materia-tag">{{ r.questaoMateria }}</span>
+
+                  <!-- INDICADOR DE VERIFICADO POR ESPECIALISTA -->
+                  @if (r.verificadoPorEspecialista) {
+                    <span class="badge-verificado" title="Solução verificada e chancelada por Especialista">
+                      <app-icon name="check" [size]="13"></app-icon>
+                      <span>Verificada por Especialista</span>
+                    </span>
+                  }
+                </div>
+
+                <div class="referencia-questao">
+                  <span class="ref-label">Na questão:</span>
+                  <span class="ref-enunciado" [appKatex]="r.questaoEnunciado"></span>
+                </div>
+
+                <!-- Demonstração / Conteúdo da Resolução -->
+                <div class="resolucao-corpo" [appKatex]="r.conteudo"></div>
+
+                @if (r.trechoCodigo) {
+                  <pre class="bloco-codigo"><code>{{ r.trechoCodigo }}</code></pre>
+                }
+
+                <footer class="card-rodape">
+                  <span class="card-meta">{{ r.qtdComentarios }} comentário(s)</span>
+                  <span class="link-acao">Ver na questão →</span>
+                </footer>
+              </article>
+            } @empty {
+              <div class="empty-state">
+                <app-icon name="star" [size]="32" class="empty-icon"></app-icon>
+                <h3 class="empty-titulo">Nenhuma resolução enviada</h3>
+                <p class="empty-desc">Você ainda não publicou nenhuma demonstração técnica.</p>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- ============================================== -->
+        <!-- ABA 3: MEUS COMENTÁRIOS                        -->
+        <!-- ============================================== -->
+        @case ('comentarios') {
+          <div class="lista-cards">
+            @for (c of comentarios(); track c.id) {
+              <article class="card-item" (click)="navegarParaQuestao(c.questaoId)">
+                <div class="referencia-questao">
+                  <span class="ref-label">Comentário na questão:</span>
+                  <span class="ref-enunciado" [appKatex]="c.questaoEnunciado"></span>
+                </div>
+
+                <p class="comentario-texto">{{ c.conteudo }}</p>
+
+                <footer class="card-rodape">
+                  <span class="card-meta">Em: {{ c.dataCriacao | date:'dd/MM/yyyy' }}</span>
+                  <span class="link-acao">Acessar discussão →</span>
+                </footer>
+              </article>
+            } @empty {
+              <div class="empty-state">
+                <app-icon name="message-square" [size]="32" class="empty-icon"></app-icon>
+                <h3 class="empty-titulo">Nenhum comentário publicado</h3>
+                <p class="empty-desc">Participe das discussões comentando em resoluções da comunidade.</p>
+              </div>
+            }
+          </div>
+        }
+
+      }
+    }
+  </main>
+</div>

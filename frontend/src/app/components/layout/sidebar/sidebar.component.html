@@ -110,7 +110,7 @@
         <!-- MENU PRINCIPAL                             -->
         <!-- ========================================== -->
         <!-- Mini-Card Identidade do Usuário (Clique leva à tela de configurações) -->
-          <section class="usuario-card" (click)="navegarParaConfiguracoes()" title="Gerenciar perfil e alterar dados nas Configurações">
+          <section class="usuario-card" (click)="navegarParaPerfil()" title="Visualizar Meu Perfil e Atividades">
             <div class="usuario-avatar-wrapper">
               <app-avatar [usuario]="authService.currentUser()" tamanho="circulo"></app-avatar>
             </div>
@@ -217,9 +217,18 @@
             </button>
           </div>
 
-          <!-- Grupo 2: Acesso às Configurações da Conta -->
+          <!-- Grupo 2: Acesso ao Perfil e Configurações -->
           <div class="secao-grupo">
-            <span class="secao-label">Meus Dados</span>
+            <span class="secao-label">Minha Conta</span>
+
+            <button type="button" class="menu-item" (click)="navegarParaPerfil()">
+              <div class="menu-item-esq">
+                <div class="menu-icone icone-blue">
+                  <app-icon name="user" [size]="18"></app-icon>
+                </div>
+                <span class="menu-texto">Meu Perfil</span>
+              </div>
+            </button>
 
             <button type="button" class="menu-item" (click)="navegarParaConfiguracoes()">
               <div class="menu-item-esq">

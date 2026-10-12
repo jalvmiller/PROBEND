@@ -11,7 +11,7 @@
     </nav>
 
     <nav class="links">
-      <a routerLink="/configuracoes" class="user-pill-link" title="Configurações e Perfil">
+      <a routerLink="/perfil" class="user-pill-link" title="Meu Perfil">
         <div class="user-pill">
           <app-avatar [usuario]="authService.currentUser()" tamanho="badge"></app-avatar>
           <span class="user-name">{{ authService.currentUser()?.nome || authService.currentUser()?.username }}</span>

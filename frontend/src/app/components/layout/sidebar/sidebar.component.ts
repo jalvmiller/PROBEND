@@ -183,6 +183,11 @@ export class SidebarComponent implements OnInit {
     this.router.navigate(['/questoes', questaoId]);
   }
 
+  public navegarParaPerfil(): void {
+    this.sidebarService.fechar();
+    this.router.navigate(['/perfil']);
+  }
+
   public navegarParaConfiguracoes(): void {
     this.sidebarService.fechar();
     this.router.navigate(['/configuracoes']);
